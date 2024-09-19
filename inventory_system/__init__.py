@@ -8,16 +8,20 @@ migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
-
-    # Load the configuration
     app.config.from_object('inventory_system.settings')
 
-    # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Register the suppliers blueprint
-    from suppliers.urls import suppliers_bp
-    app.register_blueprint(suppliers_bp, url_prefix='/suppliers')
+    #Import models
+    from suppliers.models import Supplier
+    from inventory.models import Inventory
+    from products.models import Product
+    from sales.models import Sale
+    from users.models import User
+
+    # Register Blueprints
+    from suppliers.views import suppliers_bp
+    app.register_blueprint(suppliers_bp, url_prefix='/api/suppliers')
 
     return app
