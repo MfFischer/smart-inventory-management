@@ -2,21 +2,48 @@ from inventory_system import db
 
 
 class User(db.Model):
+    """
+    User model representing user data in the system.
+    """
     __tablename__ = 'users'
 
+    # Primary key for the User table
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    # Username must be unique and cannot be null
     username = db.Column(db.String(100), unique=True, nullable=False)
+
+    # Hashed password for the user, cannot be null
     hashed_password = db.Column(db.String(255), nullable=False)
+
+    # Optional fields for the user's first and last names
     first_name = db.Column(db.String(255), nullable=True)
     last_name = db.Column(db.String(255), nullable=True)
+
+    # Optional email field for the user
     email = db.Column(db.String(255), nullable=True)
+
+    # User role, defaults to 'staff'
     role = db.Column(db.String(50), default='staff')
+
+    # User status, defaults to 'active'
     status = db.Column(db.String(50), default='active')
+
+    # Timestamp for the last login of the user
     last_login = db.Column(db.DateTime, nullable=True)
+
+    # Timestamps for when the user record was created and last updated
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    updated_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp()
+    )
 
     def to_dict(self):
+        """
+        Convert the User object into a dictionary representation.
+        """
         return {
             "id": self.id,
             "username": self.username,
