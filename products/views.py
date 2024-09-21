@@ -29,10 +29,16 @@ def create_product():
     if Product.query.filter_by(name=data.get('name')).first():
         return jsonify({"error": "A product with this name already exists."}), 400
 
+    # Ensure price is provided and valid
+    if 'price' not in data or data['price'] is None:
+        return jsonify({"error": "The price field is required."}), 400
+
+    # Create a new Product instance with validated data
     # Create a new Product instance with validated data
     new_product = Product(
         name=data.get('name'),
-        description=data.get('description')
+        description=data.get('description'),
+        price=data.get('price')
     )
     db.session.add(new_product)
     db.session.commit()
@@ -63,6 +69,10 @@ def update_product(product_id):
     # Update the product with validated data
     product.name = data.get('name', product.name)
     product.description = data.get('description', product.description)
+    if 'price' in data:
+        # Update price if provided
+        product.price = data['price']
+
     db.session.commit()
     return jsonify(product_schema.dump(product)), 200
 

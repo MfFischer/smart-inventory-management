@@ -1,6 +1,7 @@
 smart_inventory/
 │
 ├── architecture.md              # Architecture documentation file
+├── conftest.py                  # Manage testing setup
 │
 ├── inventory_system/            # Flask project folder
 │   ├── __init__.py              # Initializes the Flask app

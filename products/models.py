@@ -10,6 +10,7 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    price = db.Column(db.Numeric(10, 2), nullable=False)
     created_at = db.Column(
         db.DateTime,
         default=db.func.current_timestamp()
@@ -26,6 +27,7 @@ class Product(db.Model):
             "id": self.id,
             "name": self.name,
             "description": self.description,
+            'price': str(self.price),
             "created_at": self.created_at,
             "updated_at": self.updated_at
         }

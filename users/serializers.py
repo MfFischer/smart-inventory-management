@@ -19,17 +19,24 @@ class UserSchema(Schema):
     status = fields.Str(
         validate=validate.OneOf(['active', 'inactive'])
     )
+    password = fields.Str(required=True, validate=validate.Length(min=6))
     last_login = fields.DateTime(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
 
-    @validates('username')
-    def validate_username(self, value):
-        """
-        Validates that the username is unique.
+# Create an instance of the schema
+user_schema = UserSchema()
 
-        Raises:
-            ValidationError: If the username already exists in the database.
-        """
-        if User.query.filter_by(username=value).first():
-            raise ValidationError("Username already exists.")
+
+@validates('username')
+def validate_username(self, value):
+    """
+    Validates that the username is unique.
+
+    Raises:
+        ValidationError: If the username already exists in the database.
+    """
+    if User.query.filter_by(username=value).first():
+        raise ValidationError("Username already exists.")
+
+

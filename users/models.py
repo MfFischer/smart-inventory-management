@@ -1,6 +1,5 @@
 from inventory_system import db
 
-
 class User(db.Model):
     """
     User model representing user data in the system.
@@ -56,3 +55,20 @@ class User(db.Model):
             "created_at": self.created_at,
             "updated_at": self.updated_at
         }
+
+    @classmethod
+    def from_dict(cls, data):
+        """
+        Create a User object from a dictionary representation.
+        :param data: Dictionary containing user data.
+        :return: User object.
+        """
+        return cls(
+            username=data.get('username'),
+            hashed_password=data.get('hashed_password'),
+            first_name=data.get('first_name'),
+            last_name=data.get('last_name'),
+            email=data.get('email'),
+            role=data.get('role', 'staff'),
+            status=data.get('status', 'active')
+        )

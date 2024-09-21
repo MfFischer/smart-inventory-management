@@ -45,7 +45,7 @@ class Inventory(db.Model):
             "sku": self.sku,
             "stock_quantity": self.stock_quantity,
             "reorder_threshold": self.reorder_threshold,
-            "unit_price": str(self.unit_price),  # Convert Decimal to string for JSON serialization
+            "unit_price": str(self.unit_price),
             "created_at": self.created_at,
             "updated_at": self.updated_at
         }

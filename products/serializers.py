@@ -4,16 +4,19 @@ from products.models import Product
 
 # Schema for serializing and deserializing Product data
 class ProductSchema(Schema):
-    id = fields.Int(dump_only=True)  # ID is read-only and auto-generated
+    id = fields.Int(dump_only=True)
     name = fields.Str(
         required=True,
         validate=validate.Length(min=1, max=255)
-    )  # Name is required and should be between 1 and 255 characters
+    )
+    # Name is required and should be between 1 and 255 characters
     description = fields.Str(
         validate=validate.Length(max=500)
-    )  # Optional description, maximum length is 500 characters
-    created_at = fields.DateTime(dump_only=True)  # Read-only creation timestamp
-    updated_at = fields.DateTime(dump_only=True)  # Read-only update timestamp
+    )
+    # Optional description, maximum length is 500 characters
+    price = fields.Decimal(required=True, as_string=True)
+    created_at = fields.DateTime(dump_only=True)
+    updated_at = fields.DateTime(dump_only=True)
 
     @validates('name')
     def validate_name(self, value):

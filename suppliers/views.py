@@ -1,6 +1,8 @@
 from flask import jsonify, request, Blueprint
 from suppliers.models import Supplier
 from inventory_system import db
+from marshmallow import ValidationError
+from suppliers.serializers import SupplierSchema
 
 # Create a blueprint for supplier-related routes
 suppliers_bp = Blueprint('suppliers', __name__)
@@ -15,28 +17,41 @@ def get_suppliers():
     # Convert supplier objects to dictionaries and return as JSON
     return jsonify([supplier.to_dict() for supplier in suppliers]), 200
 
+from marshmallow import ValidationError
+from suppliers.serializers import SupplierSchema
+
 @suppliers_bp.route('/', methods=['POST'])
 def create_supplier():
+    schema = SupplierSchema()
+    try:
+        # Validate and deserialize input
+        supplier_data = schema.load(request.json)
+        # Check if supplier already exists (optional)
+        if Supplier.query.filter_by(email=supplier_data['email']).first():
+            return jsonify({"error": "A supplier with this email already exists."}), 400
+
+        # Create new supplier
+        supplier = Supplier(**supplier_data)
+        db.session.add(supplier)
+        db.session.commit()
+        return jsonify(schema.dump(supplier)), 201
+    except ValidationError as err:
+        # If validation fails, return 400 with error messages
+        return jsonify(err.messages), 400
+    except Exception as e:
+        # Catch any unexpected errors
+        return jsonify({"error": "Unexpected error", "message": str(e)}), 500
+
+@suppliers_bp.route('/<int:supplier_id>', methods=['GET'])
+def get_supplier(supplier_id):
     """
-    Create a new supplier with the provided data.
-    Expects JSON data in the request body.
+    Retrieve a specific supplier by ID.
+    Returns 404 if the supplier is not found.
     """
-    data = request.json
-
-    # Create a new Supplier object using provided data
-    new_supplier = Supplier(
-        name=data.get('name'),
-        phone=data.get('phone'),
-        email=data.get('email'),
-        address=data.get('address')
-    )
-
-    # Add and commit the new supplier to the database
-    db.session.add(new_supplier)
-    db.session.commit()
-
-    # Return the newly created supplier as a JSON response
-    return jsonify(new_supplier.to_dict()), 201
+    supplier = Supplier.query.get(supplier_id)
+    if not supplier:
+        return jsonify({'error': 'Supplier not found'}), 404
+    return jsonify(supplier.to_dict()), 200
 
 @suppliers_bp.route('/<int:supplier_id>', methods=['PUT'])
 def update_supplier(supplier_id):
@@ -44,21 +59,26 @@ def update_supplier(supplier_id):
     Update an existing supplier by ID with the provided data.
     Expects JSON data in the request body.
     """
-    # Retrieve supplier by ID or return 404 if not found
     supplier = Supplier.query.get_or_404(supplier_id)
     data = request.json
+    schema = SupplierSchema(partial=True)
 
-    # Update supplier fields with provided data, defaulting to existing values if not provided
-    supplier.name = data.get('name', supplier.name)
-    supplier.phone = data.get('phone', supplier.phone)
-    supplier.email = data.get('email', supplier.email)
-    supplier.address = data.get('address', supplier.address)
+    try:
+        # Validate and update supplier fields with provided data
+        updated_data = schema.load(data)
+        for key, value in updated_data.items():
+            setattr(supplier, key, value)
 
-    # Commit the updated supplier to the database
-    db.session.commit()
+        # Commit the updated supplier to the database
+        db.session.commit()
 
-    # Return the updated supplier as a JSON response
-    return jsonify(supplier.to_dict()), 200
+        return jsonify(supplier.to_dict()), 200
+
+    except ValidationError as err:
+        return jsonify(err.messages), 400
+    except Exception as e:
+        return jsonify({"error": "Unexpected error", "message": str(e)}), 500
+
 
 @suppliers_bp.route('/<int:supplier_id>', methods=['DELETE'])
 def delete_supplier(supplier_id):
