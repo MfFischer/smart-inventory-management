@@ -10,7 +10,8 @@ class Sale(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     total_price = db.Column(db.Numeric(10, 2), nullable=False)
     sale_status = db.Column(db.String(50), default='completed')
-
+    customer_name = db.Column(db.String(255), nullable=True)
+    sale_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     # Track record creation and update timestamps
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(
@@ -32,6 +33,8 @@ class Sale(db.Model):
             "quantity": self.quantity,
             "total_price": self.total_price,
             "sale_status": self.sale_status,
+            "customer_name": self.customer_name,
+            "sale_date": self.sale_date,
             "created_at": self.created_at,
             "updated_at": self.updated_at
         }

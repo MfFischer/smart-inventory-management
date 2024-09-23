@@ -83,3 +83,26 @@ def delete_product(product_id):
     db.session.delete(product)
     db.session.commit()
     return '', 204
+
+# Get products below reorder point based on quantity in stock
+@products_bp.route('/reorder', methods=['GET'])
+def get_products_below_reorder():
+    """Get all products below their reorder point."""
+    products_below_reorder = Product.query.filter(Product.quantity_in_stock <= Product.reorder_point).all()
+    if not products_below_reorder:
+        return jsonify({"message": "No products below reorder point"}), 404
+    return products_schema.jsonify(products_below_reorder), 200
+
+# Update the reorder point and reorder quantity of a product
+@products_bp.route('/<int:product_id>/reorder_settings', methods=['PUT'])
+def update_reorder_settings(product_id):
+    """Update the reorder point and reorder quantity of a product."""
+    product = Product.query.get_or_404(product_id)
+    data = request.json
+    if 'reorder_point' not in data or 'reorder_quantity' not in data:
+        return jsonify({"message": "Reorder point and reorder quantity are required"}), 400
+
+    product.reorder_point = data['reorder_point']
+    product.reorder_quantity = data['reorder_quantity']
+    db.session.commit()
+    return product_schema.jsonify(product), 200

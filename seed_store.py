@@ -1,53 +1,18 @@
-import pytest
 from inventory_system import db
 from products.models import Product
 from suppliers.models import Supplier
 from users.models import User
 from sales.models import Sale
 from datetime import datetime
-from random import randint, choice
-from inventory_system import create_app
 from werkzeug.security import generate_password_hash
+from inventory_system import create_app
+from inventory_system import db
 
-@pytest.fixture(scope='module')
+# Create the Flask app instance
+app = create_app()
 
-def test_client():
-    """
-    Set up the Flask test client for the module scope.
-    Creates a temporary in-memory SQLite database for testing.
-    """
-    # Create the Flask application configured for testing
-    flask_app = create_app()
-    flask_app.config.from_object('inventory_system.settings')
-    flask_app.config['TESTING'] = True  # Enable testing mode
-    flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Use in-memory SQLite database
-
-    # Create a test client using the Flask application configured above
-    testing_client = flask_app.test_client()
-
-    # Establish an application context before running the tests
-    ctx = flask_app.app_context()
-    ctx.push()
-
-    # Create the database and the database table(s)
-    db.create_all()
-
-    # Seed the database with realistic data
-    seed_database()
-    # this is where the testing happens!
-    yield testing_client
-
-    # Cleanup: Drop all data after tests
-    db.session.remove()
-    db.drop_all()
-    ctx.pop()
-
-
-def seed_database():
-    """
-    Seed the database with initial data for testing.
-    """
-    # Create sample products with prices
+def seed_store():
+    # Create sample hardware products with prices and reorder points
     products = [
         Product(
             name="Hammer",
@@ -182,33 +147,42 @@ def seed_database():
             product_id=1,  # Hammer
             quantity=2,
             total_price=products[0].price * 2,
-            sale_date=datetime.utcnow(),
-            customer_name="Alice Contractor"
+            sale_date=datetime.now(),
+            customer_name="Alice Contractor",
+            sale_status = "completed"
         ),
         Sale(
             product_id=3,  # Drill
             quantity=1,
             total_price=products[2].price,
-            sale_date=datetime.utcnow(),
-            customer_name="Bob Builder"
+            sale_date=datetime.now(),
+            customer_name="Bob Builder",
+            sale_status = "completed"
         ),
         Sale(
             product_id=6,  # Concrete Mix
             quantity=5,
             total_price=products[5].price * 5,
-            sale_date=datetime.utcnow(),
-            customer_name="Charlie Mason"
+            sale_date=datetime.now(),
+            customer_name="Charlie Mason",
+            sale_status="pending"
         ),
         Sale(
             product_id=9,  # Ladder
             quantity=1,
             total_price=products[8].price,
-            sale_date=datetime.utcnow(),
-            customer_name="Dana Decorator"
+            sale_date=datetime.now(),
+            customer_name="Dana Decorator",
+            sale_status="completed"
         )
     ]
     db.session.add_all(sales)
 
     # Commit all changes to the database
     db.session.commit()
-    print("Store database seeded successfully!")
+    print("Hardware store database seeded successfully!")
+
+if __name__ == '__main__':
+    # Run the seeding function within the application context
+    with app.app_context():
+        seed_store()
