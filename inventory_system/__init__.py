@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from inventory_system.celery_config import celery_app
 
 # Initialize SQLAlchemy and Flask-Migrate instances
 db = SQLAlchemy()
@@ -34,5 +35,7 @@ def create_app():
     app.register_blueprint(inventory_bp, url_prefix='/api/inventory')
     app.register_blueprint(sales_bp, url_prefix='/api/sales')
     app.register_blueprint(users_bp, url_prefix='/api/users')
+
+
 
     return app

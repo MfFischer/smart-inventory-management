@@ -1,0 +1,76 @@
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+Product ID: 2, Name: Screwdriver Set, Current Stock: 0, Reorder Point: 15, Reorder Quantity: 0
+
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+Product ID: 2, Name: Screwdriver Set, Current Stock: 0, Reorder Point: 15, Reorder Quantity: 0
+Product ID: 3, Name: Drill, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+Product ID: 2, Name: Screwdriver Set, Current Stock: 0, Reorder Point: 15, Reorder Quantity: 0
+Product ID: 3, Name: Drill, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+Product ID: 4, Name: Saw Blade, Current Stock: 0, Reorder Point: 12, Reorder Quantity: 0
+
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+Product ID: 2, Name: Screwdriver Set, Current Stock: 0, Reorder Point: 15, Reorder Quantity: 0
+Product ID: 3, Name: Drill, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+Product ID: 4, Name: Saw Blade, Current Stock: 0, Reorder Point: 12, Reorder Quantity: 0
+Product ID: 5, Name: Paint Brush Set, Current Stock: 0, Reorder Point: 20, Reorder Quantity: 0
+
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+Product ID: 2, Name: Screwdriver Set, Current Stock: 0, Reorder Point: 15, Reorder Quantity: 0
+Product ID: 3, Name: Drill, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+Product ID: 4, Name: Saw Blade, Current Stock: 0, Reorder Point: 12, Reorder Quantity: 0
+Product ID: 5, Name: Paint Brush Set, Current Stock: 0, Reorder Point: 20, Reorder Quantity: 0
+Product ID: 6, Name: Concrete Mix, Current Stock: 0, Reorder Point: 30, Reorder Quantity: 0
+
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+Product ID: 2, Name: Screwdriver Set, Current Stock: 0, Reorder Point: 15, Reorder Quantity: 0
+Product ID: 3, Name: Drill, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+Product ID: 4, Name: Saw Blade, Current Stock: 0, Reorder Point: 12, Reorder Quantity: 0
+Product ID: 5, Name: Paint Brush Set, Current Stock: 0, Reorder Point: 20, Reorder Quantity: 0
+Product ID: 6, Name: Concrete Mix, Current Stock: 0, Reorder Point: 30, Reorder Quantity: 0
+Product ID: 7, Name: Plywood Sheet, Current Stock: 0, Reorder Point: 8, Reorder Quantity: 0
+
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+Product ID: 2, Name: Screwdriver Set, Current Stock: 0, Reorder Point: 15, Reorder Quantity: 0
+Product ID: 3, Name: Drill, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+Product ID: 4, Name: Saw Blade, Current Stock: 0, Reorder Point: 12, Reorder Quantity: 0
+Product ID: 5, Name: Paint Brush Set, Current Stock: 0, Reorder Point: 20, Reorder Quantity: 0
+Product ID: 6, Name: Concrete Mix, Current Stock: 0, Reorder Point: 30, Reorder Quantity: 0
+Product ID: 7, Name: Plywood Sheet, Current Stock: 0, Reorder Point: 8, Reorder Quantity: 0
+Product ID: 8, Name: Nails, Current Stock: 0, Reorder Point: 50, Reorder Quantity: 0
+
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+Product ID: 2, Name: Screwdriver Set, Current Stock: 0, Reorder Point: 15, Reorder Quantity: 0
+Product ID: 3, Name: Drill, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+Product ID: 4, Name: Saw Blade, Current Stock: 0, Reorder Point: 12, Reorder Quantity: 0
+Product ID: 5, Name: Paint Brush Set, Current Stock: 0, Reorder Point: 20, Reorder Quantity: 0
+Product ID: 6, Name: Concrete Mix, Current Stock: 0, Reorder Point: 30, Reorder Quantity: 0
+Product ID: 7, Name: Plywood Sheet, Current Stock: 0, Reorder Point: 8, Reorder Quantity: 0
+Product ID: 8, Name: Nails, Current Stock: 0, Reorder Point: 50, Reorder Quantity: 0
+Product ID: 9, Name: Ladder, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+
+INFO:root:The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+Product ID: 2, Name: Screwdriver Set, Current Stock: 0, Reorder Point: 15, Reorder Quantity: 0
+Product ID: 3, Name: Drill, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+Product ID: 4, Name: Saw Blade, Current Stock: 0, Reorder Point: 12, Reorder Quantity: 0
+Product ID: 5, Name: Paint Brush Set, Current Stock: 0, Reorder Point: 20, Reorder Quantity: 0
+Product ID: 6, Name: Concrete Mix, Current Stock: 0, Reorder Point: 30, Reorder Quantity: 0
+Product ID: 7, Name: Plywood Sheet, Current Stock: 0, Reorder Point: 8, Reorder Quantity: 0
+Product ID: 8, Name: Nails, Current Stock: 0, Reorder Point: 50, Reorder Quantity: 0
+Product ID: 9, Name: Ladder, Current Stock: 0, Reorder Point: 5, Reorder Quantity: 0
+Product ID: 10, Name: Wrench Set, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
+
+INFO:root:Reorder check completed.

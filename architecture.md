@@ -14,13 +14,14 @@ smart_inventory/
 │   ├── migrations/              # Database migrations for suppliers
 │   ├── models.py                # Supplier model
 │   ├── views.py                 # Supplier API views
-│   ├── serializers.py           # Supplier serializers (if using marshmallow or similar)
+│   ├── serializers.py           # Supplier serializers 
 │   ├── urls.py                  # Supplier URL routing
 │   └── tests.py                 # Unit tests for suppliers
 │
 ├── products/                    # Products module (newly added)
 │   ├── migrations/              # Database migrations for products
 │   ├── models.py                # Product model
+│   ├── check_reorder.py         # Cron Job Script to Check for Reorders
 │   ├── views.py                 # Product API views
 │   ├── serializers.py           # Product serializers
 │   ├── urls.py                  # Product URL routing
@@ -63,7 +64,7 @@ smart_inventory/
 │
 ├── manage.py                    # Flask CLI management script (using Flask-Script or Flask-CLI)
 ├── requirements.txt             # Project dependencies
-├── Procfile                     # For deployment (if using Heroku or Render)
+├── Procfile                     # For deployment (Render)
 ├── .env                         # Environment variables (JWT secret, database URL, etc.)
 ├── .gitignore                   # Ignore unnecessary files
 └── README.md                    # Project README with overview and setup instructions
