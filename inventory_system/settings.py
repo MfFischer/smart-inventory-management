@@ -8,6 +8,6 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # Secret key for JWT authentication
-SECRET_KEY = 'secret_key'
+SECRET_KEY = 'SECRET_KEY'
 
 

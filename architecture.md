@@ -43,8 +43,8 @@ smart_inventory/
 │   ├── urls.py                  # Sales URL routing
 │   └── tests.py                 # Unit tests for sales
 │
-├── cron_jobs/                   # Background tasks (Celery)
-│   ├── tasks.py                 # Celery tasks for automating actions
+├── cron_jobs/                   # Background tasks 
+│   ├── daily_reorder_check.sh   #  tasks for automating actions
 │
 ├── users/                       # Optional authentication module
 │   ├── migrations/              # Database migrations for users
@@ -53,6 +53,16 @@ smart_inventory/
 │   ├── serializers.py           # User serializers
 │   ├── urls.py                  # User authentication routes
 │   └── tests.py                 # Unit tests for authentication
+│   └── decorators.py            # for managing roles and permission
+│
+├── permissions/                 # permissions module
+│   ├── migrations/              # Database migrations for permissions
+│   ├── models.py                # Define permission models and relationships
+│   ├── views.py                 # Admin views to manage permissions(Optional)
+│   ├── serializers.py           # serialize permission data(optional)
+│   ├── urls.py                  # URL routing
+│   └── tests.py                 # Unit tests for permissions
+│
 │
 ├── templates/                   # HTML templates (optional, for UI)
 │   ├── base.html                # Base template
@@ -63,6 +73,7 @@ smart_inventory/
 │   ├── js/
 │
 ├── manage.py                    # Flask CLI management script (using Flask-Script or Flask-CLI)
+├── seed_store.py                 # for seeding the database
 ├── requirements.txt             # Project dependencies
 ├── Procfile                     # For deployment (Render)
 ├── .env                         # Environment variables (JWT secret, database URL, etc.)
