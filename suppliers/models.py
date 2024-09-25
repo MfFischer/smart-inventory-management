@@ -1,10 +1,11 @@
 from inventory_system import db
-from marshmallow import Schema, fields, validate, validates, ValidationError
+from marshmallow import  validates, ValidationError
 
 
 # Define the Supplier model representing the 'suppliers' table in the database
 class Supplier(db.Model):
     __tablename__ = 'suppliers'
+    __table_args__ = {'extend_existing': True}
 
     # Primary key for the Supplier table
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

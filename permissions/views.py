@@ -6,6 +6,8 @@ from permissions.serializers import permission_schema, permissions_schema
 from users.decorators import role_required
 from marshmallow import ValidationError
 
+
+
 # Create a Blueprint for the permissions module
 permissions_bp = Blueprint('permissions', __name__, url_prefix='/api/permissions')
 

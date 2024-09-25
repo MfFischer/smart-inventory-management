@@ -1,8 +1,6 @@
 from flask import jsonify, request, Blueprint
-from suppliers.models import Supplier
 from inventory_system import db
-from marshmallow import ValidationError
-from suppliers.serializers import SupplierSchema
+from suppliers.models import Supplier
 
 # Create a blueprint for supplier-related routes
 suppliers_bp = Blueprint('suppliers', __name__)

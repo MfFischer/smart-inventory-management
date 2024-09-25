@@ -3,10 +3,10 @@ from products.models import Product
 from suppliers.models import Supplier
 from users.models import User
 from sales.models import Sale
+from permissions.models import Permission  # Import the Permission model
 from datetime import datetime
 from werkzeug.security import generate_password_hash
 from inventory_system import create_app
-from inventory_system import db
 
 # Create the Flask app instance
 app = create_app()
@@ -100,6 +100,21 @@ def seed_store():
     ]
     db.session.add_all(suppliers)
 
+    # Create sample permissions
+    permissions = [
+        Permission(name='view_inventory'),
+        Permission(name='edit_inventory'),
+        Permission(name='view_sales'),
+        Permission(name='edit_sales'),
+        Permission(name='manage_users')
+    ]
+    db.session.add_all(permissions)
+    db.session.commit()  # Commit to get permission IDs
+
+    # Assign permissions to admin and staff users
+    admin_permissions = permissions  # Admin has all permissions
+    staff_permissions = permissions[:2]  # Staff has 'view_inventory' and 'edit_inventory' permissions
+
     # Create sample users (staff and customers)
     users = [
         User(
@@ -109,7 +124,8 @@ def seed_store():
             last_name="User",
             email="admin@hardwarestore.com",
             role="admin",
-            status="active"
+            status="active",
+            permissions=admin_permissions  # Assign all permissions to admin
         ),
         User(
             username="john_doe",
@@ -118,7 +134,8 @@ def seed_store():
             last_name="Doe",
             email="john.doe@hardwarestore.com",
             role="staff",
-            status="active"
+            status="active",
+            permissions=staff_permissions  # Assign inventory permissions to staff
         ),
         User(
             username="jane_smith",
@@ -127,7 +144,8 @@ def seed_store():
             last_name="Smith",
             email="jane.smith@hardwarestore.com",
             role="staff",
-            status="active"
+            status="active",
+            permissions=staff_permissions  # Assign inventory permissions to staff
         ),
         User(
             username="customer1",
@@ -136,7 +154,7 @@ def seed_store():
             last_name="Builder",
             email="bob.builder@gmail.com",
             role="customer",
-            status="active"
+            status="active"  # No special permissions for customers
         )
     ]
     db.session.add_all(users)

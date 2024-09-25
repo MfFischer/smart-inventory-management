@@ -3,6 +3,7 @@ from inventory.models import Inventory, Inventory  # Ensure Inventory and Invent
 from products.models import Product
 from suppliers.models import Supplier
 
+
 # Serializer for Inventory model
 class InventorySchema(Schema):
     id = fields.Int(dump_only=True)

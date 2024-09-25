@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sales.models import Sale
-from sales.serializers import SaleSchema  # Import the SaleSchema for validation
+from sales.serializers import SaleSchema
 from inventory_system import db
 
 sales_bp = Blueprint('sales', __name__)

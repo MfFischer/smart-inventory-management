@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
-from products.models import Product
+from products.models import Product, InventoryMovement
 from products.serializers import ProductSchema
 from inventory_system import db
+from suppliers.models import Supplier
 
 products_bp = Blueprint('products', __name__)
 
@@ -106,3 +107,54 @@ def update_reorder_settings(product_id):
     product.reorder_quantity = data['reorder_quantity']
     db.session.commit()
     return product_schema.jsonify(product), 200
+
+@products_bp.route('/search', methods=['GET'])
+def search_products():
+    """
+    Search for products by name, SKU, or other attributes.
+    """
+    # Get query parameters
+    name = request.args.get('name')
+    sku = request.args.get('sku')
+    supplier_name = request.args.get('supplier')
+
+    # Build the query
+    query = Product.query
+
+    if name:
+        query = query.filter(Product.name.ilike(f'%{name}%'))
+    if sku:
+        query = query.filter(Product.sku.ilike(f'%{sku}%'))
+    if supplier_name:
+        query = query.join(Supplier).filter(Supplier.name.ilike(f'%{supplier_name}%'))
+
+    # Execute the query
+    products = query.all()
+
+    # Serialize the products
+    products_data = []
+    for product in products:
+        product_data = product.to_dict()
+
+        # Add last reorder date
+        last_movement = InventoryMovement.query.filter_by(product_id=product.id).order_by(InventoryMovement.created_at.desc()).first()
+        product_data['last_reorder_date'] = last_movement.created_at if last_movement else None
+
+        # Add inventory movements (last 10)
+        movements = InventoryMovement.query.filter_by(product_id=product.id).order_by(InventoryMovement.created_at.desc()).limit(10).all()
+        product_data['inventory_movements'] = [{
+            'movement_type': movement.movement_type,
+            'quantity': movement.quantity,
+            'date': movement.created_at
+        } for movement in movements]
+
+        # Add supplier information
+        if product.supplier:
+            product_data['supplier'] = {
+                'name': product.supplier.name,
+                'contact_info': product.supplier.contact_info
+            }
+
+        products_data.append(product_data)
+
+    return jsonify(products_data), 200

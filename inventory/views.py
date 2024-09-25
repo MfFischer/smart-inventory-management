@@ -1,7 +1,8 @@
 from flask import jsonify, request, Blueprint
 from inventory.models import Inventory
 from inventory_system import db
-from inventory.serializers import InventorySchema  # Import a schema for validation
+from inventory.serializers import InventorySchema
+
 
 inventory_bp = Blueprint('inventory', __name__)
 

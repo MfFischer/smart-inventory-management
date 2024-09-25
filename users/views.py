@@ -7,7 +7,6 @@ from users.serializers import user_schema
 from inventory_system import db
 from sqlalchemy.exc import IntegrityError
 from marshmallow import ValidationError
-from werkzeug.security import generate_password_hash
 from functools import wraps
 
 users_bp = Blueprint('users', __name__)

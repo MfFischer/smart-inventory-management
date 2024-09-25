@@ -140,7 +140,7 @@ class User(db.Model):
         """
         Update the last login timestamp.
         """
-        self.last_login = datetime.utcnow()
+        self.last_login = datetime.now()
         db.session.commit()
 
     def __repr__(self):
