@@ -7,200 +7,134 @@ from permissions.models import Permission  # Import the Permission model
 from datetime import datetime
 from werkzeug.security import generate_password_hash
 from inventory_system import create_app
+from passlib.hash import scrypt
 
 # Create the Flask app instance
 app = create_app()
 
 def seed_store():
-    # Create sample hardware products with prices and reorder points
-    products = [
-        Product(
-            name="Hammer",
-            description="16 oz claw hammer with fiberglass handle",
-            price=15.99,
-            reorder_point=10
-        ),
-        Product(
-            name="Screwdriver Set",
-            description="10-piece magnetic screwdriver set with ergonomic handles",
-            price=20.50,
-            reorder_point=15
-        ),
-        Product(
-            name="Drill",
-            description="Cordless drill with 18V battery and charger",
-            price=79.99,
-            reorder_point=5
-        ),
-        Product(
-            name="Saw Blade",
-            description="10-inch circular saw blade for cutting wood",
-            price=24.75,
-            reorder_point=12
-        ),
-        Product(
-            name="Paint Brush Set",
-            description="5-piece paint brush set for all paints and stains",
-            price=12.99,
-            reorder_point=20
-        ),
-        Product(
-            name="Concrete Mix",
-            description="50 lb bag of fast-setting concrete mix",
-            price=8.99,
-            reorder_point=30
-        ),
-        Product(
-            name="Plywood Sheet",
-            description="4x8 foot sheet of 3/4-inch plywood",
-            price=45.00,
-            reorder_point=8
-        ),
-        Product(
-            name="Nails",
-            description="5 lb box of 2-inch galvanized nails",
-            price=5.50,
-            reorder_point=50
-        ),
-        Product(
-            name="Ladder",
-            description="6-foot aluminum step ladder",
-            price=60.00,
-            reorder_point=5
-        ),
-        Product(
-            name="Wrench Set",
-            description="Metric wrench set, 8 pieces, with storage case",
-            price=29.99,
-            reorder_point=10
-        )
-    ]
-    db.session.add_all(products)
+    with app.app_context():
+        # Drop all existing tables
+        db.drop_all()
+        db.create_all()
 
-    # Create sample suppliers
-    suppliers = [
-        Supplier(
-            name="ToolMaster Supplies",
-            email="contact@toolmastersupplies.com",
-            phone="555-1234",
-            address="123 Industrial Ave, Tooltown, TX"
-        ),
-        Supplier(
-            name="Builders Depot",
-            email="sales@buildersdepot.com",
-            phone="555-5678",
-            address="456 Construction Rd, Buildsville, CA"
-        ),
-        Supplier(
-            name="Handy Hardware Co.",
-            email="support@handyhardware.com",
-            phone="555-9101",
-            address="789 Hardware Blvd, Workcity, NY"
-        )
-    ]
-    db.session.add_all(suppliers)
+        # Create or update sample hardware products with prices and reorder points
+        products_data = [
+            {"name": "Hammer", "description": "16 oz claw hammer with fiberglass handle", "price": 15.99, "reorder_point": 10},
+            {"name": "Screwdriver Set", "description": "10-piece magnetic screwdriver set with ergonomic handles", "price": 20.50, "reorder_point": 15},
+            {"name": "Drill", "description": "Cordless drill with 18V battery and charger", "price": 79.99, "reorder_point": 5},
+            {"name": "Saw Blade", "description": "10-inch circular saw blade for cutting wood", "price": 24.75, "reorder_point": 12},
+            {"name": "Paint Brush Set", "description": "5-piece paint brush set for all paints and stains", "price": 12.99, "reorder_point": 20},
+            {"name": "Concrete Mix", "description": "50 lb bag of fast-setting concrete mix", "price": 8.99, "reorder_point": 30},
+            {"name": "Plywood Sheet", "description": "4x8 foot sheet of 3/4-inch plywood", "price": 45.00, "reorder_point": 8},
+            {"name": "Nails", "description": "5 lb box of 2-inch galvanized nails", "price": 5.50, "reorder_point": 50},
+            {"name": "Ladder", "description": "6-foot aluminum step ladder", "price": 60.00, "reorder_point": 5},
+            {"name": "Wrench Set", "description": "Metric wrench set, 8 pieces, with storage case", "price": 29.99, "reorder_point": 10}
+        ]
 
-    # Create sample permissions
-    permissions = [
-        Permission(name='view_inventory'),
-        Permission(name='edit_inventory'),
-        Permission(name='view_sales'),
-        Permission(name='edit_sales'),
-        Permission(name='manage_users')
-    ]
-    db.session.add_all(permissions)
-    db.session.commit()  # Commit to get permission IDs
+        for product_data in products_data:
+            product = Product.query.filter_by(name=product_data["name"]).first()
+            if product:
+                # Update existing product
+                for key, value in product_data.items():
+                    setattr(product, key, value)
+            else:
+                # Create new product
+                product = Product(**product_data)
+                db.session.add(product)
 
-    # Assign permissions to admin and staff users
-    admin_permissions = permissions  # Admin has all permissions
-    staff_permissions = permissions[:2]  # Staff has 'view_inventory' and 'edit_inventory' permissions
+        # Create or update sample suppliers
+        suppliers_data = [
+            {"name": "ToolMaster Supplies", "email": "contact@toolmastersupplies.com", "phone": "555-1234", "address": "123 Industrial Ave, Tooltown, TX"},
+            {"name": "Builders Depot", "email": "sales@buildersdepot.com", "phone": "555-5678", "address": "456 Construction Rd, Buildsville, CA"},
+            {"name": "Handy Hardware Co.", "email": "support@handyhardware.com", "phone": "555-9101", "address": "789 Hardware Blvd, Workcity, NY"}
+        ]
 
-    # Create sample users (staff and customers)
-    users = [
-        User(
-            username="admin",
-            hashed_password=generate_password_hash("adminpassword"),
-            first_name="Admin",
-            last_name="User",
-            email="admin@hardwarestore.com",
-            role="admin",
-            status="active",
-            permissions=admin_permissions  # Assign all permissions to admin
-        ),
-        User(
-            username="john_doe",
-            hashed_password=generate_password_hash("securepassword1"),
-            first_name="John",
-            last_name="Doe",
-            email="john.doe@hardwarestore.com",
-            role="staff",
-            status="active",
-            permissions=staff_permissions  # Assign inventory permissions to staff
-        ),
-        User(
-            username="jane_smith",
-            hashed_password=generate_password_hash("securepassword2"),
-            first_name="Jane",
-            last_name="Smith",
-            email="jane.smith@hardwarestore.com",
-            role="staff",
-            status="active",
-            permissions=staff_permissions  # Assign inventory permissions to staff
-        ),
-        User(
-            username="customer1",
-            hashed_password=generate_password_hash("customerpassword"),
-            first_name="Bob",
-            last_name="Builder",
-            email="bob.builder@gmail.com",
-            role="customer",
-            status="active"  # No special permissions for customers
-        )
-    ]
-    db.session.add_all(users)
+        for supplier_data in suppliers_data:
+            supplier = Supplier.query.filter_by(email=supplier_data["email"]).first()
+            if supplier:
+                # Update existing supplier
+                for key, value in supplier_data.items():
+                    setattr(supplier, key, value)
+            else:
+                # Create new supplier
+                supplier = Supplier(**supplier_data)
+                db.session.add(supplier)
 
-    # Create sample sales transactions
-    sales = [
-        Sale(
-            product_id=1,  # Hammer
-            quantity=2,
-            total_price=products[0].price * 2,
-            sale_date=datetime.now(),
-            customer_name="Alice Contractor",
-            sale_status = "completed"
-        ),
-        Sale(
-            product_id=3,  # Drill
-            quantity=1,
-            total_price=products[2].price,
-            sale_date=datetime.now(),
-            customer_name="Bob Builder",
-            sale_status = "completed"
-        ),
-        Sale(
-            product_id=6,  # Concrete Mix
-            quantity=5,
-            total_price=products[5].price * 5,
-            sale_date=datetime.now(),
-            customer_name="Charlie Mason",
-            sale_status="pending"
-        ),
-        Sale(
-            product_id=9,  # Ladder
-            quantity=1,
-            total_price=products[8].price,
-            sale_date=datetime.now(),
-            customer_name="Dana Decorator",
-            sale_status="completed"
-        )
-    ]
-    db.session.add_all(sales)
+        # Create or update sample permissions
+        permissions_data = [
+            {"name": 'view_inventory'},
+            {"name": 'edit_inventory'},
+            {"name": 'view_sales'},
+            {"name": 'edit_sales'},
+            {"name": 'manage_users'}
+        ]
 
-    # Commit all changes to the database
-    db.session.commit()
-    print("Hardware store database seeded successfully!")
+        for permission_data in permissions_data:
+            permission = Permission.query.filter_by(name=permission_data["name"]).first()
+            if not permission:
+                # Create new permission if not exists
+                permission = Permission(**permission_data)
+                db.session.add(permission)
+
+        db.session.commit()  # Commit to get permission IDs
+
+        # Fetch the created permissions
+        view_inventory_perm = Permission.query.filter_by(name='view_inventory').first()
+        edit_inventory_perm = Permission.query.filter_by(name='edit_inventory').first()
+
+        # Assign permissions to admin and staff users
+        admin_permissions = Permission.query.all()  # Admin has all permissions
+        staff_permissions = [view_inventory_perm, edit_inventory_perm]  # Staff has 'view_inventory' and 'edit_inventory' permissions
+
+        # Create or update sample users
+        users_data = [
+            {"username": "admin", "hashed_password": scrypt.hash("adminpassword"), "first_name": "Admin", "last_name": "User", "email": "admin@hardwarestore.com", "role": "admin", "status": "active"},
+            {"username": "john_doe", "hashed_password": scrypt.hash("securepassword1"), "first_name": "John", "last_name": "Doe", "email": "john.doe@hardwarestore.com", "role": "staff", "status": "active"},
+            {"username": "jane_smith", "hashed_password": scrypt.hash("securepassword2"), "first_name": "Jane", "last_name": "Smith", "email": "jane.smith@hardwarestore.com", "role": "staff", "status": "active"},
+            {"username": "customer1", "hashed_password": scrypt.hash("customerpassword"), "first_name": "Bob", "last_name": "Builder", "email": "bob.builder@gmail.com", "role": "customer", "status": "active"}
+        ]
+
+        for user_data in users_data:
+            user = User.query.filter_by(username=user_data["username"]).first()
+            if not user:
+                # Create new user if not exists
+                user = User(**user_data)
+                db.session.add(user)
+
+        db.session.commit()  # Commit to get user IDs
+
+        # Assign permissions to users
+        admin_user = User.query.filter_by(username="admin").first()
+        john_user = User.query.filter_by(username="john_doe").first()
+        jane_user = User.query.filter_by(username="jane_smith").first()
+
+        # Add permissions to users
+        if admin_user and not admin_user.permissions:
+            admin_user.permissions.extend(admin_permissions)
+        if john_user and not john_user.permissions:
+            john_user.permissions.extend(staff_permissions)
+        if jane_user and not jane_user.permissions:
+            jane_user.permissions.extend(staff_permissions)
+
+        # Create or update sample sales transactions
+        sales_data = [
+            {"product_id": 1, "quantity": 2, "total_price": 31.98, "sale_date": datetime.now(), "customer_name": "Alice Contractor", "sale_status": "completed"},
+            {"product_id": 3, "quantity": 1, "total_price": 79.99, "sale_date": datetime.now(), "customer_name": "Bob Builder", "sale_status": "completed"},
+            {"product_id": 6, "quantity": 5, "total_price": 44.95, "sale_date": datetime.now(), "customer_name": "Charlie Mason", "sale_status": "pending"},
+            {"product_id": 9, "quantity": 1, "total_price": 60.00, "sale_date": datetime.now(), "customer_name": "Dana Decorator", "sale_status": "completed"}
+        ]
+
+        for sale_data in sales_data:
+            sale = Sale.query.filter_by(product_id=sale_data["product_id"], customer_name=sale_data["customer_name"]).first()
+            if not sale:
+                # Create new sale transaction if not exists
+                sale = Sale(**sale_data)
+                db.session.add(sale)
+
+        # Commit all changes to the database
+        db.session.commit()
+        print("Hardware store database seeded successfully!")
 
 if __name__ == '__main__':
-    # Run the seeding function within the application context
-    with app.app_context():
-        seed_store()
+    seed_store()

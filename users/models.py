@@ -1,24 +1,15 @@
 from inventory_system import db
+from permissions.models import Permission  # Ensure this matches the correct module path where Permission is defined
 from passlib.hash import pbkdf2_sha256 as sha256
 from datetime import datetime
-
-class Permission(db.Model):
-    """
-    Permission model representing specific actions or rights that can be assigned to users.
-    """
-    __tablename__ = 'permissions'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-
-    def __repr__(self):
-        return f'<Permission {self.name}>'
-
+from sqlalchemy.exc import SQLAlchemyError
+from passlib.hash import scrypt
 
 # Association table for the many-to-many relationship between users and permissions
 user_permissions = db.Table('user_permissions',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('permission_id', db.Integer, db.ForeignKey('permissions.id'))
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('permission_id', db.Integer, db.ForeignKey('permissions.id'), primary_key=True),
+    extend_existing=True
 )
 
 class User(db.Model):
@@ -27,42 +18,21 @@ class User(db.Model):
     """
     __tablename__ = 'users'
 
-    # Primary key for the User table
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
-    # Username must be unique and cannot be null
     username = db.Column(db.String(100), unique=True, nullable=False)
-
-    # Hashed password for the user, cannot be null
     hashed_password = db.Column(db.String(255), nullable=False)
-
-    # Optional fields for the user's first and last names
     first_name = db.Column(db.String(255), nullable=True)
     last_name = db.Column(db.String(255), nullable=True)
-
-    # Optional email field for the user
     email = db.Column(db.String(255), nullable=True)
-
-    # User role, defaults to 'staff'
     role = db.Column(db.String(50), default='staff')
-
-    # User status, defaults to 'active'
     status = db.Column(db.String(50), default='active')
-
-    # Timestamp for the last login of the user
     last_login = db.Column(db.DateTime, nullable=True)
-
-    # Timestamps for when the user record was created and last updated
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(
-        db.DateTime,
-        default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp()
-    )
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
     # Many-to-Many relationship with the Permission model
     permissions = db.relationship(
-        'Permission',
+        Permission,
         secondary=user_permissions,
         backref=db.backref('users', lazy='dynamic')
     )
@@ -75,11 +45,15 @@ class User(db.Model):
 
     def add_permission(self, permission):
         """
-        Add a permission to the user.
+        Add a permission to the user with error handling to catch database issues.
         """
-        if not self.has_permission(permission.name):
-            self.permissions.append(permission)
-            db.session.commit()
+        try:
+            if not self.has_permission(permission.name):
+                self.permissions.append(permission)
+                db.session.commit()
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            print(f"Error adding permission: {str(e)}")
 
     def remove_permission(self, permission):
         """
@@ -134,7 +108,7 @@ class User(db.Model):
         """
         Verify a password against its hash.
         """
-        return sha256.verify(password, hashed_password)
+        return scrypt.verify(password, hashed_password)
 
     def update_last_login(self):
         """
@@ -145,3 +119,4 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
+

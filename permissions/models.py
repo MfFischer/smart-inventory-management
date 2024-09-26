@@ -5,7 +5,8 @@ from inventory_system import db
 user_permissions = db.Table(
     'user_permissions',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
-    db.Column('permission_id', db.Integer, db.ForeignKey('permissions.id'), primary_key=True)
+    db.Column('permission_id', db.Integer, db.ForeignKey('permissions.id'), primary_key=True),
+    extend_existing=True
 )
 
 # Define the Permission model
