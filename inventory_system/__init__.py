@@ -38,5 +38,10 @@ def create_app():
     app.register_blueprint(sales_bp, url_prefix='/api/sales')
     app.register_blueprint(users_bp, url_prefix='/api/users')
 
+    # Define root route
+    @app.route('/')
+    def home():
+        return "Welcome to the Smart Inventory System API."
+
 
     return app

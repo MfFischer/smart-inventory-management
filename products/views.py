@@ -3,12 +3,16 @@ from products.models import Product, InventoryMovement
 from products.serializers import ProductSchema
 from inventory_system import db
 from suppliers.models import Supplier
+from suppliers.serializers import SupplierSchema
 
 products_bp = Blueprint('products', __name__)
 
 # Initialize the ProductSchema for validation
 product_schema = ProductSchema()
 products_schema = ProductSchema(many=True)
+
+# Initialize the SupplierSchema for serialization
+supplier_schema = SupplierSchema()
 
 # Get all products
 @products_bp.route('/', methods=['GET'])
@@ -148,12 +152,9 @@ def search_products():
             'date': movement.created_at
         } for movement in movements]
 
-        # Add supplier information
+        # Add supplier information using the SupplierSchema
         if product.supplier:
-            product_data['supplier'] = {
-                'name': product.supplier.name,
-                'contact_info': product.supplier.contact_info
-            }
+            product_data['supplier'] = supplier_schema.dump(product.supplier)
 
         products_data.append(product_data)
 
