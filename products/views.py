@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
-from products.models import Product, InventoryMovement
+from products.models import Product
 from products.serializers import ProductSchema
 from inventory_system import db
 from suppliers.models import Supplier
 from suppliers.serializers import SupplierSchema
+from inventory.models import Inventory
+
 
 products_bp = Blueprint('products', __name__)
 
@@ -93,7 +95,8 @@ def delete_product(product_id):
 @products_bp.route('/reorder', methods=['GET'])
 def get_products_below_reorder():
     """Get all products below their reorder point."""
-    products_below_reorder = Product.query.filter(Product.quantity_in_stock <= Product.reorder_point).all()
+    products_below_reorder = (Product.query.filter
+                              (Product.quantity_in_stock <= Product.reorder_point).all())
     if not products_below_reorder:
         return jsonify({"message": "No products below reorder point"}), 404
     return products_schema.jsonify(products_below_reorder), 200
@@ -112,49 +115,36 @@ def update_reorder_settings(product_id):
     db.session.commit()
     return product_schema.jsonify(product), 200
 
+
 @products_bp.route('/search', methods=['GET'])
 def search_products():
-    """
-    Search for products by name, SKU, or other attributes.
-    """
-    # Get query parameters
     name = request.args.get('name')
     sku = request.args.get('sku')
     supplier_name = request.args.get('supplier')
 
-    # Build the query
+    # Build the query for Product
     query = Product.query
 
     if name:
         query = query.filter(Product.name.ilike(f'%{name}%'))
     if sku:
-        query = query.filter(Product.sku.ilike(f'%{sku}%'))
+        query = (query.join(Inventory)
+                 .filter(Inventory.sku.ilike(f'%{sku}%')))
     if supplier_name:
-        query = query.join(Supplier).filter(Supplier.name.ilike(f'%{supplier_name}%'))
+        query = (query.join(Supplier)
+                 .filter(Supplier.name.ilike(f'%{supplier_name}%')))
 
-    # Execute the query
     products = query.all()
 
-    # Serialize the products
+    # Serialize the products with inventory details
     products_data = []
     for product in products:
         product_data = product.to_dict()
 
-        # Add last reorder date
-        last_movement = InventoryMovement.query.filter_by(product_id=product.id).order_by(InventoryMovement.created_at.desc()).first()
-        product_data['last_reorder_date'] = last_movement.created_at if last_movement else None
-
-        # Add inventory movements (last 10)
-        movements = InventoryMovement.query.filter_by(product_id=product.id).order_by(InventoryMovement.created_at.desc()).limit(10).all()
-        product_data['inventory_movements'] = [{
-            'movement_type': movement.movement_type,
-            'quantity': movement.quantity,
-            'date': movement.created_at
-        } for movement in movements]
-
-        # Add supplier information using the SupplierSchema
-        if product.supplier:
-            product_data['supplier'] = supplier_schema.dump(product.supplier)
+        # Fetch the inventory record for this product
+        inventory = Inventory.query.filter_by(product_id=product.id).first()
+        if inventory:
+            product_data['inventory'] = inventory.to_dict()
 
         products_data.append(product_data)
 

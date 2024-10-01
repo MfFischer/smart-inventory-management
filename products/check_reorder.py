@@ -13,8 +13,8 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('reorder_log.log'),   # Log to file
-        logging.StreamHandler()                  # Log to console
+        logging.FileHandler('reorder_log.log'),
+        logging.StreamHandler()
     ]
 )
 
@@ -24,7 +24,8 @@ app.app_context().push()
 
 def check_reorder():
     # Query products that are below the reorder point
-    products_to_reorder = Product.query.filter(Product.quantity_in_stock <= Product.reorder_point).all()
+    products_to_reorder = Product.query.filter(
+        Product.quantity_in_stock <= Product.reorder_point).all()
 
     if products_to_reorder:
         message = "The following products are below the reorder point:\n"

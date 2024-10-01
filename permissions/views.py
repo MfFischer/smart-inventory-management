@@ -13,7 +13,8 @@ permissions_bp = Blueprint('permissions', __name__, url_prefix='/api/permissions
 
 @permissions_bp.route('/', methods=['POST'])
 @jwt_required()
-@role_required('admin')  # Only admin can create permissions
+# Only admin can create permissions
+@role_required('admin')
 def create_permission():
     """
     Create a new permission.
@@ -42,7 +43,8 @@ def create_permission():
 
 @permissions_bp.route('/', methods=['GET'])
 @jwt_required()
-@role_required('admin')  # Only admin can view all permissions
+# Only admin can view all permissions
+@role_required('admin')
 def get_permissions():
     """
     Retrieve a list of all permissions.
@@ -52,7 +54,8 @@ def get_permissions():
 
 @permissions_bp.route('/<int:permission_id>', methods=['GET'])
 @jwt_required()
-@role_required('admin')  # Only admin can view a specific permission
+# Only admin can view a specific permission
+@role_required('admin')
 def get_permission(permission_id):
     """
     Retrieve a specific permission by ID.
@@ -65,7 +68,8 @@ def get_permission(permission_id):
 
 @permissions_bp.route('/<int:permission_id>', methods=['PUT'])
 @jwt_required()
-@role_required('admin')  # Only admin can update permissions
+# Only admin can update permissions
+@role_required('admin')
 def update_permission(permission_id):
     """
     Update an existing permission.
@@ -90,7 +94,8 @@ def update_permission(permission_id):
 
 @permissions_bp.route('/<int:permission_id>', methods=['DELETE'])
 @jwt_required()
-@role_required('admin')  # Only admin can delete permissions
+# Only admin can delete permissions
+@role_required('admin')
 def delete_permission(permission_id):
     """
     Delete a specific permission.

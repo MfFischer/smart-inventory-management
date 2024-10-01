@@ -1,5 +1,4 @@
 from marshmallow import Schema, fields, validate, validates, ValidationError
-from inventory.models import Inventory, Inventory  # Ensure Inventory and InventoryMovement models are imported
 from products.models import Product
 from suppliers.models import Supplier
 

@@ -1,6 +1,4 @@
 import pytest
-from inventory.models import Inventory
-from inventory_system import db
 
 @pytest.fixture
 def new_inventory_item():

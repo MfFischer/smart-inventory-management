@@ -66,7 +66,9 @@ smart_inventory/
 │
 ├── templates/                   # HTML templates (optional, for UI)
 │   ├── base.html                # Base template
-│   ├── dashboard.html           # Dashboard page (for logged-in users)
+│   ├── index.html               # Dashboard page (for logged-in users)
+│   ├── search.html
+│   ├── index.html
 │
 ├── static/                      # Static files (optional for CSS, JS)
 │   ├── css/

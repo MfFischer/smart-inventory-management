@@ -13,11 +13,13 @@ sales_schema = SaleSchema(many=True)
 @sales_bp.route('/', methods=['GET'])
 def get_sales():
     sales = Sale.query.all()
-    result = sales_schema.dump(sales)  # Use `dump` to serialize the list of sales
-    return jsonify(result), 200  # Use Flask's jsonify to return the serialized data
+    # Use `dump` to serialize the list of sales
+    result = sales_schema.dump(sales)
+    # Use Flask's jsonify to return the serialized data
+    return jsonify(result), 200
 
 # Create a new sale record
-@sales_bp.route('/', methods=['POST'])  # Removed redundant '/sales' since the blueprint has the prefix '/api/sales'
+@sales_bp.route('/', methods=['POST'])
 def create_sale():
     # Validate the incoming request data
     data = request.json
@@ -38,14 +40,14 @@ def create_sale():
     return jsonify(result), 201
 
 # Get a sale by ID
-@sales_bp.route('/<int:sale_id>', methods=['GET'])  # Removed redundant '/sales' since the blueprint has the prefix '/api/sales'
+@sales_bp.route('/<int:sale_id>', methods=['GET'])
 def get_sale(sale_id):
     sale = Sale.query.get_or_404(sale_id)
-    result = sale_schema.dump(sale)  # Use `dump` to serialize the sale object
+    result = sale_schema.dump(sale)
     return jsonify(result), 200
 
 # Update a sale by ID
-@sales_bp.route('/<int:sale_id>', methods=['PUT'])  # Removed redundant '/sales' since the blueprint has the prefix '/api/sales'
+@sales_bp.route('/<int:sale_id>', methods=['PUT'])
 def update_sale(sale_id):
     sale = Sale.query.get_or_404(sale_id)
     # Validate the incoming request data
@@ -65,7 +67,7 @@ def update_sale(sale_id):
     return jsonify(result), 200
 
 # Delete a sale by ID
-@sales_bp.route('/<int:sale_id>', methods=['DELETE'])  # Removed redundant '/sales' since the blueprint has the prefix '/api/sales'
+@sales_bp.route('/<int:sale_id>', methods=['DELETE'])
 def delete_sale(sale_id):
     sale = Sale.query.get_or_404(sale_id)
     db.session.delete(sale)

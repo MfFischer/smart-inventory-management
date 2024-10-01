@@ -186,7 +186,9 @@ def add_permission_to_user(user_id):
     if not permission:
         return jsonify({'message': 'Permission not found'}), 404
     user.add_permission(permission)
-    return jsonify({'message': f'Permission {permission_name} added to user {user.username}'}), 200
+    return jsonify({
+        'message': f'Permission {permission_name} added to user {user.username}'
+    }), 200
 
 # Remove permission from user (Admin only)
 @users_bp.route('/<int:user_id>/permissions', methods=['DELETE'])
@@ -200,7 +202,9 @@ def remove_permission_from_user(user_id):
     if not permission:
         return jsonify({'message': 'Permission not found'}), 404
     user.remove_permission(permission)
-    return jsonify({'message': f'Permission {permission_name} removed from user {user.username}'}), 200
+    return jsonify({
+        'message': f'Permission {permission_name} removed from user {user.username}'
+    }), 200
 
 # Get user permissions (Admin only)
 @users_bp.route('/<int:user_id>/permissions', methods=['GET'])

@@ -5,7 +5,7 @@ from sales.models import Sale
 def new_sale():
     """Fixture to provide a new sale entry."""
     return {
-        'product_id': 1,  # Replace with valid product_id from seeded data
+        'product_id': 1,
         'quantity': 5,
         'total_price': '100.00',
         'sale_status': 'completed'
@@ -37,4 +37,4 @@ def test_get_sale(test_client):
     response = test_client.get('/api/sales/1')
     assert response.status_code == 200
     assert 'product_id' in response.json
-    assert response.json['product_id'] == 1  # Replace with a valid product ID
+    assert response.json['product_id'] == 1

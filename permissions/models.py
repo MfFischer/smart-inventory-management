@@ -15,11 +15,12 @@ class Permission(db.Model):
     Model representing permissions in the system.
     """
     __tablename__ = 'permissions'
-    __table_args__ = {'extend_existing': True}  # Extend existing definition if already present
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
-    description = db.Column(db.String(255), nullable=True)  # Optional description of the permission
+    # Optional description of the permission
+    description = db.Column(db.String(255), nullable=True)
 
     def __repr__(self):
         return f'<Permission {self.name}>'

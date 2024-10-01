@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Products</title>
+</head>
+<body>
+    <h1>Search for a Product</h1>
+
+    <!-- Form for searching products by name -->
+    <form action="/search-product" method="GET">
+        <label for="name">Product Name:</label>
+        <input type="text" id="name" name="name" placeholder="Enter product name">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Display search results if any -->
+    {% if products %}
+        <h2>Search Results</h2>
+        <ul>
+            {% for product in products %}
+                <li>{{ product.name }} - {{ product.description }} - ${{ product.price }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No products found</p>
+    {% endif %}
+</body>
+</html>
