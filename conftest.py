@@ -1,11 +1,10 @@
 import pytest
 from inventory_system import db
-from products.models import Product
-from suppliers.models import Supplier
-from users.models import User
-from sales.models import Sale
+from modules.products.models import Product
+from modules.suppliers.models import Supplier
+from modules.users.models import User
+from modules.sales import Sale
 from datetime import datetime
-from random import randint, choice
 from inventory_system import create_app
 from werkzeug.security import generate_password_hash
 

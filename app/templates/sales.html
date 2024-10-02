@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Sales Management
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Sales Management</h1>
+    <div class="my-4">
+        <a href="/add-sale" class="btn btn-primary">Add New Sale</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales %}
+                <tr>
+                    <td>{{ sale.id }}</td>
+                    <td>{{ sale.date }}</td>
+                    <td>{{ sale.product.name }}</td>
+                    <td>{{ sale.quantity }}</td>
+                    <td>{{ sale.total_price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

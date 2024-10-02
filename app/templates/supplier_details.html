@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Supplier Details
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Supplier Details</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ supplier.name }}</h5>
+            <p class="card-text">{{ supplier.description }}</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Contact: {{ supplier.contact }}</li>
+                <li class="list-group-item">Address: {{ supplier.address }}</li>
+            </ul>
+            <h4>Products Supplied</h4>
+            <ul class="list-group list-group-flush">
+                {% for product in supplier.products %}
+                <li class="list-group-item">{{ product.name }} - {{ product.price }}</li>
+                {% endfor %}
+            </ul>
+            <div class="card-body">
+                <a href="/edit-supplier/{{ supplier.id }}" class="btn btn-primary">Edit Supplier</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

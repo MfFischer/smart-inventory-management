@@ -1,12 +1,11 @@
 from inventory_system import db
-from products.models import Product
-from suppliers.models import Supplier
-from users.models import User
-from sales.models import Sale
-from inventory.models import Inventory  # Import Inventory model
-from permissions.models import Permission
+from modules.products.models import Product
+from modules.suppliers.models import Supplier
+from modules.users.models import User
+from modules.sales import Sale
+from modules.inventory import Inventory  # Import Inventory model
+from modules.permissions.models import Permission
 from datetime import datetime
-from werkzeug.security import generate_password_hash
 from inventory_system import create_app
 from passlib.hash import scrypt
 

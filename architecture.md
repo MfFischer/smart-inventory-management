@@ -10,69 +10,74 @@ smart_inventory/
 │   ├── wsgi.py                  # WSGI entry point for production
 │   └── asgi.py                  # Optional: ASGI entry point if needed
 │
-├── suppliers/                   # Suppliers module
-│   ├── migrations/              # Database migrations for suppliers
-│   ├── models.py                # Supplier model
-│   ├── views.py                 # Supplier API views
-│   ├── serializers.py           # Supplier serializers 
-│   ├── urls.py                  # Supplier URL routing
-│   └── tests.py                 # Unit tests for suppliers
-│
-├── products/                    # Products module (newly added)
-│   ├── migrations/              # Database migrations for products
-│   ├── models.py                # Product model
-│   ├── check_reorder.py         # Cron Job Script to Check for Reorders
-│   ├── views.py                 # Product API views
-│   ├── serializers.py           # Product serializers
-│   ├── urls.py                  # Product URL routing
-│   └── tests.py                 # Unit tests for products
-│
-├── inventory/                   # Inventory module
-│   ├── migrations/              # Database migrations for inventory
-│   ├── models.py                # Inventory models
-│   ├── views.py                 # Inventory API views
-│   ├── serializers.py           # Inventory serializers
-│   ├── urls.py                  # Inventory URL routing
-│   └── tests.py                 # Unit tests for inventory
-│
-├── sales/                       # Sales module
-│   ├── migrations/              # Database migrations for sales
-│   ├── models.py                # Sales models
-│   ├── views.py                 # Sales API views
-│   ├── serializers.py           # Sales serializers
-│   ├── urls.py                  # Sales URL routing
-│   └── tests.py                 # Unit tests for sales
-│
 ├── cron_jobs/                   # Background tasks 
 │   ├── daily_reorder_check.sh   #  tasks for automating actions
 │
-├── users/                       # Optional authentication module
-│   ├── migrations/              # Database migrations for users
-│   ├── models.py                # User model
-│   ├── views.py                 # User login/signup views
-│   ├── serializers.py           # User serializers
-│   ├── urls.py                  # User authentication routes
-│   └── tests.py                 # Unit tests for authentication
-│   └── decorators.py            # for managing roles and permission
+├── modules/                         # Business logic modules
+│   ├suppliers/                      # Suppliers module
+│   │    ├── migrations/              # Database migrations for suppliers
+│   │    ├── models.py                # Supplier model
+│   │    ├── views.py                 # Supplier API views
+│   │    ├── serializers.py           # Supplier serializers 
+│   │    ├── urls.py                  # Supplier URL routing
+│   │    └── tests.py                 # Unit tests for suppliers
+│   │
+│   ├── products/                    # Products module (newly added)
+│   │    ├── migrations/              # Database migrations for products
+│   │    ├── models.py                # Product model
+│   │    ├── check_reorder.py         # Cron Job Script to Check for Reorders
+│   │    ├── views.py                 # Product API views
+│   │    ├── serializers.py           # Product serializers
+│   │    ├── urls.py                  # Product URL routing
+│   │    └── tests.py                 # Unit tests for products
+│   │
+│   ├── inventory/                   # Inventory module
+│   │   ├── migrations/              # Database migrations for inventory
+│   │   ├── models.py                # Inventory models
+│   │   ├── views.py                 # Inventory API views
+│   │   ├── serializers.py           # Inventory serializers
+│   │   ├── urls.py                  # Inventory URL routing
+│   │   └── tests.py                 # Unit tests for inventory
+│   │
+│   ├── sales/                       # Sales module
+│   │   ├── migrations/              # Database migrations for sales
+│   │   ├── models.py                # Sales models
+│   │   ├── views.py                 # Sales API views
+│   │   ├── serializers.py           # Sales serializers
+│   │   ├── urls.py                  # Sales URL routing
+│   │   └── tests.py                 # Unit tests for sales
+│   ├── users/                       # Optional authentication module
+│   │   ├── migrations/              # Database migrations for users
+│   │   ├── models.py                # User model
+│   │   ├── views.py                 # User login/signup views
+│   │   ├── serializers.py           # User serializers
+│   │   ├── urls.py                  # User authentication routes
+│   │   └── tests.py                 # Unit tests for authentication
+│   │   └── decorators.py            # for managing roles and permission
+│   │
+│   ├── permissions/                 # permissions module
+│      ├── migrations/              # Database migrations for permissions
+│      ├── models.py                # Define permission models and relationships
+│      ├── views.py                 # Admin views to manage permissions(Optional)
+│      ├── serializers.py           # serialize permission data(optional)
+│      ├── urls.py                  # URL routing
+│      └── tests.py                 # Unit tests for permissions
 │
-├── permissions/                 # permissions module
-│   ├── migrations/              # Database migrations for permissions
-│   ├── models.py                # Define permission models and relationships
-│   ├── views.py                 # Admin views to manage permissions(Optional)
-│   ├── serializers.py           # serialize permission data(optional)
-│   ├── urls.py                  # URL routing
-│   └── tests.py                 # Unit tests for permissions
 │
-│
-├── templates/                   # HTML templates (optional, for UI)
-│   ├── base.html                # Base template
-│   ├── index.html               # Dashboard page (for logged-in users)
-│   ├── search.html
-│   ├── index.html
-│
-├── static/                      # Static files (optional for CSS, JS)
-│   ├── css/
-│   ├── js/
+├── app/                         # Main application directory
+│   ├── templates/               # HTML templates for the frontend
+│   │   ├── base.html            # Base HTML template
+│   │   ├── index.html           # Main dashboard
+│   │   ├── inventory.html       # inventory page
+│   │   ├── login.html           # Login page
+│   │   ├── product_details.html # Details page for products
+│   │   ├── supplier_details.html# Details page for suppliers
+│   │   ├── sales.html           # Sales management page
+│   ├── static/                  # Static files (CSS, JS, images)
+│   │   ├── css/
+│   │   │   ├── main.css         # Main stylesheet
+│   │   ├── js/
+│   │   │   ├── main.js          # Main JavaScript file
 │
 ├── manage.py                    # Flask CLI management script (using Flask-Script or Flask-CLI)
 ├── seed_store.py                 # for seeding the database

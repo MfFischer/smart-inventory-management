@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Product Details
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Product Details</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text">{{ product.description }}</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Price: ${{ product.price }}</li>
+                <li class="list-group-item">Stock Quantity: {{ product.quantity_in_stock }}</li>
+                <li class="list-group-item">Reorder Level: {{ product.reorder_point }}</li>
+                <li class="list-group-item">Supplier: {{ product.supplier.name if product.supplier else 'N/A' }}</li>
+            </ul>
+            <div class="card-body">
+                <a href="{{ url_for('products.edit_product', product_id=product.id) }}" class="btn btn-primary">Edit Product</a>
+                <form action="{{ url_for('products.delete_product', product_id=product.id) }}" method="POST" style="display:inline-block;">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?');">Delete Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Dashboard</h1>
+
+    <!-- Row for Products, Sales, and Alerts -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Products</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ product_count }} Items</h5>
+                    <p class="card-text">Overview of products currently in stock.</p>
+                    <a href="/products" class="btn btn-light">Manage Products</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Sales</div>
+                <div class="card-body">
+                    <h5 class="card-title">Latest Sales</h5>
+                    <p class="card-text">Track the latest sales transactions.</p>
+                    <a href="/sales" class="btn btn-light">View Sales</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-header">Alerts</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ low_inventory_count }} Low Inventory Alerts</h5>
+                    <p class="card-text">Items that need restocking.</p>
+                    <a href="/inventory-alerts" class="btn btn-light">View Alerts</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row for Users, Suppliers, and Inventory -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white" style="background-color: #606C38;" mb-3>
+                <div class="card-header">Users</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ user_count }} Users</h5>
+                    <p class="card-text">Manage system users and their roles.</p>
+                    <a href="/users/list" class="btn btn-light">Manage Users</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-header">Suppliers</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ supplier_count }} Suppliers</h5>
+                    <p class="card-text">Overview of your product suppliers.</p>
+                    <a href="/suppliers" class="btn btn-light">Manage Suppliers</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-header">Inventory</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ inventory_count }} Items</h5>
+                    <p class="card-text">Track and manage your inventory.</p>
+                    <a href="/inventory" class="btn btn-light">Manage Inventory</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row for Reports, Visualizations, and Permissions -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">Reports</div>
+                <div class="card-body">
+                    <h5 class="card-title">Sales, Inventory, and Financial Reports</h5>
+                    <p class="card-text">View and generate system reports.</p>
+                    <a href="/reports" class="btn btn-light">View Reports</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white" style="background-color: #283618;" mb-3>
+                <div class="card-header">Visualizations</div>
+                <div class="card-body">
+                    <h5 class="card-title">Sales and Product Analytics</h5>
+                    <p class="card-text">Visualize key performance metrics.</p>
+                    <a href="/visualizations" class="btn btn-light">View Visualizations</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+             <div class="card text-white" style="background-color: #DDA15E;" mb-3>
+                <div class="card-header">Permissions</div>
+                <div class="card-body">
+                    <h5 class="card-title">Manage User Permissions</h5>
+                    <p class="card-text">Admin only: Manage user roles and permissions.</p>
+                    <a href="/permissions" class="btn btn-light">Manage Permissions</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

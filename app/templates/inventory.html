@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Inventory Management
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Inventory Management</h2>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                    <th>Reorder Level</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory_items %}
+                <tr>
+                    <td>{{ item.product_id }}</td>
+                    <td>{{ item.name }}</td> <!-- Make sure the 'name' attribute is properly passed -->
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.reorder_level }}</td>
+                    <td>
+                        <a href="/inventory/{{ item.id }}/edit" class="btn btn-primary">Edit</a>
+                        <a href="/inventory/{{ item.id }}/restock" class="btn btn-secondary">Restock</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if inventory_items|length == 0 %}
+    <p>No items found in inventory. Add new items to populate this list.</p>
+    {% endif %}
+</div>
+{% endblock %}

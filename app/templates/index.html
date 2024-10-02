@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}
+Welcome to the Smart Inventory System
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Welcome to the Smart Inventory System</h2>
+        <p class="lead">Efficiently manage your inventory with real-time data, integrated sales tracking, and much more.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <a href="/login" class="btn btn-primary btn-lg">Login to Your Account</a>
+            <a href="/register" class="btn btn-secondary btn-lg">Sign Up</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

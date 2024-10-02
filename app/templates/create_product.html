@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create New Product
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-light">Create New Product</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="POST" action="{{ url_for('products.create_product') }}">
+                <div class="mb-3">
+                    <label for="name" class="form-label text-light">Product Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label text-light">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label text-light">Price</label>
+                    <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                </div>
+                <div class="mb-3">
+                    <label for="quantity_in_stock" class="form-label text-light">Quantity In Stock</label>
+                    <input type="number" class="form-control" id="quantity_in_stock" name="quantity_in_stock" required>
+                </div>
+                <div class="mb-3">
+                    <label for="reorder_point" class="form-label text-light">Reorder Point</label>
+                    <input type="number" class="form-control" id="reorder_point" name="reorder_point" required>
+                </div>
+                <button type="submit" class="btn btn-success">Add Product</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
