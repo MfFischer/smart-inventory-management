@@ -24,7 +24,6 @@
                 <th>Price</th>
                 <th>Quantity In Stock</th>
                 <th>Reorder Point</th>
-                <th>Supplier</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -37,7 +36,6 @@
                 <td>${{ product.price }}</td>
                 <td>{{ product.quantity_in_stock }}</td>
                 <td>{{ product.reorder_point }}</td>
-                <td>{{ product.supplier or 'No Supplier' }}</td>
                 <td>
                     <a href="/api/products/{{ product.id }}" class="btn btn-info btn-sm">View</a>
                     <a href="/api/products/{{ product.id }}/edit" class="btn btn-warning btn-sm">Edit</a>

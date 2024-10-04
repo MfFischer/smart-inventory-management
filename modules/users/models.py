@@ -1,18 +1,20 @@
 from inventory_system import db
-from modules.permissions.models import Permission  # Ensure this matches the correct module path where Permission is defined
+from modules.permissions.models import Permission
 from passlib.hash import pbkdf2_sha256 as sha256
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 from passlib.hash import scrypt
+from flask_login import UserMixin
 
 # Association table for the many-to-many relationship between users and permissions
-user_permissions = db.Table('user_permissions',
+user_permissions = db.Table(
+    'user_permissions',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
     db.Column('permission_id', db.Integer, db.ForeignKey('permissions.id'), primary_key=True),
     extend_existing=True
 )
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     """
     User model representing user data in the system.
     """
@@ -28,7 +30,11 @@ class User(db.Model):
     status = db.Column(db.String(50), default='active')
     last_login = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    updated_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp()
+    )
 
     # Many-to-Many relationship with the Permission model
     permissions = db.relationship(
@@ -45,14 +51,14 @@ class User(db.Model):
 
     def add_permission(self, permission):
         """
-        Add a permission to the user with error handling to catch database issues.
+        Add a permission to the user, with error handling for database issues.
         """
         try:
             if not self.has_permission(permission.name):
                 self.permissions.append(permission)
                 db.session.commit()
         except SQLAlchemyError as e:
-            db.session.rollback()
+            db.session.rollback()  # Roll back if there's an error
             print(f"Error adding permission: {str(e)}")
 
     def remove_permission(self, permission):
@@ -78,13 +84,14 @@ class User(db.Model):
             "last_login": self.last_login,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
-            "permissions": [permission.name for permission in self.permissions]  # Include permissions in the dictionary
+            "permissions": [permission.name for permission in self.permissions]
         }
 
     @classmethod
     def from_dict(cls, data):
         """
         Create a User object from a dictionary representation.
+        Handles any missing keys with default values.
         """
         return cls(
             username=data.get('username'),
@@ -99,24 +106,26 @@ class User(db.Model):
     @staticmethod
     def generate_hash(password):
         """
-        Generate a hash for a given password.
+        Generate a secure hash for a given password using PBKDF2-SHA256.
         """
         return sha256.hash(password)
 
     @staticmethod
     def verify_hash(password, hashed_password):
         """
-        Verify a password against its hash.
+        Verify a password against its hash using the Scrypt algorithm.
         """
         return scrypt.verify(password, hashed_password)
 
     def update_last_login(self):
         """
-        Update the last login timestamp.
+        Update the last login timestamp to the current time.
         """
         self.last_login = datetime.now()
         db.session.commit()
 
     def __repr__(self):
+        """
+        String representation of the User object.
+        """
         return f'<User {self.username}>'
-

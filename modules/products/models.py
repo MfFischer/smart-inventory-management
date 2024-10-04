@@ -7,7 +7,7 @@ class InventoryMovement(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
-    movement_type = db.Column(db.String(50), nullable=False)  # e.g., 'stock_in', 'stock_out'
+    movement_type = db.Column(db.String(50), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
@@ -37,8 +37,11 @@ class Product(db.Model):
     supplier = db.relationship('Supplier', back_populates='products')
 
     # Define relationship to InventoryMovement
-    movements = db.relationship('InventoryMovement', back_populates='product', lazy='dynamic')
-
+    movements = db.relationship(
+        'InventoryMovement',
+        back_populates='product',
+        lazy='dynamic'
+    )
 
     def to_dict(self):
         """Returns a dictionary representation of the Product model."""
@@ -55,4 +58,6 @@ class Product(db.Model):
             "updated_at": self.updated_at
         }
 
-Supplier.products = db.relationship('Product', order_by=Product.id, back_populates='supplier')
+# Define the reverse relationship in Supplier
+Supplier.products = db.relationship(
+    'Product', order_by=Product.id, back_populates='supplier')

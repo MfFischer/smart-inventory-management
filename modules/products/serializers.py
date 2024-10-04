@@ -13,7 +13,8 @@ class ProductSchema(Schema):
     reorder_quantity = fields.Int(required=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
-    supplier = fields.Nested('SupplierSchema', only=('name', 'email', 'phone', 'address'))
+    supplier = fields.Nested('SupplierSchema',
+                             only=('name', 'email', 'phone', 'address'))
     last_reorder_date = fields.DateTime(dump_only=True)
     inventory_movements = fields.List(fields.Dict())
 

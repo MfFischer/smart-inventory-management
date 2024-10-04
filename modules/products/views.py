@@ -1,10 +1,12 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask import (Blueprint, request, jsonify,
+                   render_template, redirect, url_for)
 from modules.products.models import Product
 from modules.products.serializers import ProductSchema
 from inventory_system import db
 from modules.suppliers.models import Supplier
 from modules.suppliers.serializers import SupplierSchema
 from modules.inventory.models import Inventory
+from sqlalchemy.exc import SQLAlchemyError
 
 products_bp = Blueprint('products', __name__)
 
@@ -19,16 +21,20 @@ supplier_schema = SupplierSchema()
 @products_bp.route('/', methods=['GET'])
 def view_products():
     products = Product.query.all()
-    return render_template('products.html', products=products)
+    return render_template(
+        'products.html', products=products)
 
-# Get a product by ID and render the product details page
+# Get a product by ID and render the product details page (HTML)
 @products_bp.route('/<int:product_id>', methods=['GET'])
 def product_details(product_id):
     product = Product.query.get_or_404(product_id)
-    return render_template('product_details.html', product=product)
+    return render_template(
+        'product_details.html', product=product
+    )
+
 
 # Get all products (API endpoint for JSON response)
-@products_bp.route('/api', methods=['GET'])
+@products_bp.route('/', methods=['GET'])
 def get_products():
     products = Product.query.all()
     return jsonify(products_schema.dump(products)), 200
@@ -38,7 +44,6 @@ def get_products():
 @products_bp.route('/create', methods=['GET'])
 def create_product_form():
     return render_template('create_product.html')
-
 
 # Handle the form submission to create a new product
 @products_bp.route('/create', methods=['POST'])
@@ -77,7 +82,8 @@ def update_product(product_id):
         return jsonify(errors), 400
 
     # Check for duplicate product names if the name is being updated
-    if 'name' in data and Product.query.filter(Product.id != product_id, Product.name == data['name']).first():
+    if ('name' in data and Product.query.filter
+        (Product.id != product_id, Product.name == data['name']).first()):
         return jsonify({"error": "A product with this name already exists."}), 400
 
     # Update the product with validated data
@@ -95,14 +101,22 @@ def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
 
     if request.method == 'POST':
-        product.name = request.form['name']
-        product.description = request.form['description']
-        product.price = request.form['price']
-        product.quantity_in_stock = request.form['quantity_in_stock']
-        product.reorder_point = request.form['reorder_point']
+        try:
+            product.name = request.form['name']
+            product.description = request.form['description']
+            product.price = request.form['price']
+            product.quantity_in_stock = request.form['quantity_in_stock']
+            product.reorder_point = request.form['reorder_point']
+            product.reorder_quantity = request.form['reorder_quantity']
 
-        db.session.commit()
-        return redirect(url_for('products.product_details', product_id=product.id))
+            db.session.commit()  # Ensure to commit the transaction
+        except SQLAlchemyError as e:
+            db.session.rollback()  # Rollback in case of error
+            print(f"Error updating product: {str(e)}")
+            return "An error occurred", 500
+
+        return redirect(url_for(
+            'products.product_details', product_id=product.id))
 
     return render_template('edit_product.html', product=product)
 
@@ -111,30 +125,35 @@ def edit_product(product_id):
 def delete_product(product_id):
     product = Product.query.get_or_404(product_id)
     if product.sales:  # Check if the product has any associated sales
-        return jsonify({"error": "Cannot delete a product with associated sales records."}), 400
+        return jsonify(
+            {"error": "Cannot delete a product with associated sales records."}
+        ), 400
 
     db.session.delete(product)
     db.session.commit()
     return redirect(url_for('products.view_products'))
 
-
 # Get products below reorder point based on quantity in stock
 @products_bp.route('/api/reorder', methods=['GET'])
 def get_products_below_reorder():
     """Get all products below their reorder point."""
-    products_below_reorder = Product.query.filter(Product.quantity_in_stock <= Product.reorder_point).all()
+    products_below_reorder = (Product.query.filter
+                              (Product.quantity_in_stock <= Product.reorder_point)
+                              .all())
     if not products_below_reorder:
         return jsonify({"message": "No products below reorder point"}), 404
     return products_schema.jsonify(products_below_reorder), 200
 
-# Update the reorder point and reorder quantity of a product (API endpoint for JSON response)
+# Update the reorder point and quantity of a product
 @products_bp.route('/api/<int:product_id>/reorder_settings', methods=['PUT'])
 def update_reorder_settings(product_id):
     """Update the reorder point and reorder quantity of a product."""
     product = Product.query.get_or_404(product_id)
     data = request.json
     if 'reorder_point' not in data or 'reorder_quantity' not in data:
-        return jsonify({"message": "Reorder point and reorder quantity are required"}), 400
+        return jsonify(
+            {"message": "Reorder point and reorder quantity are required"}
+        ), 400
 
     product.reorder_point = data['reorder_point']
     product.reorder_quantity = data['reorder_quantity']
@@ -162,8 +181,32 @@ def search_products():
 
     # If only one product is found, redirect to product details page directly
     if len(products) == 1:
-        return redirect(url_for('products.product_details', product_id=products[0].id))
+        return redirect(url_for(
+            'products.product_details', product_id=products[0].id
+        ))
 
     # If multiple products found or none, render the search results in HTML
     return render_template('products.html', products=products)
+
+
+# Get a product price by ID (API route for JSON response)
+@products_bp.route('/api/<int:product_id>/price', methods=['GET'])
+def get_product_price(product_id):
+    product = Product.query.get(product_id)
+    if product:
+        return jsonify({"price": product.price}), 200
+    return jsonify({"error": "Product not found"}), 404
+
+# Get product details by ID (for inventory creation/edit)
+@products_bp.route('/<int:product_id>/product-details', methods=['GET'])
+def get_product_details(product_id):
+    product = Product.query.get(product_id)
+    if product:
+        product_data = {
+            'stock_quantity': product.quantity_in_stock,
+            'reorder_threshold': product.reorder_point,
+            'unit_price': str(product.price)
+        }
+        return jsonify({'success': True, 'product': product_data}), 200
+    return jsonify({'success': False, 'error': 'Product not found'}), 404
 

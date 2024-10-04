@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Low Stock Alerts
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-warning">Low Stock Alerts</h1>
+
+    <!-- Display a warning message if there are low stock items -->
+    {% if low_stock_items %}
+        <div class="alert alert-warning">
+            <strong>Warning!</strong> The following items are running low on stock:
+        </div>
+
+        <!-- Table to display low stock items -->
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product Name</th>
+                    <th>SKU</th>
+                    <th>Stock Quantity</th>
+                    <th>Reorder Threshold</th>
+                    <th>Supplier</th>
+                    <th>Reorder Needed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in low_stock_items %}
+                <tr>
+                    <td>{{ item.product.name if item.product else 'Unknown' }}</td>
+                    <td>{{ item.sku }}</td>
+                    <td>{{ item.stock_quantity }}</td>
+                    <td>{{ item.reorder_threshold }}</td>
+                    <td>{{ item.supplier.name if item.supplier else 'Unknown' }}</td>
+                    <td>
+                        {% if item.stock_quantity <= item.reorder_threshold %}
+                        <span class="text-danger font-weight-bold">Yes</span>
+                        <a href="{{ url_for('inventory.reorder_item', item_id=item.id) }}" class="btn btn-sm btn-warning">Reorder</a>
+                        {% else %}
+                        <span class="text-success font-weight-bold">No</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-success">
+            <strong>Good news!</strong> No items are currently below the reorder threshold.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

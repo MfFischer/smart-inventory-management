@@ -2,8 +2,8 @@ from inventory_system import db
 from modules.products.models import Product
 from modules.suppliers.models import Supplier
 from modules.users.models import User
-from modules.sales import Sale
-from modules.inventory import Inventory  # Import Inventory model
+from modules.sales.models import Sale
+from modules.inventory.models import Inventory
 from modules.permissions.models import Permission
 from datetime import datetime
 from inventory_system import create_app
@@ -113,9 +113,10 @@ def seed_store():
         edit_inventory_perm = Permission.query.filter_by(name='edit_inventory').first()
 
         # Assign permissions to admin and staff users
-        admin_permissions = Permission.query.all()  # Admin has all permissions
-        staff_permissions = [view_inventory_perm, edit_inventory_perm]  # Staff has 'view_inventory' and 'edit_inventory' permissions
-
+        # # Admin has all permissions
+        admin_permissions = Permission.query.all()
+        # Staff has 'view_inventory' and 'edit_inventory' permissions
+        staff_permissions = [view_inventory_perm, edit_inventory_perm]
         # Create or update sample users
         users_data = [
             {"username": "admin",

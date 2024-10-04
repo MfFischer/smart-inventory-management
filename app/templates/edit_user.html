@@ -1,0 +1,57 @@
+
+{% extends "base.html" %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+{% set is_admin = user.role == 'admin' %}
+{% set is_staff = user.role == 'staff' %}
+{% set is_active = user.status == 'active' %}
+{% set is_inactive = user.status == 'inactive' %}
+
+<div class="container mt-4">
+    <h1>Edit User</h1>
+
+    <form id="editUserForm" method="POST" action="{{ url_for('users.update_user', user_id=user.id) }}" class="mx-auto" style="max-width: 600px;">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+        </div>
+
+        <!-- Role Field -->
+        <div class="form-group">
+            <label for="role">Role</label>
+            <select class="form-control" id="role" name="role">
+                <option value="admin"{% if is_admin %} selected{% endif %}>Admin</option>
+                <option value="staff"{% if is_staff %} selected{% endif %}>Staff</option>
+            </select>
+        </div>
+
+        <!-- Status Field -->
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" name="status">
+                <option value="active"{% if is_active %} selected{% endif %}>Active</option>
+                <option value="inactive"{% if is_inactive %} selected{% endif %}>Inactive</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update User</button>
+    </form>
+</div>
+{% endblock %}

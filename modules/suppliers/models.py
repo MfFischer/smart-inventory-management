@@ -1,6 +1,5 @@
 from inventory_system import db
-from marshmallow import  validates, ValidationError
-
+from marshmallow import validates, ValidationError
 
 # Define the Supplier model representing the 'suppliers' table in the database
 class Supplier(db.Model):
@@ -13,16 +12,16 @@ class Supplier(db.Model):
     # Supplier name (required)
     name = db.Column(db.String(255), nullable=False)
 
-    # Optional phone number
+    # Optional phone number for the supplier
     phone = db.Column(db.String(20), nullable=True)
 
-    # Optional email address
+    # Email address (required and must be unique)
     email = db.Column(db.String(255), nullable=False, unique=True)
 
-    # Optional address field
+    # Optional address field for supplier's location
     address = db.Column(db.Text, nullable=True)
 
-    # Timestamps for record creation and last update
+    # Timestamps: created_at for record creation, updated_at for the last update
     created_at = db.Column(
         db.DateTime,
         default=db.func.current_timestamp()
@@ -33,12 +32,15 @@ class Supplier(db.Model):
         onupdate=db.func.current_timestamp()
     )
 
+    # Validate the 'name' field to ensure it's not empty or only whitespace
     @validates('name')
     def validate_name(self, value):
         if not value or value.strip() == '':
-            raise ValidationError("Supplier name must not be empty or contain only whitespace.")
+            raise ValidationError(
+                "Supplier name must not be empty or contain only whitespace."
+            )
 
-    # Convert model instance to dictionary format
+    # Convert model instance to dictionary format for easier data handling
     def to_dict(self):
         """Convert the Supplier object to a dictionary."""
         return {
@@ -50,4 +52,3 @@ class Supplier(db.Model):
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
-

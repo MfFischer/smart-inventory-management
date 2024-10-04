@@ -38,23 +38,32 @@ class UserSchema(Schema):
             raise ValidationError("Username already exists.")
 
     @pre_dump(pass_many=False)
-    def filter_fields_based_on_permissions(self, data, **kwargs):
+    def filter_fields_based_on_permissions(self, data):
         """
         Filters fields based on the current user's permissions.
         """
-        verify_jwt_in_request()  # Ensure the request has a valid JWT
+        verify_jwt_in_request()
         current_user_identity = get_jwt_identity()
         current_user = User.query.filter_by(username=current_user_identity['username']).first()
 
         # Remove fields based on role or permissions
         if current_user and not current_user.has_permission('view_email'):
-            data.email = None  # Remove email if the user doesn't have 'view_email' permission
+            # Remove email if the user doesn't have 'view_email' permission
+            data.email = None
 
         # Check for other permissions and adjust data fields accordingly
         if current_user and not current_user.has_permission('view_role'):
-            data.role = 'Restricted'  # Hide role details if the user doesn't have 'view_role' permission
+            # Hide role details if the user doesn't have 'view_role' permission
+            data.role = 'Restricted'
 
         return data
 
 # Create an instance of the schema
 user_schema = UserSchema()
+
+class LoginSchema(Schema):
+    username = fields.Str(required=True, validate=validate.Length(min=3, max=100))
+    password = fields.Str(required=True, validate=validate.Length(min=6))
+
+login_schema = LoginSchema()
+

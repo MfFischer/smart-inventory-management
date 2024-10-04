@@ -9,7 +9,7 @@ Create New Product
     <h1 class="text-light">Create New Product</h1>
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <form method="POST" action="{{ url_for('products.create_product') }}">
+            <form method="POST" action="{{ url_for('products.create_product') }}" class="mx-auto" style="max-width: 600px;">
                 <div class="mb-3">
                     <label for="name" class="form-label text-light">Product Name</label>
                     <input type="text" class="form-control" id="name" name="name" required>

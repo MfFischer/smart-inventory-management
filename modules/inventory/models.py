@@ -1,6 +1,5 @@
 from inventory_system import db
 
-
 # Inventory model to represent stock information in the database
 class Inventory(db.Model):
     __tablename__ = 'inventory'
@@ -11,8 +10,13 @@ class Inventory(db.Model):
     # Foreign key reference to the Products table
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
 
+    # create the relationship with Product
+    product = db.relationship('Product', backref='inventory_items')
+
     # Foreign key reference to the Suppliers table (optional)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=True)
+    # Updated to match the new backref name in the Supplier model
+    supplier = db.relationship('Supplier', backref='supplier_inventory_link')
 
     # Stock Keeping Unit (SKU) for the product
     sku = db.Column(db.String(100), nullable=False, unique=True)
@@ -35,6 +39,7 @@ class Inventory(db.Model):
         default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp()
     )
+    last_reordered_at = db.Column(db.DateTime, nullable=True)
 
     # Convert object to a dictionary format for easy JSON serialization
     def to_dict(self):
@@ -47,5 +52,6 @@ class Inventory(db.Model):
             "reorder_threshold": self.reorder_threshold,
             "unit_price": str(self.unit_price),
             "created_at": self.created_at,
-            "updated_at": self.updated_at
+            "updated_at": self.updated_at,
+            "product_name": self.product.name if self.product else "Unknown"
         }

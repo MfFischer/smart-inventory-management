@@ -1,30 +1,43 @@
 {% extends "base.html" %}
 
-{% block title %}
-Smart Inventory System - Supplier Details
-{% endblock %}
+{% block title %}Smart Inventory System - Supplier Details{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>Supplier Details</h1>
-    <div class="card">
+    <h1 class="my-4">Supplier Management</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form action="{{ url_for('suppliers.supplier_details') }}" method="GET" class="form-inline">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="search" name="search" placeholder="Search suppliers..." value="{{ request.args.get('search', '') }}">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 text-right">
+            <a href="{{ url_for('suppliers.create_supplier') }}" class="btn btn-success">Create Supplier</a>
+        </div>
+    </div>
+
+    <h2>Supplier Details</h2>
+    {% for supplier in suppliers %}
+    <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">{{ supplier.name }}</h5>
             <p class="card-text">{{ supplier.description }}</p>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">Contact: {{ supplier.contact }}</li>
+                <li class="list-group-item">Email: {{ supplier.email }}</li>
                 <li class="list-group-item">Address: {{ supplier.address }}</li>
+                <li class="list-group-item">Created At: {{ supplier.created_at }}</li>
+                <li class="list-group-item">Last Updated: {{ supplier.updated_at }}</li>
             </ul>
-            <h4>Products Supplied</h4>
-            <ul class="list-group list-group-flush">
-                {% for product in supplier.products %}
-                <li class="list-group-item">{{ product.name }} - {{ product.price }}</li>
-                {% endfor %}
-            </ul>
-            <div class="card-body">
-                <a href="/edit-supplier/{{ supplier.id }}" class="btn btn-primary">Edit Supplier</a>
-            </div>
+            <a href="{{ url_for('suppliers.edit_supplier', supplier_id=supplier.id) }}" class="btn btn-secondary mt-3">Edit</a>
         </div>
     </div>
+    {% endfor %}
 </div>
 {% endblock %}

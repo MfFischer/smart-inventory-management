@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Reorder {{ item.product.name }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-warning">Reorder Item: {{ item.product.name }}</h1>
+
+    <form method="POST"
+          action="{{ url_for('inventory.reorder_item', item_id=item.id) }}">
+        <!-- Supplier Email Section -->
+        <div class="mb-3">
+            <label for="supplier_email"
+                   class="form-label">Supplier Email
+            </label>
+            <input type="email" class="form-control"
+                   id="supplier_email" name="supplier_email"
+                   value="{{ supplier_email }}" required>
+        </div>
+
+        <!-- Product Name Section -->
+        <div class="mb-3">
+            <label for="product_name" class="form-label">
+                Product Name
+            </label>
+            <input type="text" class="form-control"
+                   id="product_name" name="product_name"
+                   value="{{ item.product.name }}" readonly>
+        </div>
+
+        <!-- Product Description Section -->
+        <div class="mb-3">
+            <label for="product_description" class="form-label">
+                Product Description
+            </label>
+            <textarea class="form-control" id="product_description"
+                      name="product_description" readonly>
+                {{ item.product.description }}
+            </textarea>
+        </div>
+
+        <!-- Reorder Quantity Section -->
+        <div class="mb-3">
+            <label for="reorder_quantity" class="form-label">
+                Reorder Quantity
+            </label>
+            <input type="number" class="form-control"
+                   id="reorder_quantity" name="reorder_quantity"
+                   value="{{ reorder_quantity }}" required
+            >
+        </div>
+
+        <!-- Reorder Button -->
+        <button type="submit" class="btn btn-success">
+            Send Reorder Email
+        </button>
+    </form>
+</div>
+{% endblock %}

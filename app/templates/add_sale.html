@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add New Sale
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-light">Add New Sale</h1>
+
+    <form method="POST" action="{{ url_for('sales.add_sale') }}">
+        <div class="mb-3">
+            <label for="product_id" class="form-label text-light">Product ID</label>
+            <input type="number" class="form-control" id="product_id" name="product_id" required>
+        </div>
+        <div class="mb-3">
+            <label for="quantity" class="form-label text-light">Quantity</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" required>
+        </div>
+        <div class="mb-3">
+            <label for="sale_status" class="form-label text-light">Sale Status</label>
+            <select class="form-select" id="sale_status" name="sale_status">
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Add Sale</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}
+User List
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-light">User List</h1>
+    <table class="table table-striped table-hover mt-3 text-light">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.status }}</td>
+                <td>
+                    <!-- Edit button with JavaScript function -->
+                    <button class="btn btn-warning btn-sm editUserBtn" data-user-id="{{ user.id }}">Edit</button>
+
+                    <form method="POST" action="/users/{{ user.id }}/delete" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+// Add event listeners to all "Edit" buttons
+document.querySelectorAll('.editUserBtn').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();  // Prevent default behavior
+
+        const userId = this.getAttribute('data-user-id');  // Get user ID from button data
+        const token = localStorage.getItem('jwt_token');  // Retrieve JWT token from localStorage
+
+        // Make the request to get the edit user page with the JWT token
+        fetch(`/users/${userId}/edit`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`  // Include JWT token in Authorization header
+            }
+        })
+        .then(response => response.text())  // Parse the response as text (HTML)
+        .then(html => {
+            document.body.innerHTML = html;  // Load the edit page content
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+</script>
+{% endblock %}

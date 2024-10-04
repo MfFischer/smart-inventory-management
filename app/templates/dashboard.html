@@ -36,7 +36,7 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">{{ low_inventory_count }} Low Inventory Alerts</h5>
                     <p class="card-text">Items that need restocking.</p>
-                    <a href="/inventory-alerts" class="btn btn-light">View Alerts</a>
+                    <a href="/inventory/low-stock-alerts"  class="btn btn-light">View Alerts</a>
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">{{ user_count }} Users</h5>
                     <p class="card-text">Manage system users and their roles.</p>
-                    <a href="/users/list" class="btn btn-light">Manage Users</a>
+                    <a href="/users/users_list" class="btn btn-light">Manage Users</a>
                 </div>
             </div>
         </div>
@@ -60,7 +60,7 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">{{ supplier_count }} Suppliers</h5>
                     <p class="card-text">Overview of your product suppliers.</p>
-                    <a href="/suppliers" class="btn btn-light">Manage Suppliers</a>
+                    <a href="{{ url_for('suppliers.supplier_details') }}" class="btn btn-light">Manage Suppliers</a>
                 </div>
             </div>
         </div>
