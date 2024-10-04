@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify,  redirect, url_for
+from flask import (Blueprint, request, jsonify,  redirect,
+                   url_for, render_template, flash)
 from flask_jwt_extended import (
     create_access_token, jwt_required, get_jwt_identity
 )
@@ -53,40 +54,30 @@ def permission_required(permission_name):
     return decorator
 
 
-# User registration endpoint
-@users_bp.route('/register', methods=['POST'])
+# Register route
+@users_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    # Get JSON data from the request
-    data = request.json
-    # Validate and deserialize the input data
-    errors = user_schema.validate(data)
-    if errors:
-        return jsonify(errors), 400
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
 
-    # Create a new user with hashed password and optional fields
-    new_user = User(
-        username=data['username'],
-        hashed_password=User.generate_hash(data['password']),
-        first_name=data.get('first_name'),
-        last_name=data.get('last_name'),
-        email=data['email'],
-        # Default role is 'staff'
-        role=data.get('role', 'staff'),
-        # Default status is 'active'
-        status=data.get('status', 'active')
-    )
+        # Use generate_hash instead of hash_password
+        hashed_password = User.generate_hash(password)
+        # Create a new user instance
+        new_user = User(
+            username=username,
+            email=email,
+            hashed_password=hashed_password
+        )
 
-    # Try adding the new user to the database
-    try:
         db.session.add(new_user)
         db.session.commit()
-    except IntegrityError:
-        # Roll back if a username or email already exists
-        db.session.rollback()
-        return jsonify({"error": "Username or email already exists"}), 400
-    # Return the created user
-    return jsonify(user_schema.dump(new_user)), 201
 
+        flash('Registration successful!', 'success')
+        return redirect(url_for('users.login'))
+
+    return render_template('register.html')
 
 # User login endpoint
 @users_bp.route('/login', methods=['POST'])

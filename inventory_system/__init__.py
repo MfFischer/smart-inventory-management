@@ -43,7 +43,6 @@ def create_app():
 
     # Register blueprints for different modules
     app.register_blueprint(products_bp, url_prefix='/api/products')
-    print(f"Registered blueprints: {app.blueprints}")
     app.register_blueprint(suppliers_bp, url_prefix='/suppliers')
     app.register_blueprint(inventory_bp, url_prefix='/inventory')
     app.register_blueprint(sales_bp, url_prefix='/sales')
@@ -190,5 +189,33 @@ def create_app():
         return render_template(
             'low_stock_alerts.html',
             low_stock_items=low_stock_items)
+
+    @app.route('/register', methods=['GET', 'POST'])
+    def register():
+        if request.method == 'POST':
+            username = request.form['username']
+            email = request.form['email']
+            password = request.form['password']
+
+            # Check if user already exists
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user:
+                return render_template('register.html', error="Email is already registered")
+
+            # Hash the password using the generate_hash method
+            hashed_password = User.generate_hash(password)
+
+            # Create new user
+            new_user = User(
+                username=username,
+                email=email,
+                hashed_password=hashed_password  # Use the hashed password
+            )
+            db.session.add(new_user)
+            db.session.commit()
+
+            return redirect(url_for('login'))
+
+        return render_template('register.html')
 
     return app

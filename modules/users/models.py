@@ -1,9 +1,10 @@
 from inventory_system import db
+from flask import (render_template,
+                   request, redirect, url_for, app)
 from modules.permissions.models import Permission
 from passlib.hash import pbkdf2_sha256 as sha256
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
-from passlib.hash import scrypt
 from flask_login import UserMixin
 
 # Association table for the many-to-many relationship between users and permissions
@@ -115,7 +116,7 @@ class User(db.Model, UserMixin):
         """
         Verify a password against its hash using the Scrypt algorithm.
         """
-        return scrypt.verify(password, hashed_password)
+        return sha256.verify(password, hashed_password)
 
     def update_last_login(self):
         """
@@ -129,3 +130,31 @@ class User(db.Model, UserMixin):
         String representation of the User object.
         """
         return f'<User {self.username}>'
+
+    def register(self):
+        if request.method == 'POST':
+            username = request.form['username']
+            email = request.form['email']
+            password = request.form['password']
+
+            # Check if user already exists
+            existing_user = User.query.filter_by(username=username).first()
+            if existing_user:
+                return render_template(
+                    'register.html',
+                    error="Username already taken"
+                )
+
+            # Hash the password and create a new user
+            new_user = User(
+                username=username,
+                hashed_password=User.generate_hash(password),
+                email=email
+            )
+            db.session.add(new_user)
+            db.session.commit()
+
+            return redirect(url_for('login'))
+
+        return render_template('register.html')
+
