@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}
-Smart Inventory System - Edit Inventory Item
-{% endblock %}
+{% block title %} Smart Inventory System - Edit Inventory Item {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -22,9 +20,11 @@ Smart Inventory System - Edit Inventory Item
         <!-- Dropdown for Product -->
         <div class="mb-3">
             <label for="product_id" class="form-label">Product</label>
-            <select name="product_id" class="form-select" required>
+            <select id="product_id" name="product_id" class="form-select" required>
                 {% for product in products %}
-                <option value="{{ product.id }}" {% if product.id == item.product_id %} selected {% endif %}>
+                <option value="{{ product.id }}"
+                        {% if product.id == item.product_id %}
+                        selected {% endif %}>
                     {{ product.name }}
                 </option>
                 {% endfor %}
@@ -34,7 +34,7 @@ Smart Inventory System - Edit Inventory Item
         <!-- Dropdown for Supplier -->
         <div class="mb-3">
             <label for="supplier_id" class="form-label">Supplier</label>
-            <select name="supplier_id" class="form-select" required>
+            <select id="supplier_id" name="supplier_id" class="form-select" required>
                 {% for supplier in suppliers %}
                 <option value="{{ supplier.id }}" {% if supplier.id == item.supplier_id %} selected {% endif %}>
                     {{ supplier.name }}
@@ -46,19 +46,19 @@ Smart Inventory System - Edit Inventory Item
         <!-- Other fields (SKU, stock quantity, etc.) -->
         <div class="mb-3">
             <label for="sku" class="form-label">SKU</label>
-            <input type="text" class="form-control" name="sku" value="{{ item.sku }}" required>
+            <input type="text" class="form-control" id="sku" name="sku" value="{{ item.sku }}" required>
         </div>
         <div class="mb-3">
             <label for="stock_quantity" class="form-label">Stock Quantity</label>
-            <input type="number" class="form-control" name="stock_quantity" value="{{ item.stock_quantity }}" required>
+            <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" value="{{ item.stock_quantity }}" required>
         </div>
         <div class="mb-3">
             <label for="reorder_threshold" class="form-label">Reorder Threshold</label>
-            <input type="number" class="form-control" name="reorder_threshold" value="{{ item.reorder_threshold }}" required>
+            <input type="number" class="form-control" id="reorder_threshold" name="reorder_threshold" value="{{ item.reorder_threshold }}" required>
         </div>
         <div class="mb-3">
             <label for="unit_price" class="form-label">Unit Price</label>
-            <input type="text" class="form-control" name="unit_price" value="{{ item.unit_price }}" required>
+            <input type="text" class="form-control" id="unit_price" name="unit_price" value="{{ item.unit_price }}" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Update</button>

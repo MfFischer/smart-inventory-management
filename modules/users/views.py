@@ -209,3 +209,9 @@ def delete_user(user_id):
     # Commit the changes
     db.session.commit()
     return '', 204
+
+@users_bp.route('/users_list', methods=['GET'])
+def users_list():
+    # Fetch all users
+    users = User.query.all()
+    return render_template('user_list.html', users=users)

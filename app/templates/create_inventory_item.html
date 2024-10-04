@@ -15,69 +15,133 @@ Smart Inventory System - Create Inventory Item
     <form method="POST" action="{{ url_for('inventory.create_inventory_item') }}">
         <!-- Product Section -->
         <div class="mb-3">
-            <label for="product_select" class="form-label">Product</label>
-            <select id="product_select" name="product_id" class="form-select">
-                <option value="">Select a product or add new</option>
+            <label for="product_select" class="form-label">
+                Product
+            </label>
+            <select id="product_select"
+                    name="product_id"
+                    class="form-select"
+            >
+                <option value="">
+                    Select a product or add new
+                </option>
                 {% for product in products %}
-                <option value="{{ product.id }}">{{ product.name }}</option>
+                <option value="{{ product.id }}">
+                    {{ product.name }}
+                </option>
                 {% endfor %}
-                <option value="new">+ Add New Product</option>
+                <option value="new">
+                    + Add New Product
+                </option>
             </select>
         </div>
 
         <div id="new_product_fields" style="display:none;">
             <div class="mb-3">
-                <label for="new_product_name" class="form-label">New Product Name</label>
-                <input type="text" class="form-control" id="new_product_name" name="new_product_name">
+                <label for="new_product_name" class="form-label">
+                    New Product Name
+                </label>
+                <input type="text"
+                       class="form-control"
+                       id="new_product_name"
+                       name="new_product_name"
+                >
             </div>
             <div class="mb-3">
-                <label for="new_product_description" class="form-label">New Product Description</label>
-                <textarea class="form-control" id="new_product_description" name="new_product_description"></textarea>
+                <label for="new_product_description" class="form-label">
+                    New Product Description
+                </label>
+                <textarea class="form-control"
+                          id="new_product_description"
+                          name="new_product_description">
+                </textarea>
             </div>
         </div>
 
         <!-- Supplier Section -->
         <div class="mb-3">
-            <label for="supplier_select" class="form-label">Supplier</label>
-            <select id="supplier_select" name="supplier_id" class="form-select">
-                <option value="">Select a supplier or add new</option>
+            <label for="supplier_select" class="form-label">
+                Supplier
+            </label>
+            <select id="supplier_select"
+                    name="supplier_id"
+                    class="form-select">
+                <option value="">
+                    Select a supplier or add new
+                </option>
                 {% for supplier in suppliers %}
-                <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                <option value="{{ supplier.id }}">
+                    {{ supplier.name }}
+                </option>
                 {% endfor %}
-                <option value="new">+ Add New Supplier</option>
+                <option value="new">
+                    + Add New Supplier
+                </option>
             </select>
         </div>
         <div id="new_supplier_fields" style="display:none;">
             <div class="mb-3">
-                <label for="new_supplier_name" class="form-label">New Supplier Name</label>
-                <input type="text" class="form-control" id="new_supplier_name" name="new_supplier_name">
+                <label for="new_supplier_name" class="form-label">
+                    New Supplier Name
+                </label>
+                <input type="text"
+                       class="form-control"
+                       id="new_supplier_name"
+                       name="new_supplier_name">
             </div>
             <div class="mb-3">
-                <label for="new_supplier_contact" class="form-label">New Supplier Contact</label>
-                <input type="text" class="form-control" id="new_supplier_contact" name="new_supplier_contact">
+                <label for="new_supplier_contact" class="form-label">
+                    New Supplier Contact
+                </label>
+                <input type="text"
+                       class="form-control"
+                       id="new_supplier_contact"
+                       name="new_supplier_contact">
             </div>
         </div>
 
         <!-- Pre-fill stock details if product exists -->
         <div class="mb-3">
-            <label for="sku" class="form-label">SKU</label>
-            <input type="text" class="form-control" id="sku" name="sku" required>
+            <label for="sku" class="form-label">
+                SKU
+            </label>
+            <input type="text"
+                   class="form-control"
+                   id="sku"
+                   name="sku" required>
         </div>
 
         <div class="mb-3">
-            <label for="stock_quantity" class="form-label">Stock Quantity</label>
-            <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" required>
+            <label for="stock_quantity" class="form-label">
+                Stock Quantity
+            </label>
+            <input type="number"
+                   class="form-control"
+                   id="stock_quantity"
+                   name="stock_quantity" required>
         </div>
         <div class="mb-3">
-            <label for="reorder_threshold" class="form-label">Reorder Threshold</label>
-            <input type="number" class="form-control" id="reorder_threshold" name="reorder_threshold" required>
+            <label for="reorder_threshold" class="form-label">
+                Reorder Threshold
+            </label>
+            <input type="number"
+                   class="form-control"
+                   id="reorder_threshold"
+                   name="reorder_threshold" required>
         </div>
         <div class="mb-3">
-            <label for="unit_price" class="form-label">Unit Price</label>
-            <input type="text" class="form-control" id="unit_price" name="unit_price" required>
+            <label for="unit_price" class="form-label">
+                Unit Price
+            </label>
+            <input type="text"
+                   class="form-control"
+                   id="unit_price"
+                   name="unit_price" required>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary">
+            Create
+        </button>
     </form>
 </div>
 
@@ -101,9 +165,12 @@ document.getElementById('product_select').addEventListener('change', function() 
                 .then(data => {
                     if (data.success) {
                         // Populate the form fields with the fetched product data
-                        document.getElementById('stock_quantity').value = data.product.stock_quantity;
-                        document.getElementById('reorder_threshold').value = data.product.reorder_threshold;
-                        document.getElementById('unit_price').value = data.product.unit_price;
+                        document.getElementById('stock_quantity').value =
+                        data.product.stock_quantity;
+                        document.getElementById('reorder_threshold').value =
+                        data.product.reorder_threshold;
+                        document.getElementById('unit_price').value =
+                        data.product.unit_price;
                     } else {
                         console.error('Failed to fetch product details:', data.error);
                     }
