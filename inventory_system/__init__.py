@@ -176,10 +176,14 @@ def create_app():
         """
         if supplier_id:
             supplier = Supplier.query.get_or_404(supplier_id)
-            return render_template('supplier_details.html', supplier=supplier)
+            return render_template(
+                'supplier_details.html',
+                supplier=supplier)
         else:
             suppliers = Supplier.query.all()
-            return render_template('supplier_list.html', suppliers=suppliers)
+            return render_template(
+                'supplier_list.html',
+                suppliers=suppliers)
 
     @app.route('/inventory/low-stock-alerts', methods=['GET'])
     def low_stock_alerts():
@@ -200,7 +204,9 @@ def create_app():
             # Check if user already exists
             existing_user = User.query.filter_by(email=email).first()
             if existing_user:
-                return render_template('register.html', error="Email is already registered")
+                return render_template(
+                    'register.html',
+                    error="Email is already registered")
 
             # Hash the password using the generate_hash method
             hashed_password = User.generate_hash(password)
@@ -209,13 +215,12 @@ def create_app():
             new_user = User(
                 username=username,
                 email=email,
-                hashed_password=hashed_password  # Use the hashed password
+                hashed_password=hashed_password
             )
             db.session.add(new_user)
             db.session.commit()
 
             return redirect(url_for('login'))
-
         return render_template('register.html')
 
     return app
