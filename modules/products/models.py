@@ -1,5 +1,5 @@
 from inventory_system import db
-from modules.suppliers.models import Supplier  # Import Supplier from the suppliers module
+from modules.suppliers.models import Supplier
 
 class InventoryMovement(db.Model):
     """Inventory Movement model representing stock in/out records."""
