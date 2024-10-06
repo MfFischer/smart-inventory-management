@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for,  jsonify
-from modules.inventory.models import Inventory
+from flask import Blueprint, render_template, request, redirect, url_for
 from modules.products.models import InventoryMovement, Product
 
 

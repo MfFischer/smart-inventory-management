@@ -28,7 +28,7 @@ def init_swagger(app):
     from modules.sales.views import api as sales_ns
     from modules.users.views import api as users_ns
 
-    # Register namespaces (only add them to the `api` object, no need to register blueprint twice)
+    # Register namespaces
     api.add_namespace(products_ns, path='/api/products')
     api.add_namespace(suppliers_ns, path='/api/suppliers')
     api.add_namespace(inventory_ns, path='/api/inventory')

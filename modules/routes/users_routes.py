@@ -14,7 +14,9 @@ def user_register():
         email = request.form['email']
         password = request.form['password']
         hashed_password = User.generate_hash(password)
-        new_user = User(username=username, email=email, hashed_password=hashed_password)
+        new_user = User(username=username,
+                        email=email,
+                        hashed_password=hashed_password)
 
         db.session.add(new_user)
         db.session.commit()
@@ -55,11 +57,17 @@ def user_create():
             username = request.form['username']
             email = request.form['email']
             password = request.form['password']
-            role = request.form.get('role', 'staff')  # Default role is 'staff'
-            status = request.form.get('status', 'active')  # Default status is 'active'
+            # Default role is 'staff'
+            role = request.form.get('role', 'staff')
+            # Default status is 'active'
+            status = request.form.get('status', 'active')
 
             hashed_password = User.generate_hash(password)
-            new_user = User(username=username, email=email, hashed_password=hashed_password, role=role, status=status)
+            new_user = User(username=username,
+                            email=email,
+                            hashed_password=hashed_password,
+                            role=role,
+                            status=status)
 
             db.session.add(new_user)
             db.session.commit()

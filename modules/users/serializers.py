@@ -37,26 +37,35 @@ class UserSchema(Schema):
         if User.query.filter_by(username=value).first():
             raise ValidationError("Username already exists.")
 
-    @pre_dump(pass_many=False)
-    def filter_fields_based_on_permissions(self, data):
+    @pre_dump(pass_many=True)
+    def filter_fields_based_on_permissions(self, data, many):
         """
         Filters fields based on the current user's permissions.
+        Supports filtering for single or multiple objects.
         """
         verify_jwt_in_request()
         current_user_identity = get_jwt_identity()
         current_user = User.query.filter_by(username=current_user_identity['username']).first()
 
-        # Remove fields based on role or permissions
-        if current_user and not current_user.has_permission('view_email'):
-            # Remove email if the user doesn't have 'view_email' permission
-            data.email = None
-
-        # Check for other permissions and adjust data fields accordingly
-        if current_user and not current_user.has_permission('view_role'):
-            # Hide role details if the user doesn't have 'view_role' permission
-            data.role = 'Restricted'
+        if many:
+            # If we're dealing with multiple users (a list), iterate over each user
+            for user in data:
+                self._apply_permission_filters(user, current_user)
+        else:
+            # For a single user
+            self._apply_permission_filters(data, current_user)
 
         return data
+
+    def _apply_permission_filters(self, user_data, current_user):
+        """
+        Helper function to apply permission filters to a single user.
+        """
+        if current_user and not current_user.has_permission('view_email'):
+            user_data.email = None
+
+        if current_user and not current_user.has_permission('view_role'):
+            user_data.role = 'Restricted'
 
 # Create an instance of the schema
 user_schema = UserSchema()

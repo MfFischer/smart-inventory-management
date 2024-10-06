@@ -13,7 +13,8 @@ def inventory_list():
     """Render the inventory page with all inventory items."""
     try:
         inventory_items = Inventory.query.all()
-        return render_template('inventory.html', inventory_items=inventory_items)
+        return render_template('inventory.html',
+                               inventory_items=inventory_items)
     except Exception as e:
         print(f"Error fetching inventory items: {e}")
         return render_template('error.html'), 500
@@ -41,11 +42,14 @@ def inventory_create():
             return redirect(url_for('inventory.inventory_list'))
         except Exception as e:
             db.session.rollback()
-            return render_template('create_inventory_item.html', error=str(e))
+            return render_template('create_inventory_item.html',
+                                   error=str(e))
 
     products = Product.query.all()
     suppliers = Supplier.query.all()
-    return render_template('create_inventory_item.html', products=products, suppliers=suppliers)
+    return render_template('create_inventory_item.html',
+                           products=products,
+                           suppliers=suppliers)
 
 
 @inventory_bp.route('/<int:item_id>/edit', methods=['GET', 'POST'])
@@ -66,11 +70,15 @@ def inventory_edit(item_id):
             return redirect(url_for('inventory.inventory_list'))
         except Exception as e:
             db.session.rollback()
-            return render_template('edit_inventory.html', error=str(e), item=item)
+            return render_template('edit_inventory.html',
+                                   error=str(e),
+                                   item=item)
 
     products = Product.query.all()
     suppliers = Supplier.query.all()
-    return render_template('edit_inventory.html', item=item, products=products, suppliers=suppliers)
+    return render_template('edit_inventory.html',
+                           item=item, products=products,
+                           suppliers=suppliers)
 
 
 @inventory_bp.route('/<int:item_id>/delete', methods=['POST'])
@@ -89,7 +97,8 @@ def low_stock_alerts():
         low_stock_items = Inventory.query.filter(
             Inventory.stock_quantity <= Inventory.reorder_threshold
         ).all()
-        return render_template('low_stock_alerts.html', low_stock_items=low_stock_items)
+        return render_template('low_stock_alerts.html',
+                               low_stock_items=low_stock_items)
     except Exception as e:
         print(f"Error fetching low stock alerts: {e}")
         return render_template('error.html'), 500
@@ -105,7 +114,8 @@ def inventory_search():
         ).all()
     else:
         inventory_items = Inventory.query.all()
-    return render_template('inventory.html', inventory_items=inventory_items)
+    return render_template('inventory.html',
+                           inventory_items=inventory_items)
 
 
 @inventory_bp.route('/<int:item_id>/reorder', methods=['GET', 'POST'])
@@ -119,5 +129,7 @@ def inventory_reorder(item_id):
 
     supplier_email = item.supplier.email if item.supplier else None
     reorder_quantity = item.product.reorder_quantity if item.product else 0
-    return render_template('reorder_form.html', item=item, supplier_email=supplier_email,
+    return render_template('reorder_form.html',
+                           item=item,
+                           supplier_email=supplier_email,
                            reorder_quantity=reorder_quantity)

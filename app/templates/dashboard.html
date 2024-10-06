@@ -16,7 +16,9 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">{{ product_count }} Items</h5>
                     <p class="card-text">Overview of products currently in stock.</p>
-                    <a href="{{ url_for('products.render_product_list') }}" class="btn btn-light">Manage Products</a>
+                    <a href="{{ url_for('products.render_product_list') }}" class="btn btn-light">
+                        Manage Products
+                    </a>
                 </div>
             </div>
         </div>
@@ -26,7 +28,9 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">Latest Sales</h5>
                     <p class="card-text">Track the latest sales transactions.</p>
-                    <a href="{{ url_for('sales.sale_list') }}" class="btn btn-light">View Sales</a>
+                    <a href="{{ url_for('sales.sale_list') }}" class="btn btn-light">
+                        View Sales
+                    </a>
                 </div>
             </div>
         </div>
@@ -36,7 +40,9 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">{{ low_inventory_count }} Low Inventory Alerts</h5>
                     <p class="card-text">Items that need restocking.</p>
-                    <a href="{{ url_for('inventory.low_stock_alerts') }}" class="btn btn-light">View Alerts</a>
+                    <a href="{{ url_for('inventory.low_stock_alerts') }}" class="btn btn-light">
+                        View Alerts
+                    </a>
                 </div>
             </div>
         </div>
@@ -50,7 +56,9 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">{{ user_count }} Users</h5>
                     <p class="card-text">Manage system users and their roles.</p>
-                    <a href="{{ url_for('users.users_list_view') }}" class="btn btn-primary">Manage Users</a>
+                    <a href="{{ url_for('users.users_list_view') }}" class="btn btn-primary">
+                        Manage Users
+                    </a>
                 </div>
             </div>
         </div>
@@ -60,7 +68,9 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">{{ supplier_count }} Suppliers</h5>
                     <p class="card-text">Overview of your product suppliers.</p>
-                    <a href="{{ url_for('suppliers.supplier_list') }}" class="btn btn-light">Manage Suppliers</a>
+                    <a href="{{ url_for('suppliers.supplier_list') }}" class="btn btn-light">
+                        Manage Suppliers
+                    </a>
                 </div>
             </div>
         </div>
@@ -70,7 +80,9 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">{{ inventory_count }} Items</h5>
                     <p class="card-text">Track and manage your inventory.</p>
-                    <a href="{{ url_for('inventory.inventory_list') }}" c class="btn btn-light">Manage Inventory</a>
+                    <a href="{{ url_for('inventory.inventory_list') }}" c class="btn btn-light">
+                        Manage Inventory
+                    </a>
                 </div>
             </div>
         </div>

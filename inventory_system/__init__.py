@@ -28,7 +28,11 @@ def create_app():
 
     # API Blueprint and Namespace Registration
     api_bp = Blueprint('api', __name__, url_prefix='/api')
-    api = Api(api_bp, title="Smart Inventory System API", version="1.0", description="API for managing inventory, products, sales, and users.")
+    api = Api(api_bp,
+              title="Smart Inventory System API",
+              version="1.0",
+              description="API for managing inventory, products, sales, and users."
+              )
 
     from modules.products.views import api as products_ns
     from modules.suppliers.views import api as suppliers_ns
