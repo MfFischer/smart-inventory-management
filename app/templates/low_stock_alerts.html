@@ -37,7 +37,7 @@ Smart Inventory System - Low Stock Alerts
                     <td>
                         {% if item.stock_quantity <= item.reorder_threshold %}
                         <span class="text-danger font-weight-bold">Yes</span>
-                        <a href="{{ url_for('inventory.reorder_item', item_id=item.id) }}" class="btn btn-sm btn-warning">Reorder</a>
+                        <a href="{{ url_for('inventory.inventory_reorder', item_id=item.id) }}" class="btn btn-sm btn-warning">Reorder</a>
                         {% else %}
                         <span class="text-success font-weight-bold">No</span>
                         {% endif %}

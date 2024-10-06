@@ -7,7 +7,7 @@ Add New Product
 {% block content %}
 <div class="container mt-4">
     <h1 class="text-light">Add New Product</h1>
-    <form method="POST" action="{{ url_for('products.add_product') }}">
+    <form method="POST" action="{{ url_for('products.product_create') }}">
         <div class="mb-3">
             <label for="name" class="form-label">
                 Product Name
@@ -43,8 +43,7 @@ Add New Product
             <input type="number"
                    class="form-control"
                    id="quantity_in_stock"
-                   name="quantity_in_stock" required
-            >
+                   name="quantity_in_stock" required>
         </div>
         <div class="mb-3">
             <label for="reorder_point" class="form-label">

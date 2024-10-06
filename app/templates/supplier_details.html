@@ -8,7 +8,7 @@
 
     <div class="row mb-4">
         <div class="col-md-6">
-            <form action="{{ url_for('suppliers.supplier_details') }}" method="GET" class="form-inline">
+            <form action="{{ url_for('suppliers.supplier_search') }}" method="GET" class="form-inline">
                 <div class="input-group">
                     <input type="text" class="form-control" id="search" name="search" placeholder="Search suppliers..." value="{{ request.args.get('search', '') }}">
                     <div class="input-group-append">
@@ -18,7 +18,7 @@
             </form>
         </div>
         <div class="col-md-6 text-right">
-            <a href="{{ url_for('suppliers.create_supplier') }}" class="btn btn-success">Create Supplier</a>
+            <a href="{{ url_for('suppliers.supplier_create') }}" class="btn btn-success">Create Supplier</a>
         </div>
     </div>
 
@@ -35,7 +35,10 @@
                 <li class="list-group-item">Created At: {{ supplier.created_at }}</li>
                 <li class="list-group-item">Last Updated: {{ supplier.updated_at }}</li>
             </ul>
-            <a href="{{ url_for('suppliers.edit_supplier', supplier_id=supplier.id) }}" class="btn btn-secondary mt-3">Edit</a>
+            <a href="{{ url_for('suppliers.supplier_edit', supplier_id=supplier.id) }}" class="btn btn-secondary mt-3">Edit</a>
+            <form action="{{ url_for('suppliers.supplier_delete', supplier_id=supplier.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this supplier?');">
+                <button type="submit" class="btn btn-danger mt-3">Delete</button>
+            </form>
         </div>
     </div>
     {% endfor %}

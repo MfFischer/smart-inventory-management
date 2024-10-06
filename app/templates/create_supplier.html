@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
     <h1 class="my-4">Create New Supplier</h1>
-    <form action="{{ url_for('suppliers.create_supplier') }}"
+    <form action="{{ url_for('suppliers.supplier_create') }}"
           class="mx-auto" style="max-width: 600px;"
           method="POST">
         <div class="form-group">
@@ -52,7 +52,7 @@
         <button type="submit" class="btn btn-primary">
             Create Supplier
         </button>
-        <a href="{{ url_for('suppliers.supplier_details') }}" class="btn btn-secondary">
+        <a href="{{ url_for('suppliers.supplier_list') }}" class="btn btn-secondary">
             Cancel
         </a>
     </form>

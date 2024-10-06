@@ -16,7 +16,7 @@
         </div>
     {% endif %}
 
-    <form method="POST" action="{{ url_for('inventory.edit_inventory_item', item_id=item.id) }}">
+    <form method="POST" action="{{ url_for('inventory.inventory_edit', item_id=item.id) }}">
         <!-- Dropdown for Product -->
         <div class="mb-3">
             <label for="product_id" class="form-label">Product</label>

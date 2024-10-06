@@ -40,7 +40,8 @@ class Product(db.Model):
     movements = db.relationship(
         'InventoryMovement',
         back_populates='product',
-        lazy='dynamic'
+        lazy='dynamic',
+        cascade = "all, delete-orphan"
     )
 
     def to_dict(self):

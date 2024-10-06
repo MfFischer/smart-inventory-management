@@ -7,7 +7,7 @@ Edit Sale
 {% block content %}
 <div class="container mt-4">
     <h1 class="text-light">Edit Sale</h1>
-    <form method="POST" action="{{ url_for('sales.edit_sale', sale_id=sale.id) }}" class="mx-auto" style="max-width: 600px;">
+    <form method="POST" action="{{ url_for('sales.sale_edit', sale_id=sale.id) }}" class="mx-auto" style="max-width: 600px;">
         <div class="mb-3">
             <label for="product_id" class="form-label text-light">Product ID</label>
             <input type="number" class="form-control" id="product_id" name="product_id" value="{{ sale.product_id }}" readonly>
@@ -19,8 +19,8 @@ Edit Sale
         <div class="mb-3">
             <label for="sale_status" class="form-label text-light">Sale Status</label>
             <select class="form-select" id="sale_status" name="sale_status">
-                <option value="completed" {% if sale.sale_status == 'completed' %} selected {% endif %}>Completed</option>
-                <option value="pending" {% if sale.sale_status == 'pending' %} selected {% endif %}>Pending</option>
+                 <option value="completed" {% if sale.sale_status=='completed' %} selected {% endif %}>Completed</option>
+                <option value="pending" {% if sale.sale_status=='pending' %} selected {% endif %}>Pending</option>
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Update Sale</button>

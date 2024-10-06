@@ -9,7 +9,8 @@ Smart Inventory System - Login
     <div class="row h-100 justify-content-center align-items-center">
         <div class="col-md-6">
             <h2 class="text-center mb-4">Login to Your Account</h2>
-            <form method="POST" action="{{ url_for('login') }}" class="needs-validation" novalidate style="max-width: 500px;">
+            <!-- Update the form action to point to the correct route after Swagger integration -->
+            <form method="POST" action="{{ url_for('main.login') }}" class="needs-validation" novalidate style="max-width: 500px;">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
                     <input type="text" class="form-control" id="username" name="username" required>
@@ -29,6 +30,8 @@ Smart Inventory System - Login
                     <label class="form-check-label" for="rememberMe">Remember me</label>
                 </div>
                 <button type="submit" class="btn btn-primary">Login</button>
+
+                <!-- Error block to display login errors -->
                 {% if error %}
                     <div class="alert alert-danger mt-3" role="alert">
                         {{ error }}
@@ -38,6 +41,7 @@ Smart Inventory System - Login
         </div>
     </div>
 </div>
+
 <script>
     // Example JavaScript to improve interactivity and validation
     (function() {

@@ -8,15 +8,17 @@ Add New Sale
 <div class="container mt-4">
     <h1 class="text-light">Add New Sale</h1>
 
-    <form method="POST" action="{{ url_for('sales.add_sale') }}">
+    <form method="POST" action="{{ url_for('sales.sale_create') }}">
         <div class="mb-3">
             <label for="product_id" class="form-label text-light">
                 Product ID
             </label>
-            <input type="number"
-                   class="form-control"
-                   id="product_id"
-                   name="product_id" required>
+            <select class="form-select" id="product_id" name="product_id" required>
+                <!-- Loop through products to populate the dropdown -->
+                {% for product in products %}
+                <option value="{{ product.id }}">{{ product.name }} (ID: {{ product.id }})</option>
+                {% endfor %}
+            </select>
         </div>
         <div class="mb-3">
             <label for="quantity" class="form-label text-light">

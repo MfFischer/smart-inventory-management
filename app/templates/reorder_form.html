@@ -9,7 +9,7 @@ Smart Inventory System - Reorder {{ item.product.name }}
     <h1 class="text-warning">Reorder Item: {{ item.product.name }}</h1>
 
     <form method="POST"
-          action="{{ url_for('inventory.reorder_item', item_id=item.id) }}">
+          action="{{ url_for('inventory.inventory_reorder', item_id=item.id) }}">
         <!-- Supplier Email Section -->
         <div class="mb-3">
             <label for="supplier_email"

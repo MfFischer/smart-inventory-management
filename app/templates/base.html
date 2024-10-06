@@ -37,18 +37,18 @@
                         </a></li>
                         {% if session.get('logged_in') %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('dashboard') }}">
+                                <a class="nav-link" href="{{ url_for('main.dashboard') }}">
                                     Dashboard
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('logout') }}">
+                                <a class="nav-link" href="{{ url_for('main.logout') }}">
                                     Logout
                                 </a>
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('login') }}">
+                                <a class="nav-link" href="{{ url_for('main.login') }}">
                                     Login
                                 </a>
                             </li>

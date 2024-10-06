@@ -9,7 +9,8 @@ Register - Smart Inventory System
     <h1 class="text-light">Register New Account</h1>
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <form method="POST" action="{{ url_for('register') }}">
+            <!-- Update the form action to point to the correct route -->
+            <form method="POST" action="{{ url_for('users.register') }}">
                 <div class="mb-3">
                     <label for="username" class="form-label text-light">Username</label>
                     <input type="text" class="form-control" id="username" name="username" required>
@@ -24,6 +25,8 @@ Register - Smart Inventory System
                 </div>
                 <button type="submit" class="btn btn-success">Register</button>
             </form>
+
+            <!-- Error message block -->
             {% if error %}
                 <div class="alert alert-danger mt-3" role="alert">
                     {{ error }}

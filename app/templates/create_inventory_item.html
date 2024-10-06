@@ -12,7 +12,7 @@ Smart Inventory System - Create Inventory Item
         <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
 
-    <form method="POST" action="{{ url_for('inventory.create_inventory_item') }}">
+    <form method="POST" action="{{ url_for('inventory.inventory_create') }}">
         <!-- Product Section -->
         <div class="mb-3">
             <label for="product_select" class="form-label">

@@ -10,7 +10,7 @@ Create New Product
     <div class="row justify-content-center">
         <div class="col-md-6">
             <form method="POST"
-                  action="{{ url_for('products.create_product') }}"
+                  action="{{ url_for('products.product_create') }}"
                   class="mx-auto"
                   style="max-width: 600px;">
                 <div class="mb-3">
@@ -29,8 +29,7 @@ Create New Product
                     <textarea class="form-control"
                               id="description"
                               name="description"
-                              rows="3" required>
-                    </textarea>
+                              rows="3" required></textarea>
                 </div>
                 <div class="mb-3">
                     <label for="price" class="form-label text-light">

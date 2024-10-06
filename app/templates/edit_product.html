@@ -8,7 +8,7 @@
 <div class="container mt-4">
     <h1 class="text-center">Edit Product</h1>
     <form method="POST"
-          action="{{ url_for('products.edit_product', product_id=product.id) }}"
+          action="{{ url_for('products.product_edit', product_id=product.id) }}"
           class="mx-auto" style="max-width: 600px;">
         <div class="card p-4 shadow-sm">
             <div class="mb-3">
@@ -25,9 +25,8 @@
                     Description
                 </label>
                 <textarea class="form-control" id="description"
-                          name="description" rows="3">
-                    {{ product.description }}
-                </textarea>
+                          name="description" rows="3"
+                          required>{{ product.description }}</textarea>
             </div>
             <div class="row">
                 <div class="col-md-6 mb-3">

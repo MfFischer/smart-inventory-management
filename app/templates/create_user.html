@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Create New User{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Create New User</h1>
+
+    <!-- Ensure the form posts to the correct API endpoint -->
+    <form id="createUserForm" method="POST" action="{{ url_for('users.user_create') }}" class="mx-auto" style="max-width: 600px;">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+        </div>
+
+        <!-- Role Field -->
+        <div class="form-group">
+            <label for="role">Role</label>
+            <select class="form-control" id="role" name="role">
+                <option value="admin">Admin</option>
+                <option value="staff">Staff</option>
+            </select>
+        </div>
+
+        <!-- Status Field -->
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select class="form-control" id="status" name="status">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Create User</button>
+    </form>
+</div>
+{% endblock %}
