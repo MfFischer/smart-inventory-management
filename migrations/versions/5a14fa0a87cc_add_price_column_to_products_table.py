@@ -19,11 +19,6 @@ depends_on = None
 
 def upgrade():
 
-    conn = op.get_bind()
-    inspector = Inspector.from_engine(conn)
-    tables = inspector.get_table_names()
-
-    if 'products' not in tables:
         op.create_table('products',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('name', sa.String(length=255), nullable=False),
@@ -33,7 +28,7 @@ def upgrade():
         sa.Column('updated_at', sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint('id')
         )
-    if 'suppliers' not in tables:
+
         op.create_table('suppliers',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('phone', sa.String(length=20), nullable=True),
@@ -42,7 +37,7 @@ def upgrade():
         sa.Column('updated_at', sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint('id')
         )
-    if 'users' not in tables:
+
         op.create_table('users',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('username', sa.String(length=100), nullable=False),
@@ -58,7 +53,7 @@ def upgrade():
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('username')
         )
-    if 'inventory' not in tables:
+
         op.create_table('inventory',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('product_id', sa.Integer(), nullable=False),
@@ -75,7 +70,7 @@ def upgrade():
         sa.UniqueConstraint('sku')
         )
 
-    if 'sales' not in tables:
+
         op.create_table('sales',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('product_id', sa.Integer(), nullable=False),
