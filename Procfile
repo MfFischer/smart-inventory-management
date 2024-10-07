@@ -1,1 +1,2 @@
-web: command to run your app
+web: gunicorn inventory_system.wsgi:app
+

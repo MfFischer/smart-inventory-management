@@ -74,3 +74,8 @@ Product ID: 9, Name: Ladder, Current Stock: 0, Reorder Point: 5, Reorder Quantit
 Product ID: 10, Name: Wrench Set, Current Stock: 0, Reorder Point: 10, Reorder Quantity: 0
 
 INFO:root:Reorder check completed.
+2024-10-07 09:44:46,430 - INFO - The following products are below the reorder point:
+Product ID: 1, Name: Hammer, Current Stock: 9, Reorder Point: 10, Reorder Quantity: 10
+Product ID: 12, Name: string, Current Stock: 0, Reorder Point: 0, Reorder Quantity: 0
+
+2024-10-07 09:44:46,431 - INFO - Reorder check completed.
