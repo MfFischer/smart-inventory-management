@@ -29,7 +29,8 @@ def inventory_create():
             if 'new_product_name' in request.form and request.form['new_product_name']:
                 new_product = Product(
                     name=request.form['new_product_name'],
-                    price=request.form['new_product_price'],
+                    description=request.form.get('new_product_description', ''),
+                    price=request.form['unit_price']
                 )
                 db.session.add(new_product)
                 db.session.commit()
@@ -40,7 +41,8 @@ def inventory_create():
             # Check if a new supplier is being added
             if 'new_supplier_name' in request.form and request.form['new_supplier_name']:
                 new_supplier = Supplier(
-                    name=request.form['new_supplier_name']
+                    name=request.form['new_supplier_name'],
+                    contact=request.form.get('new_supplier_contact', '')
                 )
                 db.session.add(new_supplier)
                 db.session.commit()
@@ -63,11 +65,14 @@ def inventory_create():
             return redirect(url_for('inventory.inventory_list'))
         except Exception as e:
             db.session.rollback()
-            return render_template('create_inventory_item.html', error=str(e))
+            return render_template('create_inventory_item.html',
+                                   error=str(e))
 
     products = Product.query.all()
     suppliers = Supplier.query.all()
-    return render_template('create_inventory_item.html', products=products, suppliers=suppliers)
+    return render_template('create_inventory_item.html',
+                           products=products,
+                           suppliers=suppliers)
 
 
 @inventory_bp.route('/<int:item_id>/edit', methods=['GET', 'POST'])

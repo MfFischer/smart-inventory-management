@@ -149,41 +149,32 @@ Smart Inventory System - Create Inventory Item
 document.getElementById('product_select').addEventListener('change', function() {
     const selectedProductId = this.value;
     if (selectedProductId === 'new') {
-        // Show new product fields and clear stock details
         document.getElementById('new_product_fields').style.display = 'block';
         document.getElementById('stock_quantity').value = '';
         document.getElementById('reorder_threshold').value = '';
         document.getElementById('unit_price').value = '';
     } else {
-        // Hide new product fields and fetch product details via AJAX
         document.getElementById('new_product_fields').style.display = 'none';
 
         if (selectedProductId) {
-            // Fetch product details via AJAX
             fetch(`/api/products/${selectedProductId}/product-details`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Populate the form fields with the fetched product data
-                        document.getElementById('stock_quantity').value =
-                        data.product.stock_quantity;
-                        document.getElementById('reorder_threshold').value =
-                        data.product.reorder_threshold;
-                        document.getElementById('unit_price').value =
-                        data.product.unit_price;
+                        document.getElementById('stock_quantity').value = data.product.stock_quantity;
+                        document.getElementById('reorder_threshold').value = data.product.reorder_threshold;
+                        document.getElementById('unit_price').value = data.product.unit_price;
                     } else {
                         console.error('Failed to fetch product details:', data.error);
                     }
                 })
-                .catch(error => {
-                    console.error('Error fetching product details:', error);
-                });
+                .catch(error => console.error('Error fetching product details:', error));
         }
     }
 });
+
 document.getElementById('supplier_select').addEventListener('change', function() {
-    document.getElementById('new_supplier_fields').style.display =
-        this.value === 'new' ? 'block' : 'none';
+    document.getElementById('new_supplier_fields').style.display = this.value === 'new' ? 'block' : 'none';
 });
 </script>
 {% endblock %}
