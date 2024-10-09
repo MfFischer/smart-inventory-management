@@ -9,8 +9,20 @@ Register - Smart Inventory System
     <h1 class="text-light">Register New Account</h1>
     <div class="row justify-content-center">
         <div class="col-md-6">
+
+            <!-- Flash messages block for error or success messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} mt-3" role="alert">
+                    {{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
             <!-- Update the form action to point to the correct route -->
-            <form method="POST" action="{{ url_for('users.register') }}">
+            <form method="POST" action="{{ url_for('users.user_register') }}">
                 <div class="mb-3">
                     <label for="username" class="form-label text-light">Username</label>
                     <input type="text" class="form-control" id="username" name="username" required>
@@ -25,13 +37,6 @@ Register - Smart Inventory System
                 </div>
                 <button type="submit" class="btn btn-success">Register</button>
             </form>
-
-            <!-- Error message block -->
-            {% if error %}
-                <div class="alert alert-danger mt-3" role="alert">
-                    {{ error }}
-                </div>
-            {% endif %}
         </div>
     </div>
 </div>

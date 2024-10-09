@@ -14,7 +14,6 @@ suppliers_schema = SupplierSchema(many=True)
 
 supplier_model = api.model('Supplier', {
     'name': fields.String(required=True, description='Supplier name'),
-    'contact_person': fields.String(required=True, description='Contact person name'),
     'email': fields.String(required=True, description='Supplier email'),
     'phone': fields.String(required=True, description='Supplier phone number'),
     'address': fields.String(required=True, description='Supplier address')

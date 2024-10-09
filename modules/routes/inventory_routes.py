@@ -25,9 +25,30 @@ def inventory_create():
     """Render the form to create a new inventory item."""
     if request.method == 'POST':
         try:
-            product_id = request.form['product_id']
-            supplier_id = request.form['supplier_id']
+            # Check if a new product is being added
+            if 'new_product_name' in request.form and request.form['new_product_name']:
+                new_product = Product(
+                    name=request.form['new_product_name'],
+                    price=request.form['new_product_price'],
+                )
+                db.session.add(new_product)
+                db.session.commit()
+                product_id = new_product.id
+            else:
+                product_id = request.form['product_id']
 
+            # Check if a new supplier is being added
+            if 'new_supplier_name' in request.form and request.form['new_supplier_name']:
+                new_supplier = Supplier(
+                    name=request.form['new_supplier_name']
+                )
+                db.session.add(new_supplier)
+                db.session.commit()
+                supplier_id = new_supplier.id
+            else:
+                supplier_id = request.form['supplier_id']
+
+            # Create inventory item
             new_item = Inventory(
                 product_id=product_id,
                 supplier_id=supplier_id,
@@ -42,14 +63,11 @@ def inventory_create():
             return redirect(url_for('inventory.inventory_list'))
         except Exception as e:
             db.session.rollback()
-            return render_template('create_inventory_item.html',
-                                   error=str(e))
+            return render_template('create_inventory_item.html', error=str(e))
 
     products = Product.query.all()
     suppliers = Supplier.query.all()
-    return render_template('create_inventory_item.html',
-                           products=products,
-                           suppliers=suppliers)
+    return render_template('create_inventory_item.html', products=products, suppliers=suppliers)
 
 
 @inventory_bp.route('/<int:item_id>/edit', methods=['GET', 'POST'])

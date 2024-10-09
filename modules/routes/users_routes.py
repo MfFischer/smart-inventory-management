@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 users_bp = Blueprint('users', __name__)
 
+
 @users_bp.route('/register', methods=['GET', 'POST'])
 def user_register():
     """Render the registration form and handle user registration."""
@@ -13,14 +14,22 @@ def user_register():
         username = request.form['username']
         email = request.form['email']
         password = request.form['password']
+
+        # Check if a user with the same email or username already exists
+        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+        if existing_user:
+            flash('Username or email already exists. Please choose a different one.', 'error')
+            return render_template('register.html')
+
+        # Proceed with registration if no duplicate user found
         hashed_password = User.generate_hash(password)
-        new_user = User(username=username,
-                        email=email,
-                        hashed_password=hashed_password)
+        new_user = User(username=username, email=email, hashed_password=hashed_password)
 
         db.session.add(new_user)
         db.session.commit()
-        flash('Registration successful!', 'success')
+
+        # Flash success message and redirect to login page
+        flash('Registration successful! You can now log in.', 'success')
         return redirect(url_for('users.user_login'))
 
     return render_template('register.html')
