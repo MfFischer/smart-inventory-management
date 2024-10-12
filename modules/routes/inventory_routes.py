@@ -156,3 +156,20 @@ def inventory_reorder(item_id):
                            item=item,
                            supplier_email=supplier_email,
                            reorder_quantity=reorder_quantity)
+
+@inventory_bp.route('/product-details/<int:product_id>', methods=['GET'])
+def get_product_details(product_id):
+    """Fetch product details by ID."""
+    product = Product.query.get(product_id)
+    if product:
+        return {
+            'success': True,
+            'product': {
+                'stock_quantity': product.quantity_in_stock,
+                'reorder_threshold': product.reorder_point,
+                'unit_price': product.price
+            }
+        }
+    else:
+        return {'success': False, 'error': 'Product not found'}, 404
+
