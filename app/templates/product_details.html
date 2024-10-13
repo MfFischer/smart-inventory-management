@@ -15,6 +15,7 @@ Smart Inventory System - Product Details
                 <li class="list-group-item">Price: ${{ product.price }}</li>
                 <li class="list-group-item">Stock Quantity: {{ product.quantity_in_stock }}</li>
                 <li class="list-group-item">Reorder Level: {{ product.reorder_point }}</li>
+                <li class="list-group-item">Reorder Quantity: {{ product.reorder_quantity }}</li> <!-- Added this line -->
                 <li class="list-group-item">Supplier: {{ product.supplier.name if product.supplier else 'N/A' }}</li>
             </ul>
             <div class="card-body">

@@ -32,6 +32,9 @@ def sale_create():
         if not product:
             return "Product not found", 404
 
+        if product.quantity_in_stock < quantity:
+            return "Insufficient stock to fulfill sale", 400  # Or render an error message on the template
+
         total_price = product.price * quantity
         new_sale = Sale(
             product_id=product_id,
@@ -40,8 +43,8 @@ def sale_create():
             sale_status=request.form.get('sale_status', 'completed')
         )
         db.session.add(new_sale)
-        product.quantity_in_stock -= quantity
-        db.session.commit()
+        product.quantity_in_stock -= quantity  # Deduct quantity
+        db.session.commit()  # Commit both the new sale and updated product stock
 
         return redirect(url_for('sales.sale_list'))
 

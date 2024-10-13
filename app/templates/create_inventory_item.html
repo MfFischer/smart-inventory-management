@@ -157,7 +157,8 @@ document.getElementById('product_select').addEventListener('change', function() 
         document.getElementById('new_product_fields').style.display = 'none';
 
         if (selectedProductId) {
-            fetch(`/api/products/${selectedProductId}/product-details`)
+            // Fetch product details and pre-fill fields
+            fetch(`/product-details/${selectedProductId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
@@ -171,10 +172,6 @@ document.getElementById('product_select').addEventListener('change', function() 
                 .catch(error => console.error('Error fetching product details:', error));
         }
     }
-});
-
-document.getElementById('supplier_select').addEventListener('change', function() {
-    document.getElementById('new_supplier_fields').style.display = this.value === 'new' ? 'block' : 'none';
 });
 </script>
 {% endblock %}
