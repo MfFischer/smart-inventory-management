@@ -148,16 +148,17 @@ Smart Inventory System - Create Inventory Item
 <script>
 document.getElementById('product_select').addEventListener('change', function() {
     const selectedProductId = this.value;
+
     if (selectedProductId === 'new') {
         document.getElementById('new_product_fields').style.display = 'block';
+        // Clear fields for new product entry
         document.getElementById('stock_quantity').value = '';
         document.getElementById('reorder_threshold').value = '';
         document.getElementById('unit_price').value = '';
     } else {
         document.getElementById('new_product_fields').style.display = 'none';
-
+        // Fetch product details and populate fields
         if (selectedProductId) {
-            // Fetch product details and pre-fill fields
             fetch(`/product-details/${selectedProductId}`)
                 .then(response => response.json())
                 .then(data => {
@@ -173,5 +174,6 @@ document.getElementById('product_select').addEventListener('change', function() 
         }
     }
 });
+
 </script>
 {% endblock %}

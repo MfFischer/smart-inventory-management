@@ -25,7 +25,7 @@ def inventory_create():
     """Render the form to create a new inventory item."""
     if request.method == 'POST':
         try:
-            # Fetch product details if existing product is selected
+            # Fetch product details if an existing product is selected
             product_id = request.form.get('product_id')
             if product_id == 'new':
                 # Add a new product
@@ -36,18 +36,19 @@ def inventory_create():
                 )
                 db.session.add(new_product)
                 db.session.commit()
-                product_id = new_product.id
+                product_id = new_product.id  # Update product_id to the new product's ID
             else:
+                # Use existing product
                 product = Product.query.get(product_id)
                 if product:
-                    # If product exists, use its details
-                    stock_quantity = request.form.get('stock_quantity', product.quantity_in_stock)
-                    reorder_threshold = request.form.get('reorder_threshold', product.reorder_point)
-                    unit_price = request.form.get('unit_price', product.price)
+                    # Populate these with product details from the database if they exist
+                    stock_quantity = product.quantity_in_stock
+                    reorder_threshold = product.reorder_point
+                    unit_price = product.price
                 else:
                     return "Product not found", 404
 
-            # Fetch supplier details or add a new supplier
+            # Check supplier selection or create a new supplier
             supplier_id = request.form.get('supplier_id')
             if supplier_id == 'new':
                 new_supplier = Supplier(
@@ -65,9 +66,9 @@ def inventory_create():
                 product_id=product_id,
                 supplier_id=supplier_id,
                 sku=request.form['sku'],
-                stock_quantity=int(stock_quantity),
-                reorder_threshold=int(reorder_threshold),
-                unit_price=float(unit_price)
+                stock_quantity=int(request.form.get('stock_quantity', stock_quantity)),
+                reorder_threshold=int(request.form.get('reorder_threshold', reorder_threshold)),
+                unit_price=float(request.form.get('unit_price', unit_price))
             )
             db.session.add(new_item)
             db.session.commit()
@@ -75,12 +76,16 @@ def inventory_create():
             return redirect(url_for('inventory.inventory_list'))
         except Exception as e:
             db.session.rollback()
-            return render_template('create_inventory_item.html', error=str(e))
+            return render_template('create_inventory_item.html',
+                                   error=str(e))
 
     # Fetch all products and suppliers for the dropdowns
     products = Product.query.all()
     suppliers = Supplier.query.all()
-    return render_template('create_inventory_item.html', products=products, suppliers=suppliers)
+    return render_template('create_inventory_item.html',
+                           products=products,
+                           suppliers=suppliers)
+
 
 
 
