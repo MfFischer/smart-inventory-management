@@ -37,14 +37,17 @@ def inventory_create():
                 db.session.add(new_product)
                 db.session.commit()
                 product_id = new_product.id  # Update product_id to the new product's ID
+                # Set initial values for new product inventory fields
+                stock_quantity = request.form.get('stock_quantity', 0)
+                reorder_threshold = request.form.get('reorder_threshold', 0)
+                unit_price = request.form.get('unit_price', 0.0)
             else:
-                # Use existing product
+                # Use existing product and set inventory fields as defaults
                 product = Product.query.get(product_id)
                 if product:
-                    # Populate these with product details from the database if they exist
-                    stock_quantity = product.quantity_in_stock
-                    reorder_threshold = product.reorder_point
-                    unit_price = product.price
+                    stock_quantity = int(request.form.get('stock_quantity', product.quantity_in_stock))
+                    reorder_threshold = int(request.form.get('reorder_threshold', product.reorder_point))
+                    unit_price = float(request.form.get('unit_price', product.price))
                 else:
                     return "Product not found", 404
 
@@ -66,9 +69,9 @@ def inventory_create():
                 product_id=product_id,
                 supplier_id=supplier_id,
                 sku=request.form['sku'],
-                stock_quantity=int(request.form.get('stock_quantity', stock_quantity)),
-                reorder_threshold=int(request.form.get('reorder_threshold', reorder_threshold)),
-                unit_price=float(request.form.get('unit_price', unit_price))
+                stock_quantity=int(stock_quantity),
+                reorder_threshold=int(reorder_threshold),
+                unit_price=float(unit_price)
             )
             db.session.add(new_item)
             db.session.commit()
@@ -85,9 +88,6 @@ def inventory_create():
     return render_template('create_inventory_item.html',
                            products=products,
                            suppliers=suppliers)
-
-
-
 
 @inventory_bp.route('/<int:item_id>/edit', methods=['GET', 'POST'])
 def inventory_edit(item_id):
