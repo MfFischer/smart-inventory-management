@@ -54,7 +54,7 @@ def product_edit(product_id):
     return render_template('edit_product.html', product=product)
 
 
-@products_bp.route('/<int:product_id>/delete', methods=['POST'])
+@products_bp.route('/products/<int:product_id>/delete', methods=['POST'])
 def delete_product(product_id):
     product = Product.query.get_or_404(product_id)
 
@@ -68,7 +68,7 @@ def delete_product(product_id):
     product.is_active = False
     db.session.commit()
 
-    return redirect(url_for('products.view_products'))
+    return redirect(url_for('products.render_product_list'))
 
 @products_bp.route('/products/search', methods=['GET'])
 def product_search():
