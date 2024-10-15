@@ -40,19 +40,30 @@ def product_create():
 
     return render_template('create_product.html')
 
+
 @products_bp.route('/products/<int:product_id>/edit', methods=['GET', 'POST'])
 def product_edit(product_id):
     product = Product.query.get_or_404(product_id)
+
     if request.method == 'POST':
         product.name = request.form['name']
         product.description = request.form['description']
         product.price = request.form['price']
         product.quantity_in_stock = request.form['quantity_in_stock']
-        db.session.commit()
+        product.reorder_point = request.form['reorder_point']
+        product.reorder_quantity = request.form['reorder_quantity']  # Add reorder_quantity here
+
+        # Commit the changes to the database
+        try:
+            db.session.commit()
+        except Exception as e:
+            print(f"Error updating product: {e}")
+            db.session.rollback()
+            # Optional: return an error message to the user here
+
         return redirect(url_for('products.render_product_list'))
 
     return render_template('edit_product.html', product=product)
-
 
 @products_bp.route('/products/<int:product_id>/delete', methods=['POST'])
 def delete_product(product_id):
