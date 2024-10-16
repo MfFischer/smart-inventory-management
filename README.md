@@ -124,11 +124,12 @@ This project was built using the following technologies:
 
 ---
 
-## 🤝 Contributing
-Contributions, issues, and feature requests are welcome! Please follow these steps:
-1. **Fork the Project.**
-2. **Create a feature branch:**
-   ```bash
-   git checkout -b feature/YourFeature
+## 📜 License
+Distributed under the MIT License. See LICENSE for more information.
+
+## 📬 Contact
+Maria Fe Fischer - afefischer@gmail.com
+
+Project Link:[ https://github.com/yourusername/smart-inventory-system](https://smart-inventory-management-1.onrender.com)
 
 
