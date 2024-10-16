@@ -20,6 +20,12 @@ user_model = api.model('User', {
     'status': fields.String(description='Status of the user (e.g., active, inactive)')
 })
 
+# Define a login model specifically for Swagger documentation
+login_model = api.model('Login', {
+    'username': fields.String(required=True, description='Username of the user'),
+    'password': fields.String(required=True, description='User password')
+})
+
 @api.route('/register')
 class Register(Resource):
     @api.expect(user_model)
@@ -35,7 +41,7 @@ class Register(Resource):
         data = request.json
         errors = user_schema.validate(data)
         if errors:
-            return jsonify(errors), 400
+            return errors, 400
 
         hashed_password = User.generate_hash(data['password'])
         new_user = User(username=data['username'],
@@ -45,10 +51,10 @@ class Register(Resource):
         try:
             db.session.add(new_user)
             db.session.commit()
-            return jsonify(user_schema.dump(new_user)), 201
+            return user_schema.dump(new_user), 201  # Directly return the dictionary
         except IntegrityError:
             db.session.rollback()
-            return jsonify({"error": "Username or email already exists"}), 400
+            return {"error": "Username or email already exists"}, 400
         except SQLAlchemyError as db_err:
             db.session.rollback()
             print(f"Database error: {db_err}")
@@ -56,7 +62,7 @@ class Register(Resource):
 
 @api.route('/login')
 class Login(Resource):
-    @api.expect(user_model)
+    @api.expect(login_model)  # Use the login model here for Swagger
     @api.doc(responses={200: 'Success',
                         400: 'Validation Error',
                         401: 'Unauthorized',
@@ -69,35 +75,34 @@ class Login(Resource):
         data = request.json
         errors = login_schema.validate(data)
         if errors:
-            return jsonify(errors), 400
+            return errors, 400  # Return as plain dictionary
 
         user = User.query.filter_by(username=data['username']).first()
         if not user or not User.verify_hash(data['password'], user.hashed_password):
-            return jsonify({'message': 'Invalid credentials'}), 401
+            return {'message': 'Invalid credentials'}, 401  # Return as plain dictionary
 
-        # Generate access token with user information
         access_token = create_access_token(identity={
             'username': user.username,
             'role': user.role
         })
-        return jsonify({'access_token': access_token}), 200
+        return {'access_token': access_token}, 200  # Return as plain dictionary
 
 @api.route('/')
 class UsersList(Resource):
-    #@jwt_required()  # Ensure user is logged in
-    #@role_required('admin')  # Check if the user has 'admin' role
+    @jwt_required()
+    @role_required('admin')
     @api.doc(responses={200: 'Success', 500: 'Internal Server Error'})
     def get(self):
         """Get all users (Admin only)."""
         try:
             users = User.query.all()
-            return jsonify(user_schema.dump(users, many=True)), 200
+            return user_schema.dump(users, many=True), 200  # Return JSON-serializable dictionary
         except SQLAlchemyError as db_err:
             print(f"Database error: {db_err}")
             return {'message': 'An error occurred while fetching users.'}, 500
 
-   #@jwt_required()  # Ensure user is logged in
-    #@role_required('admin')  # Check if the user has 'admin' role
+    @jwt_required()
+    @role_required('admin')
     @api.expect(user_model)
     @api.doc(responses={201: 'Created',
                         400: 'Validation Error',
@@ -111,25 +116,23 @@ class UsersList(Resource):
         data = request.json
         errors = user_schema.validate(data)
         if errors:
-            return jsonify(errors), 400
+            return errors, 400
 
         new_user = User(
             username=data['username'],
             hashed_password=User.generate_hash(data['password']),
             email=data['email'],
-            # Default role is 'staff'
             role=data.get('role', 'staff'),
-            # Default status is 'active'
             status=data.get('status', 'active')
         )
 
         try:
             db.session.add(new_user)
             db.session.commit()
-            return jsonify(user_schema.dump(new_user)), 201
+            return user_schema.dump(new_user), 201
         except IntegrityError:
             db.session.rollback()
-            return jsonify({"error": "Username or email already exists"}), 400
+            return {"error": "Username or email already exists"}, 400
         except SQLAlchemyError as db_err:
             db.session.rollback()
             print(f"Database error: {db_err}")
@@ -137,8 +140,8 @@ class UsersList(Resource):
 
 @api.route('/<int:user_id>')
 class UserDetail(Resource):
-    #@jwt_required()  # Ensure user is logged in
-    #@role_required('admin')  # Check if the user has 'admin' role
+    @jwt_required()
+    @role_required('admin')
     @api.doc(responses={200: 'Success',
                         404: 'Not Found',
                         500: 'Internal Server Error'})
@@ -146,13 +149,13 @@ class UserDetail(Resource):
         """Get a user by ID (Admin only)."""
         try:
             user = User.query.get_or_404(user_id)
-            return jsonify(user_schema.dump(user)), 200
+            return user_schema.dump(user), 200
         except SQLAlchemyError as db_err:
             print(f"Database error: {db_err}")
             return {'message': 'An error occurred while fetching the user.'}, 500
 
-    #@jwt_required()  # Ensure user is logged in
-    #@role_required('admin')  # Check if the user has 'admin' role
+    @jwt_required()
+    @role_required('admin')
     @api.expect(user_model)
     @api.doc(responses={200: 'Success',
                         400: 'Validation Error',
@@ -168,7 +171,7 @@ class UserDetail(Resource):
         data = request.json
         errors = user_schema.validate(data, partial=True)
         if errors:
-            return jsonify(errors), 400
+            return errors, 400
 
         user.username = data.get('username', user.username)
         user.email = data.get('email', user.email)
@@ -179,17 +182,15 @@ class UserDetail(Resource):
 
         try:
             db.session.commit()
-            return jsonify(user_schema.dump(user)), 200
+            return user_schema.dump(user), 200
         except SQLAlchemyError as db_err:
             db.session.rollback()
             print(f"Database error: {db_err}")
             return {'message': 'An error occurred while updating the user.'}, 500
 
-    #@jwt_required()  # Ensure user is logged in
-    #@role_required('admin')  # Check if the user has 'admin' role
-    @api.doc(responses={204: 'No Content',
-                        404: 'Not Found',
-                        500: 'Internal Server Error'})
+    @jwt_required()
+    @role_required('admin')
+    @api.doc(responses={204: 'No Content', 404: 'Not Found', 500: 'Internal Server Error'})
     def delete(self, user_id):
         """Delete a user by ID (Admin only)."""
         user = User.query.get_or_404(user_id)
