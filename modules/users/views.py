@@ -84,8 +84,8 @@ class Login(Resource):
 
 @api.route('/')
 class UsersList(Resource):
-    @jwt_required()  # Ensure user is logged in
-    @role_required('admin')  # Check if the user has 'admin' role
+    #@jwt_required()  # Ensure user is logged in
+    #@role_required('admin')  # Check if the user has 'admin' role
     @api.doc(responses={200: 'Success', 500: 'Internal Server Error'})
     def get(self):
         """Get all users (Admin only)."""
@@ -96,8 +96,8 @@ class UsersList(Resource):
             print(f"Database error: {db_err}")
             return {'message': 'An error occurred while fetching users.'}, 500
 
-    @jwt_required()  # Ensure user is logged in
-    @role_required('admin')  # Check if the user has 'admin' role
+   #@jwt_required()  # Ensure user is logged in
+    #@role_required('admin')  # Check if the user has 'admin' role
     @api.expect(user_model)
     @api.doc(responses={201: 'Created',
                         400: 'Validation Error',
@@ -139,7 +139,9 @@ class UsersList(Resource):
 class UserDetail(Resource):
     #@jwt_required()  # Ensure user is logged in
     #@role_required('admin')  # Check if the user has 'admin' role
-    @api.doc(responses={200: 'Success', 404: 'Not Found', 500: 'Internal Server Error'})
+    @api.doc(responses={200: 'Success',
+                        404: 'Not Found',
+                        500: 'Internal Server Error'})
     def get(self, user_id):
         """Get a user by ID (Admin only)."""
         try:
@@ -149,10 +151,14 @@ class UserDetail(Resource):
             print(f"Database error: {db_err}")
             return {'message': 'An error occurred while fetching the user.'}, 500
 
-    @jwt_required()  # Ensure user is logged in
-    @role_required('admin')  # Check if the user has 'admin' role
+    #@jwt_required()  # Ensure user is logged in
+    #@role_required('admin')  # Check if the user has 'admin' role
     @api.expect(user_model)
-    @api.doc(responses={200: 'Success', 400: 'Validation Error', 404: 'Not Found', 415: 'Unsupported Media Type', 500: 'Internal Server Error'})
+    @api.doc(responses={200: 'Success',
+                        400: 'Validation Error',
+                        404: 'Not Found',
+                        415: 'Unsupported Media Type',
+                        500: 'Internal Server Error'})
     def put(self, user_id):
         """Update a user by ID (Admin only)."""
         if not request.is_json:
@@ -179,8 +185,8 @@ class UserDetail(Resource):
             print(f"Database error: {db_err}")
             return {'message': 'An error occurred while updating the user.'}, 500
 
-    @jwt_required()  # Ensure user is logged in
-    @role_required('admin')  # Check if the user has 'admin' role
+    #@jwt_required()  # Ensure user is logged in
+    #@role_required('admin')  # Check if the user has 'admin' role
     @api.doc(responses={204: 'No Content',
                         404: 'Not Found',
                         500: 'Internal Server Error'})

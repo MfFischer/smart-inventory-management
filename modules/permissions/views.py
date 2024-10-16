@@ -8,7 +8,8 @@ from marshmallow import ValidationError
 
 
 # Create a Blueprint for the permissions module with a URL prefix
-permissions_bp = Blueprint('permissions', __name__, url_prefix='/api/permissions')
+permissions_bp = Blueprint('permissions', __name__,
+                           url_prefix='/api/permissions')
 
 @permissions_bp.route('/', methods=['POST'])
 @jwt_required()
@@ -57,7 +58,8 @@ def get_permissions():
     # Return the list of permissions in serialized form
     return jsonify(permissions_schema.dump(permissions)), 200
 
-@permissions_bp.route('/<int:permission_id>', methods=['GET'])
+@permissions_bp.route('/<int:permission_id>',
+                      methods=['GET'])
 @jwt_required()
 # Restrict viewing specific permission to admin users
 @role_required('admin')
@@ -74,7 +76,8 @@ def get_permission(permission_id):
     # Return the serialized permission data
     return jsonify(permission_schema.dump(permission)), 200
 
-@permissions_bp.route('/<int:permission_id>', methods=['PUT'])
+@permissions_bp.route('/<int:permission_id>',
+                      methods=['PUT'])
 @jwt_required()
 # Restrict permission updates to admin users
 @role_required('admin')
@@ -105,7 +108,8 @@ def update_permission(permission_id):
     # Return the updated permission data
     return jsonify(permission_schema.dump(permission)), 200
 
-@permissions_bp.route('/<int:permission_id>', methods=['DELETE'])
+@permissions_bp.route('/<int:permission_id>',
+                      methods=['DELETE'])
 @jwt_required()
 # Restrict permission deletion to admin users
 @role_required('admin')
