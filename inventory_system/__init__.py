@@ -10,6 +10,16 @@ db = SQLAlchemy()
 migrate = Migrate()
 jwt = JWTManager()
 
+# Define the authorization method for Swagger globally
+authorizations = {
+    'Bearer': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+        'description': "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'"
+    }
+}
+
 def create_app():
     base_dir = os.path.abspath(os.path.dirname(__file__))
     template_dir = os.path.join(base_dir, '../app/templates')

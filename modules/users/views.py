@@ -102,6 +102,7 @@ class Login(Resource):
 
 @api.route('/')
 class UsersList(Resource):
+    @api.doc(security='Bearer')
     @jwt_required()
     @role_required('admin')
     @api.doc(responses={200: 'Success', 500: 'Internal Server Error'})
