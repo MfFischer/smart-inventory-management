@@ -1,3 +1,4 @@
+```bash
 smart_inventory/
 │
 ├── architecture.md                         # Architecture documentation file
@@ -19,7 +20,7 @@ smart_inventory/
 │   ├suppliers/                             # Suppliers module
 │   │    ├── migrations/                    # Database migrations for suppliers
 │   │    ├── models.py                      # Supplier model
-│   │    ├── views.py                       # Supplier API views
+│   │    ├── views.py                       # Product API views: Handles CRUD operations
 │   │    ├── serializers.py                 # Supplier serializers 
 │   │    ├── urls.py                        # Supplier URL routing
 │   │    └── tests.py                       # Unit tests for suppliers
@@ -28,7 +29,7 @@ smart_inventory/
 │   │    ├── migrations/                    # Database migrations for products
 │   │    ├── models.py                      # Product model
 │   │    ├── check_reorder.py               # Cron Job Script to Check for Reorders
-│   │    ├── views.py                       # Product API views
+│   │    ├── views.py                       # Product API views: Handles CRUD operations
 │   │    ├── serializers.py                 # Product serializers
 │   │    ├── urls.py                        # Product URL routing
 │   │    └── tests.py                       # Unit tests for products
@@ -36,7 +37,7 @@ smart_inventory/
 │   ├── inventory/                          # Inventory module
 │   │   ├── migrations/                     # Database migrations for inventory
 │   │   ├── models.py                       # Inventory models
-│   │   ├── views.py                        # Inventory API views
+│   │   ├── views.py                        # Inventory API views: Handles CRUD operations
 │   │   ├── serializers.py                  # Inventory serializers
 │   │   ├── urls.py                         # Inventory URL routing
 │   │   └── tests.py                        # Unit tests for inventory
@@ -44,14 +45,14 @@ smart_inventory/
 │   ├── sales/                              # Sales module
 │   │   ├── migrations/                     # Database migrations for sales
 │   │   ├── models.py                       # Sales models
-│   │   ├── views.py                        # Sales API views
+│   │   ├── views.py                        # Sales API views: Handles CRUD operations
 │   │   ├── serializers.py                  # Sales serializers
 │   │   ├── urls.py                         # Sales URL routing
 │   │   └── tests.py                        # Unit tests for sales
 │   ├── users/                              # Optional authentication module
 │   │   ├── migrations/                     # Database migrations for users
 │   │   ├── models.py                       # User model
-│   │   ├── views.py                        # User API and business logic views
+│   │   ├── views.py                        # User API views: Handles CRUD operations
 │   │   ├── serializers.py                  # User serializers
 │   │   ├── urls.py                         # User authentication routes
 │   │   └── tests.py                        # Unit tests for authentication
@@ -112,3 +113,4 @@ smart_inventory/
 ├── .env                                    # Environment variables (JWT secret, database URL, etc.)
 ├── .gitignore                              # Ignore unnecessary files
 └── README.md                               # Project README with overview and setup instructions
+```
