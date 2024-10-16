@@ -8,8 +8,21 @@ from flask_restx import Namespace, Resource, fields
 from modules.users.decorators import role_required
 from marshmallow import ValidationError
 
-# Define a namespace for users-related API operations
-api = Namespace('users', description='Users related operations')
+# Define JWT authorization scheme for Swagger
+authorizations = {
+    'Bearer': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+        'description': "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'"
+    }
+}
+
+# Pass the authorizations parameter to Namespace
+api = Namespace('users',
+                description='Users related operations',
+                authorizations=authorizations,
+                security='Bearer')
 
 # Define the user model for API documentation (for Swagger)
 user_model = api.model('User', {
@@ -140,11 +153,9 @@ class UsersList(Resource):
 
 @api.route('/<int:user_id>')
 class UserDetail(Resource):
+    @api.doc(security='Bearer')
     @jwt_required()
     @role_required('admin')
-    @api.doc(responses={200: 'Success',
-                        404: 'Not Found',
-                        500: 'Internal Server Error'})
     def get(self, user_id):
         """Get a user by ID (Admin only)."""
         try:

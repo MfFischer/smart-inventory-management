@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from inventory_system import db
 from modules.users.models import User
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, create_access_token
 from sqlalchemy.exc import IntegrityError
+from modules.users.decorators import role_required
 
 users_bp = Blueprint('users', __name__)
-
 
 @users_bp.route('/register', methods=['GET', 'POST'])
 def user_register():
@@ -15,20 +15,17 @@ def user_register():
         email = request.form['email']
         password = request.form['password']
 
-        # Check if a user with the same email or username already exists
         existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
         if existing_user:
             flash('Username or email already exists. Please choose a different one.', 'error')
             return render_template('register.html')
 
-        # Proceed with registration if no duplicate user found
         hashed_password = User.generate_hash(password)
         new_user = User(username=username, email=email, hashed_password=hashed_password)
 
         db.session.add(new_user)
         db.session.commit()
 
-        # Flash success message and redirect to login page
         flash('Registration successful! You can now log in.', 'success')
         return redirect(url_for('users.user_login'))
 
@@ -43,6 +40,8 @@ def user_login():
 
         user = User.query.filter_by(username=username).first()
         if user and User.verify_hash(password, user.hashed_password):
+            # Create JWT token with user identity and role
+            access_token = create_access_token(identity={'username': user.username, 'role': user.role})
             flash('Login successful!', 'success')
             return redirect(url_for('users.users_list_view'))
         else:
@@ -51,14 +50,16 @@ def user_login():
     return render_template('login.html')
 
 @users_bp.route('/users_list')
-#@jwt_required()
+@jwt_required()
+@role_required('admin')
 def users_list_view():
     """Render the list of users (Admin only)."""
     users = User.query.all()
     return render_template('user_list.html', users=users)
 
 @users_bp.route('/create', methods=['GET', 'POST'])
-#@jwt_required()
+@jwt_required()
+@role_required('admin')
 def user_create():
     """Admin-only route for creating a new user."""
     if request.method == 'POST':
@@ -66,17 +67,11 @@ def user_create():
             username = request.form['username']
             email = request.form['email']
             password = request.form['password']
-            # Default role is 'staff'
             role = request.form.get('role', 'staff')
-            # Default status is 'active'
             status = request.form.get('status', 'active')
 
             hashed_password = User.generate_hash(password)
-            new_user = User(username=username,
-                            email=email,
-                            hashed_password=hashed_password,
-                            role=role,
-                            status=status)
+            new_user = User(username=username, email=email, hashed_password=hashed_password, role=role, status=status)
 
             db.session.add(new_user)
             db.session.commit()
@@ -90,7 +85,8 @@ def user_create():
     return render_template('create_user.html')
 
 @users_bp.route('/edit/<int:user_id>', methods=['GET', 'POST'])
-#@jwt_required()
+@jwt_required()
+@role_required('admin')
 def user_edit(user_id):
     """Render the form to edit a user."""
     user = User.query.get_or_404(user_id)
@@ -114,7 +110,8 @@ def user_edit(user_id):
     return render_template('edit_user.html', user=user)
 
 @users_bp.route('/delete/<int:user_id>', methods=['POST'])
-#@jwt_required()
+@jwt_required()
+@role_required('admin')
 def user_delete(user_id):
     """Delete a user (Admin only)."""
     user = User.query.get_or_404(user_id)
