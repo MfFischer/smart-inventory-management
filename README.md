@@ -64,7 +64,7 @@ Before you begin, ensure you have the following installed:
 ### Installation
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/smart-inventory-system.git
+   git clone https://github.com/MfFischer/smart-inventory-management.git
    cd smart-inventory-system
 
 2. **Create and Activate a Virtual Environment:**
