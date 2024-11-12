@@ -130,6 +130,5 @@ Distributed under the MIT License. See LICENSE for more information.
 ## 📬 Contact
 Maria Fe Fischer - afefischer@gmail.com
 
-Project Link:https://smart-inventory-management-1.onrender.com
-
+Project Link:https://bmsgo.online/landing
 
