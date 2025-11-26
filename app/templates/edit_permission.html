@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Permission{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-light">Edit Permission</h1>
+    <form method="POST" action="{{ url_for('permissions.edit_permission', permission_id=permission.id) }}">
+        <div class="mb-3">
+            <label for="name" class="form-label text-light">Permission Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ permission.name }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label text-light">Description</label>
+            <textarea class="form-control" id="description" name="description">{{ permission.description }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Update Permission</button>
+    </form>
+</div>
+{% endblock %}

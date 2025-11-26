@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Create Announcement{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Main Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="h4 mb-0">
+                            <i class="fas fa-bullhorn me-2"></i>Create Announcement
+                        </h2>
+                        <a href="{{ url_for('announcements.list_announcements') }}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-list me-1"></i>View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        <!-- Title Input -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">
+                                <i class="fas fa-heading me-1"></i>Title
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="title"
+                                   name="title"
+                                   required
+                                   placeholder="Enter announcement title">
+                            <div class="invalid-feedback">
+                                Please provide a title
+                            </div>
+                        </div>
+
+                        <!-- Type Selection -->
+                        <div class="mb-3">
+                            <label for="type" class="form-label">
+                                <i class="fas fa-tag me-1"></i>Type
+                            </label>
+                            <select class="form-select" id="type" name="type" required>
+                                <option value="">Select announcement type</option>
+                                <option value="announcement">General Announcement</option>
+                                <option value="event">Event</option>
+                                <option value="reminder">Reminder</option>
+                                <option value="alert">Alert</option>
+                                <option value="update">Update</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select an announcement type
+                            </div>
+                        </div>
+
+                        <!-- Visibility Selection -->
+                        <div class="mb-3">
+                            <label for="visibility" class="form-label">
+                                <i class="fas fa-eye me-1"></i>Visibility
+                            </label>
+                            <select class="form-select" id="visibility" name="visibility" required>
+                                <option value="">Select visibility</option>
+                                <option value="everyone">Everyone</option>
+                                <option value="staff">Staff Only</option>
+                                <option value="admin">Admins Only</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select visibility level
+                            </div>
+                        </div>
+
+                        <!-- Content Input -->
+                        <div class="mb-4">
+                            <label for="content" class="form-label">
+                                <i class="fas fa-align-left me-1"></i>Content
+                            </label>
+                            <textarea class="form-control"
+                                      id="content"
+                                      name="content"
+                                      rows="6"
+                                      required
+                                      placeholder="Enter announcement content"></textarea>
+                            <div class="invalid-feedback">
+                                Please provide content for the announcement
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Publish Announcement
+                            </button>
+                            <a href="{{ url_for('announcements.list_announcements') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class="card mt-3 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Announcement Tips
+                    </h3>
+                </div>
+                <div class="card-body bg-light">
+                    <div class="tips-content">
+                        <ul class="mb-0">
+                            <li class="mb-2">Keep titles clear and concise</li>
+                            <li class="mb-2">Choose the appropriate type for better organization</li>
+                            <li class="mb-2">Consider your audience when setting visibility</li>
+                            <li>Use formatting in content for better readability</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 0.5rem;
+        border: none;
+    }
+
+    .card-header {
+        border-top-left-radius: 0.5rem !important;
+        border-top-right-radius: 0.5rem !important;
+    }
+
+    .form-control, .form-select {
+        border-radius: 0.375rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .tips-content ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .tips-content ul li {
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .tips-content ul li:before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: #0dcaf0;
+    }
+</style>
+
+<script>
+// Form validation
+(function () {
+    'use strict'
+    const forms = document.querySelectorAll('.needs-validation')
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}

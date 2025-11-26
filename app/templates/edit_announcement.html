@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Edit Announcement{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Edit Announcement</h2>
+    <form method="post">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ announcement.title }}" required>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="content">Content</label>
+            <textarea class="form-control" id="content" name="content" rows="5" required>{{ announcement.content }}</textarea>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="type">Type</label>
+            <select class="form-control" id="type" name="type">
+                {% set type_options = [
+                    ('announcement', 'Announcement'),
+                    ('event', 'Event'),
+                    ('reminder', 'Reminder')
+                ] %}
+                {% for value, label in type_options %}
+                    <option value="{{ value }}" {% if announcement.type == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="visibility">Visibility</label>
+            <select class="form-control" id="visibility" name="visibility">
+                {% set visibility_options = [
+                    ('everyone', 'Everyone'),
+                    ('specific_role', 'Specific Role')
+                ] %}
+                {% for value, label in visibility_options %}
+                    <option value="{{ value }}" {% if announcement.visibility == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-4">Update Announcement</button>
+    </form>
+</div>
+{% endblock %}

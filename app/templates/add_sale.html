@@ -6,47 +6,606 @@ Add New Sale
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="text-light">Add New Sale</h1>
+    <h1 class="text-light text-center mb-4">Add New Sale</h1>
 
-    <form method="POST" action="{{ url_for('sales.sale_create') }}">
-        <div class="mb-3">
-            <label for="product_id" class="form-label text-light">
-                Product ID
-            </label>
-            <select class="form-select" id="product_id" name="product_id" required>
-                <!-- Loop through products to populate the dropdown -->
-                {% for product in products %}
-                <option value="{{ product.id }}">{{ product.name }} (ID: {{ product.id }})</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="quantity" class="form-label text-light">
-                Quantity
-            </label>
-            <input type="number"
-                   class="form-control"
-                   id="quantity"
-                   name="quantity" required>
-        </div>
-        <div class="mb-3">
-            <label for="sale_status" class="form-label text-light">
-                Sale Status
-            </label>
-            <select class="form-select"
-                    id="sale_status"
-                    name="sale_status">
-                <option value="completed">
-                    Completed
-                </option>
-                <option value="pending">
-                    Pending
-                </option>
-            </select>
-        </div>
-        <button type="submit" class="btn btn-success">
-            Add Sale
+    <!-- Centered scanner button container -->
+    <div class="text-center mb-4">
+        <button type="button" class="btn btn-primary btn-lg" id="openScannerBtn">
+            <i class="fas fa-barcode me-2"></i> Scan Barcode
         </button>
+        <div id="scannedProductInfo" class="text-light mt-2" style="display: none;">
+            <div class="alert alert-info">
+                Scanned Product: <strong><span id="scannedProductName"></span></strong>
+                <br>
+                Price: $<span id="scannedProductPrice"></span>
+                <br>
+                Stock: <span id="scannedProductStock"></span>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('sales.sale_create') }}" class="sale-form" id="saleForm">
+        <div class="mb-3">
+            <label for="customer_name" class="form-label text-light">Customer Name (optional)</label>
+            <input type="text" class="form-control" id="customer_name" name="customer_name" placeholder="Enter customer name">
+        </div>
+
+        <div class="mb-3">
+            <label for="sale_status" class="form-label text-light">Sale Status</label>
+            <select class="form-select" id="sale_status" name="sale_status">
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+            </select>
+        </div>
+
+        <!-- Container for dynamically added product items -->
+        <div id="product-items-container">
+            <h3 class="text-light">Products</h3>
+
+            <!-- Initial Product Item -->
+            <div class="product-item mb-4">
+                <div class="mb-3">
+                    <label for="product_id_1" class="form-label text-light">Product</label>
+                    <select class="form-select product-dropdown" id="product_id_1" name="product_ids[]" required style="height: 40px;" onchange="fetchProductDetails(this, 1)">
+                        <option value="">Select a product</option>
+                        {% for product in products %}
+                        <option value="{{ product.product_id }}"
+                                data-cost-price="{{ product.cost_price }}"
+                                data-quantity="{{ product.quantity_in_stock }}"
+                                data-barcode="{{ product.barcode }}">
+                            {{ product.name }} (ID: {{ product.product_id }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="quantity_1" class="form-label text-light">Quantity</label>
+                    <input type="number" class="form-control" id="quantity_1" name="quantities[]" required min="1">
+                </div>
+
+                <div class="mb-3">
+                    <label for="discount_percentage_1" class="form-label text-light">Discount Percentage</label>
+                    <input type="number" class="form-control" id="discount_percentage_1" name="discount_percentages[]" step="0.01" placeholder="Enter discount %" min="0" max="100">
+                </div>
+
+                <!-- Display product details -->
+                <div id="product_details_1" class="text-light" style="display: none;">
+                    <p><strong>Available Stock:</strong> <span id="stock_1"></span></p>
+                    <p><strong>Cost Price:</strong> $<span id="cost_price_1"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button to add another product item -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <button type="button" class="btn btn-dark" onclick="addProductItem()">Add Another Product</button>
+            <button type="submit" class="btn btn-success">Add Sale</button>
+        </div>
+
+        <!-- Back to Sales Link -->
+        <div class="text-end mt-3">
+            <a href="{{ url_for('sales.sale_list') }}" class="text-light" style="text-decoration: underline;">&#8592; Back to Sales</a>
+        </div>
     </form>
 </div>
+
+<!-- Camera Modal -->
+<div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cameraModalLabel">Scan Barcode</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="cameraError" style="display: none;" class="alert alert-danger"></div>
+                <div id="scannerStatus" class="mb-2"></div>
+                <video id="scanner" playsinline autoplay muted style="width: 100%; max-height: 400px; object-fit: cover;"></video>
+                <button id="cameraSwitchBtn" class="btn btn-primary mt-3">
+                    Switch Camera
+                </button>
+            </div>
+            <div class="modal-footer">
+                <div id="scannerTips" class="small text-muted">
+                    Center the barcode in the camera view for best results
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+        .modal-dialog {
+            margin: 0;
+            max-width: 100%;
+            height: 100%;
+        }
+
+        .modal-content {
+            height: 100%;
+            border: 0;
+            border-radius: 0;
+        }
+
+        .modal-body {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #scanner {
+            height: 60vh;
+            max-height: none;
+            border-radius: 0;
+        }
+
+        #cameraSwitchBtn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1050;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Improved alert styling */
+    .alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        max-width: 500px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Camera switch button improvements */
+    #cameraSwitchBtn {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    #cameraSwitchBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Scanner status styling */
+    #scannerStatus {
+        padding: 8px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    /* Error message styling */
+    #cameraError {
+        margin: 10px;
+        text-align: left;
+    }
+
+    /* Product details styling */
+    .product-item {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    /* Form control improvements */
+    .form-control, .form-select {
+        background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .form-control:focus, .form-select:focus {
+        background-color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Scanned product info improvements */
+    #scannedProductInfo .alert {
+        position: static;
+        margin: 10px auto;
+        max-width: 400px;
+    }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let codeReader = null;
+    let currentFacingMode = 'environment';
+    let productCount = 1;
+    let isScanning = false;
+    let scanTimeout = null;
+
+    const openScannerBtn = document.getElementById('openScannerBtn');
+    const cameraSwitchBtn = document.getElementById('cameraSwitchBtn');
+    const scannedProductInfo = document.getElementById('scannedProductInfo');
+    const scannedProductName = document.getElementById('scannedProductName');
+    const scannedProductPrice = document.getElementById('scannedProductPrice');
+    const scannedProductStock = document.getElementById('scannedProductStock');
+    const cameraModal = new bootstrap.Modal(document.getElementById('cameraModal'));
+
+    function showAlert(type, message, duration = 5000) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+        alertDiv.style.zIndex = '9999';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        setTimeout(() => alertDiv.remove(), duration);
+    }
+
+    async function initializeScanner() {
+        try {
+            if (!codeReader) {
+                codeReader = new ZXing.BrowserMultiFormatReader();
+                const hints = new Map();
+                hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+                    ZXing.BarcodeFormat.EAN_13,
+                    ZXing.BarcodeFormat.EAN_8,
+                    ZXing.BarcodeFormat.CODE_128,
+                    ZXing.BarcodeFormat.CODE_39,
+                    ZXing.BarcodeFormat.UPC_A,
+                    ZXing.BarcodeFormat.UPC_E,
+                    ZXing.BarcodeFormat.QR_CODE
+                ]);
+                hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+                codeReader.hints = hints;
+            }
+
+            const constraints = {
+                video: {
+                    facingMode: currentFacingMode,
+                    width: { min: 640, ideal: 1280, max: 1920 },
+                    height: { min: 480, ideal: 720, max: 1080 },
+                    advanced: [{
+                        focusMode: 'continuous',
+                        exposureMode: 'continuous',
+                        whiteBalanceMode: 'continuous'
+                    }]
+                }
+            };
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                const videoElement = document.getElementById('scanner');
+                videoElement.srcObject = stream;
+                await videoElement.play();
+
+                await codeReader.decodeFromVideoDevice(
+                    undefined,
+                    'scanner',
+                    async (result, err) => {
+                        if (result && !isScanning) {
+                            isScanning = true;
+                            // Clear any existing timeout
+                            if (scanTimeout) {
+                                clearTimeout(scanTimeout);
+                            }
+                            const barcode = result.getText().trim();
+                            // Add vibration feedback if supported
+                            if (navigator.vibrate) {
+                                navigator.vibrate(100);
+                            }
+                            // Play success sound
+                            const audio = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAAwAAABQADw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8VFRUVFRUVFRUVFRUVFRUVFRUVFRUVFR4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAOAAADSAAAJytJQ0UAAAAXAAAAAwAAABQADw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8VFRUVFRUVFRUVFRUVFRUVFRUVFRUVFR4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/jGMQAAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==');
+                            audio.play();
+
+                            await handleScannedBarcode(barcode);
+
+                            // Set a timeout before allowing next scan
+                            scanTimeout = setTimeout(() => {
+                                isScanning = false;
+                            }, 2000); // 2-second cooldown
+                        }
+                        if (err && !(err instanceof ZXing.NotFoundException)) {
+                            console.error('Scanning error:', err);
+                        }
+                    }
+                );
+
+                document.getElementById('scannerStatus').textContent = 'Scanner active - Ready to scan';
+                document.getElementById('scannerStatus').className = 'alert alert-success mb-2';
+
+            } catch (streamError) {
+                console.error('Stream error:', streamError);
+                if (streamError.name === 'NotAllowedError') {
+                    throw new Error('Camera access denied. Please check your browser settings and allow camera access.');
+                } else if (streamError.name === 'NotFoundError') {
+                    throw new Error('No camera found on your device.');
+                } else {
+                    throw streamError;
+                }
+            }
+
+        } catch (error) {
+            console.error('Scanner initialization error:', error);
+            const errorElement = document.getElementById('cameraError');
+            errorElement.style.display = 'block';
+            errorElement.textContent = `Error: ${error.message}`;
+            showAlert('danger', `Failed to initialize scanner: ${error.message}`);
+            throw error;
+        }
+    }
+
+    function stopScanner() {
+        if (codeReader) {
+            codeReader.reset();
+            const videoElement = document.getElementById('scanner');
+            if (videoElement && videoElement.srcObject) {
+                videoElement.srcObject.getTracks().forEach(track => track.stop());
+                videoElement.srcObject = null;
+            }
+        }
+        // Clear any existing scan timeout
+        if (scanTimeout) {
+            clearTimeout(scanTimeout);
+            scanTimeout = null;
+        }
+        isScanning = false;
+    }
+
+     async function handleScannedBarcode(barcode) {
+        try {
+            showAlert('info', 'Processing barcode...', 2000);
+
+            // Clean and properly encode the barcode
+            const cleanBarcode = barcode.toString().trim().replace(/[^\w\d-]/g, '');
+            const encodedBarcode = encodeURIComponent(cleanBarcode);
+
+            // Debug logging
+            console.log('Processing barcode:', {
+                original: barcode,
+                cleaned: cleanBarcode,
+                encoded: encodedBarcode
+            });
+
+            // Use the full URL path with the /sales prefix
+            const response = await fetch(`/sales/get-product-by-barcode/${encodedBarcode}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'  // Include cookies
+            });
+
+            // Log the response status and URL for debugging
+            console.log('Response status:', response.status);
+            console.log('Request URL:', response.url);
+
+            if (!response.ok) {
+                // Try to get error details from response
+                const errorData = await response.json().catch(() => ({
+                    error: `HTTP error! status: ${response.status}`
+                }));
+                throw new Error(errorData.error || `Server error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Server response:', data);
+
+            if (data.success) {
+                const product = data.product;
+
+                // Update the product dropdown
+                const productSelect = document.getElementById('product_id_1');
+                if (!productSelect) {
+                    throw new Error('Product select element not found');
+                }
+
+                // Find and select the matching option
+                let foundMatch = false;
+                for (let option of productSelect.options) {
+                    if (option.value === product.product_id) {
+                        option.selected = true;
+                        foundMatch = true;
+                        break;
+                    }
+                }
+
+                if (!foundMatch) {
+                    throw new Error('Product not found in dropdown options');
+                }
+
+                // Update quantity input
+                const quantityInput = document.getElementById('quantity_1');
+                if (quantityInput) {
+                    quantityInput.value = '1';
+                    quantityInput.max = product.quantity_in_stock;
+                }
+
+                // Update scanned product info display
+                if (scannedProductInfo) {
+                    scannedProductName.textContent = product.name;
+                    scannedProductPrice.textContent = product.price;
+                    scannedProductStock.textContent = product.quantity_in_stock;
+                    scannedProductInfo.style.display = 'block';
+                }
+
+                // Trigger product details update
+                fetchProductDetails(productSelect, 1);
+
+                // Close modal and show success message
+                cameraModal.hide();
+                showAlert('success', 'Product found! Please enter quantity.');
+
+                // Focus on quantity input
+                if (quantityInput) {
+                    quantityInput.focus();
+                    quantityInput.select();
+                }
+
+                // Scroll to product details
+                scannedProductInfo?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            } else {
+                throw new Error(data.error || 'Failed to process product data');
+            }
+        } catch (error) {
+            console.error('Error handling barcode:', error);
+            showAlert('danger', `Error: ${error.message}`);
+
+            // Show error in modal
+            const errorElement = document.getElementById('cameraError');
+            if (errorElement) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = error.message;
+            }
+        }
+    }
+
+
+    function addProductItem() {
+        productCount++;
+        const container = document.getElementById('product-items-container');
+        const newItem = document.createElement('div');
+        newItem.className = 'product-item mb-4';
+        newItem.innerHTML = `
+            <div class="mb-3">
+                <label for="product_id_${productCount}" class="form-label text-light">Product</label>
+                <select class="form-select product-dropdown" id="product_id_${productCount}" name="product_ids[]" required style="height: 40px;" onchange="fetchProductDetails(this, ${productCount})">
+                    <option value="">Select a product</option>
+                    {% for product in products %}
+                    <option value="{{ product.product_id }}"
+                            data-cost-price="{{ product.cost_price }}"
+                            data-quantity="{{ product.quantity_in_stock }}"
+                            data-barcode="{{ product.barcode }}">
+                        {{ product.name }} (ID: {{ product.product_id }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="quantity_${productCount}" class="form-label text-light">Quantity</label>
+                <input type="number" class="form-control" id="quantity_${productCount}" name="quantities[]" required min="1">
+            </div>
+
+            <div class="mb-3">
+                <label for="discount_percentage_${productCount}" class="form-label text-light">Discount Percentage</label>
+                <input type="number" class="form-control" id="discount_percentage_${productCount}" name="discount_percentages[]" step="0.01" placeholder="Enter discount %" min="0" max="100">
+            </div>
+
+            <div id="product_details_${productCount}" class="text-light" style="display: none;">
+                <p><strong>Available Stock:</strong> <span id="stock_${productCount}"></span></p>
+                <p><strong>Cost Price:</strong> $<span id="cost_price_${productCount}"></span></p>
+            </div>
+        `;
+        container.appendChild(newItem);
+
+        // Scroll to the new item
+        newItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function fetchProductDetails(selectElement, productNumber) {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const stock = selectedOption.getAttribute('data-quantity');
+        const costPrice = selectedOption.getAttribute('data-cost-price');
+        const detailsDiv = document.getElementById(`product_details_${productNumber}`);
+
+        if (stock && costPrice) {
+            document.getElementById(`stock_${productNumber}`).textContent = stock;
+            document.getElementById(`cost_price_${productNumber}`).textContent = costPrice;
+            detailsDiv.style.display = 'block';
+
+            // Check stock level and show warning if low
+            if (parseInt(stock) < 5) {
+                showAlert('warning', `Low stock alert: Only ${stock} units remaining!`);
+            }
+        } else {
+            detailsDiv.style.display = 'none';
+        }
+    }
+
+    // Form validation
+    document.getElementById('saleForm').addEventListener('submit', function(event) {
+        const products = document.querySelectorAll('.product-dropdown');
+        const quantities = document.querySelectorAll('input[name="quantities[]"]');
+        let isValid = true;
+
+        products.forEach((product, index) => {
+            if (!product.value) {
+                showAlert('danger', 'Please select a product');
+                isValid = false;
+            }
+
+            const quantity = parseInt(quantities[index].value);
+            const stock = parseInt(product.selectedOptions[0].getAttribute('data-quantity'));
+
+            if (isNaN(quantity) || quantity < 1) {
+                showAlert('danger', 'Please enter a valid quantity');
+                isValid = false;
+            }
+
+            if (quantity > stock) {
+                showAlert('danger', `Insufficient stock for ${product.selectedOptions[0].text}`);
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+
+    // Event Listeners
+    openScannerBtn.addEventListener('click', async () => {
+        try {
+            if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
+                showAlert('warning', 'Camera access works best with HTTPS. You may experience issues.');
+            }
+
+            const permissionResult = await navigator.mediaDevices.getUserMedia({ video: true });
+            permissionResult.getTracks().forEach(track => track.stop());
+
+            cameraModal.show();
+            await initializeScanner();
+        } catch (error) {
+            console.error('Error opening scanner:', error);
+            showAlert('danger', 'Failed to open scanner: ' + error.message);
+        }
+    });
+
+    cameraSwitchBtn.addEventListener('click', async () => {
+        currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+        stopScanner();
+        await initializeScanner();
+        cameraSwitchBtn.textContent = `Switch to ${currentFacingMode === 'environment' ? 'Front' : 'Back'} Camera`;
+    });
+
+    document.getElementById('cameraModal').addEventListener('hidden.bs.modal', stopScanner);
+
+    // Handle keyboard shortcuts
+    document.addEventListener('keydown', function(event) {
+        // Alt + B to open scanner
+        if (event.altKey && event.key === 'b') {
+            event.preventDefault();
+            openScannerBtn.click();
+        }
+        // Alt + N to add new product
+        if (event.altKey && event.key === 'n') {
+            event.preventDefault();
+            addProductItem();
+        }
+    });
+
+    // Make functions available globally
+    window.addProductItem = addProductItem;
+    window.fetchProductDetails = fetchProductDetails;
+});
+</script>
 {% endblock %}

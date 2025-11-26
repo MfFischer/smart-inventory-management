@@ -1,0 +1,102 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="{% if current_user.is_authenticated %}{{ url_for('users.personal_dashboard') }}{% else %}{{ url_for('main.home') }}{% endif %}">
+            <i class="fas fa-boxes"></i>
+            <span>BMSgo</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Public Navigation -->
+            {% if not current_user.is_authenticated %}
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.home') }}#features">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.home') }}#pricing">Pricing</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('main.login') }}">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-primary btn-sm ms-2" href="{{ url_for('users.user_register') }}">
+                        Start Free Trial
+                    </a>
+                </li>
+            </ul>
+            {% else %}
+            <!-- Authenticated Navigation -->
+            <ul class="navbar-nav ms-auto align-items-center">
+                <!-- Quick Actions Dropdown -->
+                <li class="nav-item dropdown me-3">
+                    <a class="nav-link dropdown-toggle" href="#" id="quickActionsDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-plus-circle me-1"></i>Quick Actions
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="quickActionsDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('sales.sale_create') }}">
+                            <i class="fas fa-shopping-cart me-2"></i>New Sale
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('products.product_create') }}">
+                            <i class="fas fa-box me-2"></i>Add Product
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('inventory.inventory_create') }}">
+                            <i class="fas fa-warehouse me-2"></i>Receive Stock
+                        </a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('expenses.add_expense') }}">
+                            <i class="fas fa-receipt me-2"></i>Record Expense
+                        </a></li>
+                    </ul>
+                </li>
+
+                <!-- Notifications (placeholder for future) -->
+                <li class="nav-item me-3">
+                    <a class="nav-link position-relative" href="{{ url_for('inventory.low_stock_alerts') }}" title="Alerts">
+                        <i class="fas fa-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                            !
+                        </span>
+                    </a>
+                </li>
+
+                <!-- User Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-2" style="font-size: 1.5rem;"></i>
+                        <span class="d-none d-md-inline">{{ current_user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li class="px-3 py-2 border-bottom">
+                            <div class="small text-muted">Signed in as</div>
+                            <div class="fw-semibold">{{ current_user.username }}</div>
+                            <div class="small text-muted">{{ current_user.role|title }}</div>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">
+                            <i class="fas fa-user me-2"></i>My Profile
+                        </a></li>
+                        {% if current_user.role in ['admin', 'owner'] %}
+                        <li><a class="dropdown-item" href="{{ url_for('business.business_view') }}">
+                            <i class="fas fa-building me-2"></i>Business Settings
+                        </a></li>
+                        {% endif %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="{{ url_for('main.logout') }}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a></li>
+                    </ul>
+                </li>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+</nav>

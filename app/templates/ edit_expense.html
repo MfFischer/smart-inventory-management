@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Expense{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Main Form Card -->
+            <div class="card bg-dark shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="h4 mb-0">
+                            <i class="fas fa-edit me-2"></i>Edit Expense
+                        </h2>
+                        <a href="{{ url_for('expenses.expense_list') }}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-list me-1"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body text-light">
+                    <form method="post" class="needs-validation" novalidate>
+                        <!-- Category Selection -->
+                        <div class="mb-3">
+                            <label for="category" class="form-label">
+                                <i class="fas fa-tags me-1"></i>Category
+                            </label>
+                            <select class="form-select bg-dark text-light" id="category" name="category" required>
+                                <option value="">Select a category</option>
+                                {% for group, items in categories.items() %}
+                                    <optgroup label="{{ group }}">
+                                        {% for item in items %}
+                                            <option value="{{ item }}" {{ 'selected' if expense.category and item == expense.category.name else '' }}>
+                                                {{ item }}
+                                            </option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select a category
+                            </div>
+                        </div>
+
+                        <!-- New Category Input -->
+                        <div class="mb-3">
+                            <label for="new_category" class="form-label">
+                                <i class="fas fa-plus me-1"></i>New Category
+                            </label>
+                            <input type="text"
+                                   class="form-control bg-dark text-light"
+                                   id="new_category"
+                                   name="new_category"
+                                   placeholder="Or enter a new category name">
+                            <div class="form-text text-light-50">
+                                Leave empty if selecting from existing categories
+                            </div>
+                        </div>
+
+                        <!-- Description Input -->
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-align-left me-1"></i>Description
+                            </label>
+                            <textarea class="form-control bg-dark text-light"
+                                    id="description"
+                                    name="description"
+                                    rows="2"
+                                    placeholder="Enter expense description"
+                                    required>{{ expense.description }}</textarea>
+                            <div class="invalid-feedback">
+                                Please provide a description
+                            </div>
+                        </div>
+
+                        <!-- Amount Input -->
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">
+                                <i class="fas fa-euro-sign me-1"></i>Amount
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-light">€</span>
+                                <input type="number"
+                                       class="form-control bg-dark text-light"
+                                       id="amount"
+                                       name="amount"
+                                       placeholder="0.00"
+                                       step="0.01"
+                                       min="0.01"
+                                       value="{{ '%.2f'|format(expense.amount|float) }}"
+                                       required>
+                            </div>
+                            <div class="invalid-feedback">
+                                Please enter a valid amount
+                            </div>
+                        </div>
+
+                        <!-- Date Input -->
+                        <div class="mb-4">
+                            <label for="date_incurred" class="form-label">
+                                <i class="fas fa-calendar me-1"></i>Date Incurred
+                            </label>
+                            <input type="date"
+                                   class="form-control bg-dark text-light"
+                                   id="date_incurred"
+                                   name="date_incurred"
+                                   value="{{ expense.date_incurred.strftime('%Y-%m-%d') }}"
+                                   required>
+                            <div class="invalid-feedback">
+                                Please select a date
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            <a href="{{ url_for('expenses.expense_list') }}" class="btn btn-outline-light">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="button" class="btn btn-danger"
+                                    onclick="confirmDelete({{ expense.id }})">
+                                <i class="fas fa-trash-alt me-2"></i>Delete Expense
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this expense? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Category selection handler
+    document.getElementById('category').addEventListener('change', function() {
+        const newCategoryInput = document.getElementById('new_category')
+        if (this.value) {
+            newCategoryInput.value = ''
+            newCategoryInput.disabled = true
+        } else {
+            newCategoryInput.disabled = false
+        }
+    })
+
+    // Delete confirmation handler
+    function confirmDelete(expenseId) {
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'))
+        const deleteForm = document.getElementById('deleteForm')
+        deleteForm.action = `/expenses/${expenseId}/delete`
+        modal.show()
+    }
+</script>
+{% endblock %}
+{% endblock %}

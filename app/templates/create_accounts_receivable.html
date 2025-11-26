@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h1>Create Accounts Receivable</h1>
+
+    <form method="POST" action="{{ url_for('accounts_receivable.create_accounts_receivable', sale_id=sale.id if sale else None) }}">
+
+        <!-- Customer Name -->
+        <div class="mb-3">
+            <label for="customer_name" class="form-label">Customer Name:</label>
+            <input type="text" name="customer_name" id="customer_name" class="form-control" value="{{ sale.customer_name if sale else '' }}" required>
+        </div>
+
+        <!-- Due Date -->
+        <div class="mb-3">
+            <label for="due_date" class="form-label">Due Date:</label>
+            <input type="date" name="due_date" id="due_date" class="form-control" required>
+        </div>
+
+        <!-- Product List Section -->
+        <h3>Products</h3>
+        <div id="product-list">
+            {% if sale_items %}
+                {% for item in sale_items %}
+                <div class="product-item mb-3">
+                    <label class="form-label">Product:</label>
+                    <input type="text" class="form-control" readonly value="{{ item.product.name }}">
+
+                    <label class="form-label">Quantity:</label>
+                    <input type="number" class="form-control" readonly value="{{ item.quantity }}">
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="product-item mb-3">
+                    <label for="product_id_1" class="form-label">Product:</label>
+                    <select class="form-select" id="product_id_1" name="product_ids[]">
+                        {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.name }} (ID: {{ product.id }})</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="quantity_1" class="form-label">Quantity:</label>
+                    <input type="number" class="form-control" id="quantity_1" name="quantities[]" required>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Add Product Button (only if not pre-filled by a sale) -->
+        {% if not sale_items %}
+        <button type="button" class="btn btn-secondary mt-2" onclick="addProduct()">Add Another Product</button>
+        {% endif %}
+
+        <!-- Total Amount Due -->
+        <div class="mb-3 mt-4">
+            <label for="amount_due" class="form-label">Total Amount Due:</label>
+            <input type="number" name="amount_due" id="amount_due" class="form-control" value="{{ amount_due }}" required
+                   {% if sale_items %} readonly {% endif %}>
+        </div>
+
+
+        <!-- Submit and Cancel Buttons -->
+        <button type="submit" class="btn btn-primary mt-3">Create Receivable</button>
+        <a href="{{ url_for('accounts_receivable.accounts_receivable_list') }}" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+
+    <!-- Back to Accounts Receivable Table -->
+    <div class="mt-4">
+        <a href="{{ url_for('accounts_receivable.accounts_receivable_list') }}" class="btn btn-secondary">Back to Accounts Receivable</a>
+    </div>
+</div>
+
+<script>
+// Function to add a new product section dynamically
+let productCount = 1;
+
+function addProduct() {
+    productCount++;
+    const productHTML = `
+        <div class="product-item mb-3">
+            <label for="product_id_${productCount}" class="form-label">Product:</label>
+            <select class="form-select" id="product_id_${productCount}" name="product_ids[]">
+                {% for product in products %}
+                <option value="{{ product.id }}">{{ product.name }} (ID: {{ product.id }})</option>
+                {% endfor %}
+            </select>
+            <label for="quantity_${productCount}" class="form-label">Quantity:</label>
+            <input type="number" class="form-control" id="quantity_${productCount}" name="quantities[]" required>
+        </div>
+    `;
+    document.getElementById('product-list').insertAdjacentHTML('beforeend', productHTML);
+}
+</script>
+{% endblock %}

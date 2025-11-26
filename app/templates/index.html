@@ -1,27 +1,225 @@
 {% extends "base.html" %}
 
 {% block title %}
-Welcome to the Smart Inventory System
+BMSgo
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="py-5 text-center">
-        <h2>Welcome to the Smart Inventory System</h2>
-        <p class="lead">Efficiently manage your inventory with real-time data,
-            integrated sales tracking, and much more.
-        </p>
-    </div>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #00204a, #0d3b66, #1a5279, #1c7da6);
+        background-size: 400% 400%;
+        animation: gradientAnimation 15s ease infinite;
+        font-family: 'Poppins', sans-serif;
+    }
 
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <a href="{{ url_for('main.login') }}" class="btn btn-primary btn-lg">
-                Login to Your Account
-            </a>
-            <a href="{{ url_for('users.user_register') }}" class="btn btn-secondary btn-lg">
-                Sign Up
-            </a>
+    @keyframes gradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .header {
+        position: fixed;
+        top: 0;
+        right: 0;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 1000;
+    }
+
+    .header-brand {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-right: 1rem;
+    }
+
+    .header-button {
+        padding: 0.5rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+
+    .header-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .main-container {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+    }
+
+    .login-container {
+        background: rgba(28, 31, 42, 0.9);
+        border-radius: 16px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+        width: 80px;
+        height: 80px;
+        background: #FFD700;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+
+    .logo i {
+        font-size: 2.5rem;
+        color: #00204a;
+    }
+
+    .welcome-text {
+        margin-bottom: 2rem;
+    }
+
+    .welcome-text h2 {
+        color: #FFD700;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-text p {
+        color: #E0E1DD;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        opacity: 0.8;
+    }
+
+    .auth-button {
+        width: 100%;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .login-button {
+        background: #2E8B57;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .login-button:hover {
+        background: #276747;
+        transform: translateY(-2px);
+    }
+
+    .register-button {
+        background: #4169E1;
+        color: white;
+    }
+
+    .register-button:hover {
+        background: #3658B3;
+        transform: translateY(-2px);
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        margin: 1.5rem 0;
+        color: #E0E1DD;
+        opacity: 0.5;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .divider span {
+        padding: 0 10px;
+    }
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 480px) {
+        .login-container {
+            padding: 2rem;
+        }
+
+        .header {
+            padding: 1rem;
+        }
+
+        .header-brand {
+            display: none;
+        }
+    }
+</style>
+
+<!-- Header -->
+
+
+<!-- Main Content -->
+<div class="main-container">
+    <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-boxes"></i>
         </div>
+
+        <div class="welcome-text">
+            <h2>Welcome Back!</h2>
+            <p>Sign in to access your business management dashboard and start managing your operations efficiently.</p>
+        </div>
+
+        <a href="{{ url_for('main.login') }}" class="auth-button login-button">
+            <i class="fas fa-sign-in-alt"></i>
+            Login to Your Account
+        </a>
+
+        <div class="divider">
+            <span>or</span>
+        </div>
+
+        <a href="{{ url_for('users.user_register') }}" class="auth-button register-button">
+            <i class="fas fa-user-plus"></i>
+            Create New Account
+        </a>
     </div>
 </div>
+
 {% endblock %}

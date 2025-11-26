@@ -1,0 +1,145 @@
+<!-- Sidebar for authenticated users -->
+<aside class="sidebar" id="sidebar">
+    <nav class="sidebar-nav">
+        <!-- Overview Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Overview</div>
+            <a href="{{ url_for('users.personal_dashboard') }}" class="sidebar-link {% if request.endpoint == 'users.personal_dashboard' %}active{% endif %}">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+        </div>
+
+        <!-- Operations Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Operations</div>
+            <a href="{{ url_for('products.render_product_list') }}" class="sidebar-link {% if request.endpoint and 'products' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-box"></i>
+                <span>Products</span>
+            </a>
+            <a href="{{ url_for('inventory.inventory_list') }}" class="sidebar-link {% if request.endpoint and 'inventory' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-warehouse"></i>
+                <span>Inventory</span>
+            </a>
+            <a href="{{ url_for('sales.sale_list') }}" class="sidebar-link {% if request.endpoint and 'sales' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Sales</span>
+            </a>
+            <a href="{{ url_for('returns.list_returns') }}" class="sidebar-link {% if request.endpoint and 'returns' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-undo"></i>
+                <span>Returns & Damages</span>
+            </a>
+        </div>
+
+        <!-- Partners & Money Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Partners & Money</div>
+            <a href="{{ url_for('suppliers.supplier_list') }}" class="sidebar-link {% if request.endpoint and 'suppliers' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-truck"></i>
+                <span>Suppliers</span>
+            </a>
+            <a href="{{ url_for('accounts_receivable.accounts_receivable_list') }}" class="sidebar-link {% if request.endpoint and 'accounts_receivable' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-hand-holding-usd"></i>
+                <span>Accounts Receivable</span>
+            </a>
+            <a href="{{ url_for('expenses.expense_list') }}" class="sidebar-link {% if request.endpoint and 'expenses' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-receipt"></i>
+                <span>Expenses</span>
+            </a>
+        </div>
+
+        <!-- Insights Section -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Insights</div>
+            <a href="{{ url_for('tables_reports.reports_dashboard') }}" class="sidebar-link {% if request.endpoint and 'reports' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+            </a>
+            <a href="{{ url_for('visualizations.create_visualization_view') }}" class="sidebar-link {% if request.endpoint and 'visualizations' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-chart-line"></i>
+                <span>Visualizations</span>
+            </a>
+        </div>
+
+        <!-- Settings Section -->
+        {% if current_user.role in ['admin', 'owner'] %}
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Settings</div>
+            <a href="{{ url_for('business.business_view') }}" class="sidebar-link {% if request.endpoint and 'business' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-building"></i>
+                <span>Business Profile</span>
+            </a>
+            <a href="{{ url_for('users.users_list_view') }}" class="sidebar-link {% if request.endpoint == 'users.users_list_view' %}active{% endif %}">
+                <i class="fas fa-users"></i>
+                <span>Users & Team</span>
+            </a>
+            <a href="{{ url_for('permissions.manage_permissions') }}" class="sidebar-link {% if request.endpoint and 'permissions' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-shield-alt"></i>
+                <span>Permissions</span>
+            </a>
+        </div>
+        {% endif %}
+    </nav>
+</aside>
+
+<!-- Sidebar Toggle Button -->
+<button class="sidebar-toggle d-lg-none" id="sidebarToggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Sidebar Overlay for Mobile -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<style>
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100%;
+    height: calc(100vh - var(--navbar-height));
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+
+body.auth.sidebar-open .sidebar-overlay {
+    display: block;
+}
+
+@media (min-width: 992px) {
+    .sidebar {
+        left: 0;
+    }
+    
+    body.auth .main-content {
+        margin-left: var(--sidebar-width);
+    }
+    
+    .sidebar-toggle {
+        display: none;
+    }
+    
+    .sidebar-overlay {
+        display: none !important;
+    }
+}
+</style>
+
+<script>
+function toggleSidebar() {
+    document.body.classList.toggle('sidebar-open');
+}
+
+// Close sidebar when clicking on a link (mobile only)
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.innerWidth < 992) {
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                document.body.classList.remove('sidebar-open');
+            });
+        });
+    }
+});
+</script>
+

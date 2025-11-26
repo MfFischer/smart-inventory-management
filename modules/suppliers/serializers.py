@@ -3,29 +3,13 @@ from modules.suppliers.models import Supplier
 
 
 class SupplierSchema(Schema):
-    """Schema for validating and serializing Supplier data."""
-
-    # Field definitions with validations
     id = fields.Int(dump_only=True)
-    name = fields.Str(
-        required=True,
-        validate=[
-            validate.Length(min=1, error="Supplier name must not be empty."),
-            validate.Length(max=255, error="Supplier name must not exceed 255 characters.")
-        ]
-    )
-    # Required email field, Marshmallow handles email validation
+    name = fields.Str(required=True)
+    contact = fields.Str(allow_none=True)
+    description = fields.Str(allow_none=True)
+    phone = fields.Str(allow_none=True)
     email = fields.Email(required=True)
-    phone = fields.Str(
-        validate=validate.Length(max=20)
-    )
-    # Optional phone field, max length of 20 characters
-    address = fields.Str(
-        validate=validate.Length(max=500)
-    )
-    # Optional address field, max length of 500 characters
-    created_at = fields.DateTime(dump_only=True)
-    updated_at = fields.DateTime(dump_only=True)
+    address = fields.Str(allow_none=True)
 
     @validates('name')
     def validate_name(self, value):
@@ -34,8 +18,13 @@ class SupplierSchema(Schema):
             raise ValidationError("Supplier name must not be empty or contain only whitespace.")
 
     @validates('email')
-    def validate_email(self, value):
+    def validate_email(self, value, **kwargs):
         """Validate that the email is unique within the Supplier model."""
-        # Check for an existing supplier with the same email address
-        if Supplier.query.filter_by(email=value).first():
+        # Get the supplier being updated (if any)
+        supplier_id = self.context.get('supplier_id')
+
+        existing_supplier = Supplier.query.filter_by(email=value).first()
+
+        # If a supplier with this email exists and it's not the one being updated
+        if existing_supplier and (not supplier_id or existing_supplier.id != supplier_id):
             raise ValidationError("A supplier with this email already exists.")

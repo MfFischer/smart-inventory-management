@@ -1,54 +1,226 @@
 {% extends "base.html" %}
 
-{% block title %}
-Smart Inventory System - Login
+{% block title %}Login - BMSgo{% endblock %}
+
+{% block styles %}
+<style>
+    .login-page {
+        min-height: calc(100vh - var(--navbar-height));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+
+    .login-card {
+        background-color: var(--color-primary-light);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+        padding: var(--spacing-3xl);
+        max-width: 450px;
+        width: 100%;
+        border: 1px solid var(--color-border-dark);
+    }
+
+    .login-header {
+        text-align: center;
+        margin-bottom: var(--spacing-2xl);
+    }
+
+    .login-logo {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--spacing-lg);
+    }
+
+    .login-logo i {
+        font-size: 2rem;
+        color: var(--color-primary);
+    }
+
+    .login-title {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-white);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .login-subtitle {
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        opacity: 0.9;
+    }
+
+    .login-form .form-group {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .forgot-password {
+        text-align: right;
+        margin-top: var(--spacing-sm);
+    }
+
+    .forgot-password a {
+        color: var(--color-accent);
+        font-size: var(--font-size-sm);
+        text-decoration: none;
+    }
+
+    .forgot-password a:hover {
+        text-decoration: underline;
+    }
+
+    .login-divider {
+        text-align: center;
+        margin: var(--spacing-xl) 0;
+        position: relative;
+    }
+
+    .login-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: var(--color-border-dark);
+    }
+
+    .login-divider span {
+        background-color: var(--color-primary-light);
+        padding: 0 var(--spacing-md);
+        position: relative;
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-sm);
+    }
+
+    .signup-link {
+        text-align: center;
+        margin-top: var(--spacing-xl);
+        color: var(--color-text-primary);
+    }
+
+    .signup-link a {
+        color: var(--color-accent);
+        font-weight: var(--font-weight-semibold);
+        text-decoration: none;
+    }
+
+    .signup-link a:hover {
+        text-decoration: underline;
+    }
+
+    .security-note {
+        margin-top: var(--spacing-lg);
+        padding: var(--spacing-md);
+        background-color: rgba(255, 215, 0, 0.1);
+        border-radius: var(--radius-md);
+        border-left: 3px solid var(--color-accent);
+    }
+
+    .security-note p {
+        margin: 0;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .security-note i {
+        color: var(--color-accent);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container h-100">
-    <div class="row h-100 justify-content-center align-items-center">
-        <div class="col-md-6">
-            <h2 class="text-center mb-4">Login to Your Account</h2>
-            <!-- Update the form action to point to the correct route after Swagger integration -->
-            <form method="POST" action="{{ url_for('main.login') }}" class="needs-validation" novalidate style="max-width: 500px;">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                    <div class="invalid-feedback">
-                        Please enter your username.
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                    <div class="invalid-feedback">
-                        Please enter your password.
-                    </div>
-                </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMe">
-                    <label class="form-check-label" for="rememberMe">Remember me</label>
-                </div>
-                <button type="submit" class="btn btn-primary">Login</button>
+<div class="login-page">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <h1 class="login-title">Welcome Back</h1>
+            <p class="login-subtitle">Sign in to access your dashboard</p>
+        </div>
 
-                <!-- Error block to display login errors -->
-                {% if error %}
-                    <div class="alert alert-danger mt-3" role="alert">
-                        {{ error }}
-                    </div>
-                {% endif %}
-            </form>
+        <form method="POST" action="{{ url_for('main.login') }}" class="login-form needs-validation" novalidate>
+            <div class="form-group">
+                <label for="username" class="form-label">Username or Email</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    required
+                    autofocus
+                    autocomplete="username"
+                >
+                <div class="invalid-feedback">
+                    Please enter your username or email.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                >
+                <div class="invalid-feedback">
+                    Please enter your password.
+                </div>
+                <div class="forgot-password">
+                    <a href="#" onclick="alert('Please contact your administrator to reset your password.'); return false;">
+                        Forgot password?
+                    </a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-sign-in-alt"></i>
+                Sign In
+            </button>
+        </form>
+
+        <div class="login-divider">
+            <span>New to BMSgo?</span>
+        </div>
+
+        <div class="signup-link">
+            <a href="{{ url_for('users.user_register') }}" class="btn btn-outline w-100">
+                <i class="fas fa-user-plus"></i>
+                Create Free Account
+            </a>
+        </div>
+
+        <div class="security-note">
+            <p>
+                <i class="fas fa-shield-alt"></i>
+                <span>Your data is encrypted and secure</span>
+            </p>
         </div>
     </div>
 </div>
 
 <script>
-    // Example JavaScript to improve interactivity and validation
+    // Form validation
     (function() {
         'use strict';
         window.addEventListener('load', function() {
             var forms = document.getElementsByClassName('needs-validation');
-            var validation = Array.prototype.filter.call(forms, function(form) {
+            Array.prototype.filter.call(forms, function(form) {
                 form.addEventListener('submit', function(event) {
                     if (form.checkValidity() === false) {
                         event.preventDefault();

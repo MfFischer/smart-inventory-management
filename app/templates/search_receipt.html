@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}Search Receipt{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-dark text-light">
+                <div class="card-header">
+                    <h4 class="mb-0">Search Receipt</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Search Form -->
+                    <form method="POST" action="{{ url_for('sales.search_receipt') }}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control text-light" id="start_date" name="start_date">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control text-light" id="end_date" name="end_date">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="customer_name" class="form-label">Customer Name</label>
+                                <input type="text" class="form-control text-light" id="customer_name" name="customer_name" placeholder="Enter customer name">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="receipt_number" class="form-label">Receipt Number</label>
+                                <input type="text" class="form-control text-light" id="receipt_number" name="receipt_number" placeholder="Enter receipt number">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Scanner Button -->
+                    <div class="text-center mt-4">
+                        <button class="btn btn-secondary" id="openScanner">
+                            <i class="fas fa-camera"></i> Scan Receipt
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            {% if sales is not none %}
+            <div class="card bg-dark text-light mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Search Results</h5>
+                </div>
+                <div class="card-body">
+                    {% if sales %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Receipt #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sale in sales %}
+                                <tr>
+                                    <td>{{ sale.receipt_number }}</td>
+                                    <td>{{ sale.customer_name }}</td>
+                                    <td>{{ sale.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>${{ "%.2f"|format(sale.total_price) }}</td>
+                                    <td>
+                                        <a href="{{ url_for('sales.sale_receipt', sale_id=sale.id) }}"
+                                           class="btn btn-primary btn-sm">
+                                            <i class="fas fa-receipt"></i> View Receipt
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">No receipts found matching your search criteria.</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Scanner Modal -->
+<div class="modal fade" id="scannerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title">Scan Receipt Barcode</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <video id="scanner" style="width: 100%; max-height: 60vh; object-fit: cover;"></video>
+                <div id="scannerStatus" class="p-3 text-center">
+                    <small class="text-muted">Position the barcode within the camera view</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let codeReader = null;
+    const openScannerBtn = document.getElementById('openScanner');
+
+    openScannerBtn.addEventListener('click', function() {
+        const modal = new bootstrap.Modal(document.getElementById('scannerModal'));
+        modal.show();
+        initScanner();
+    });
+
+    async function initScanner() {
+        try {
+            if (!codeReader) {
+                codeReader = new ZXing.BrowserMultiFormatReader();
+            }
+
+            const videoElement = document.getElementById('scanner');
+            await codeReader.decodeFromVideoDevice(null, videoElement, (result) => {
+                if (result) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('scannerModal'));
+                    modal.hide();
+                    codeReader.reset();
+                    document.getElementById('receipt_number').value = result.text;
+                    document.querySelector('form').submit();
+                }
+            });
+        } catch (err) {
+            console.error('Scanner error:', err);
+            document.getElementById('scannerStatus').innerHTML =
+                '<div class="alert alert-danger">Camera error: Please check permissions</div>';
+        }
+    }
+
+    document.getElementById('scannerModal').addEventListener('hidden.bs.modal', function () {
+        if (codeReader) {
+            codeReader.reset();
+        }
+    });
+});
+</script>
+{% endblock %}

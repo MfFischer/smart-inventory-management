@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Financial Report
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Financial Report</h1>
+    <p>Detailed financial data, including revenue, expenses, net profit, and profit margin.</p>
+
+    <!-- Date Range Selection -->
+    <form action="{{ url_for('tables_reports.financial_report') }}" method="get" class="form-inline mb-4">
+        <label for="start_date" class="mr-2">Start Date:</label>
+        <input type="date" name="start_date" id="start_date" class="form-control mr-2" required>
+        <label for="end_date" class="mr-2">End Date:</label>
+        <input type="date" name="end_date" id="end_date" class="form-control mr-2" required>
+        <button type="submit" class="btn btn-primary">Generate Report</button>
+    </form>
+
+    <!-- Financial Summary Section -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">Total Revenue</div>
+                <div class="card-body">
+                    <h5 class="card-title">${{ total_revenue }}</h5>
+                    <p class="card-text">Total income generated in the selected period.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-header">Total Expenses</div>
+                <div class="card-body">
+                    <h5 class="card-title">${{ total_expenses }}</h5>
+                    <p class="card-text">Total expenses in the selected period.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Net Profit</div>
+                <div class="card-body">
+                    <h5 class="card-title">${{ net_profit }}</h5>
+                    <p class="card-text">Revenue minus expenses.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Profit Margin</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ profit_margin }}%</h5>
+                    <p class="card-text">Percentage of profit based on revenue.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trends Section with Graphs -->
+    <h3>Financial Trends</h3>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="expenseChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Revenue and Expense Breakdown -->
+    <h3>Revenue and Expense Breakdown</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Revenue</th>
+                <th>Expense</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in financial_data %}
+            <tr>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.description }}</td>
+                <td>{{ entry.category }}</td>
+                <td>${{ entry.revenue or 0 }}</td>
+                <td>${{ entry.expense or 0 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- JavaScript to Render Charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var revenueData = {{ revenue_trend_data | tojson }};
+    var expenseData = {{ expense_trend_data | tojson }};
+
+    // Revenue Trend Chart
+    var ctx1 = document.getElementById('revenueChart').getContext('2d');
+    var revenueChart = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: revenueData.dates,
+            datasets: [{
+                label: 'Revenue',
+                data: revenueData.values,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                fill: false
+            }]
+        }
+    });
+
+    // Expense Trend Chart
+    var ctx2 = document.getElementById('expenseChart').getContext('2d');
+    var expenseChart = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: expenseData.dates,
+            datasets: [{
+                label: 'Expense',
+                data: expenseData.values,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                fill: false
+            }]
+        }
+    });
+</script>
+{% endblock %}

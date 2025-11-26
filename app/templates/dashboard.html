@@ -48,7 +48,7 @@ Smart Inventory System - Dashboard
         </div>
     </div>
 
-    <!-- Row for Users, Suppliers, and Inventory -->
+    <!-- Row for Users, Suppliers, Inventory -->
     <div class="row">
         <div class="col-md-4">
             <div class="card text-white" style="background-color: #606C38;" mb-3>
@@ -80,7 +80,7 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">{{ inventory_count }} Items</h5>
                     <p class="card-text">Track and manage your inventory.</p>
-                    <a href="{{ url_for('inventory.inventory_list') }}" c class="btn btn-light">
+                    <a href="{{ url_for('inventory.inventory_list') }}" class="btn btn-light">
                         Manage Inventory
                     </a>
                 </div>
@@ -88,7 +88,7 @@ Smart Inventory System - Dashboard
         </div>
     </div>
 
-    <!-- Row for Reports, Visualizations, and Permissions -->
+    <!-- Row for Reports, Visualizations, Permissions -->
     <div class="row">
         <div class="col-md-4">
             <div class="card text-white bg-dark mb-3">
@@ -96,7 +96,7 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">Sales, Inventory, and Financial Reports</h5>
                     <p class="card-text">View and generate system reports.</p>
-                    <a href="/reports" class="btn btn-light">View Reports</a>
+                    <a href="{{ url_for('tables_reports.reports_dashboard') }}" class="btn btn-light">View Reports</a>
                 </div>
             </div>
         </div>
@@ -106,17 +106,51 @@ Smart Inventory System - Dashboard
                 <div class="card-body">
                     <h5 class="card-title">Sales and Product Analytics</h5>
                     <p class="card-text">Visualize key performance metrics.</p>
-                    <a href="/visualizations" class="btn btn-light">View Visualizations</a>
+                    <a href="{{ url_for('visualizations.create_visualization_view') }}" class="btn btn-light">View Visualizations</a>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
              <div class="card text-white" style="background-color: #DDA15E;" mb-3>
-                <div class="card-header">Permissions</div>
+                <div class="card-header">View Announcements</div>
                 <div class="card-body">
                     <h5 class="card-title">Manage User Permissions</h5>
-                    <p class="card-text">Admin only: Manage user roles and permissions.</p>
-                    <a href="/permissions" class="btn btn-light">Manage Permissions</a>
+                    <p class="card-text">Stay updated with the latest news, events, and reminders.</p>
+                    <a href="{{ url_for('announcements.list_announcements') }}" class="btn btn-light">View Announcements</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row for Accounts Receivable, Returned/Damaged Items, Expenses -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">Accounts Receivable</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ accounts_receivable_count }} Pending Receivables</h5>
+                    <p class="card-text">Track outstanding balances and overdue payments.</p>
+                    <a href="{{ url_for('accounts_receivable.accounts_receivable_list') }}" class="btn btn-light">View Receivables</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-header">Returned/Damaged Items</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ damaged_count }} Items</h5>
+                    <p class="card-text">Manage returned and damaged items.</p>
+                    <a href="{{ url_for('returns.list_returns') }}" class="btn btn-light">Manage Items</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-header">Expenses</div>
+                <div class="card-body">
+                    <h5 class="card-title">${{ total_expenses }} This Month</h5>
+                    <p class="card-text">Track operational expenses and financials.</p>
+                    <a href="{{ url_for('expenses.expense_list') }}" class="btn btn-light">View Expenses</a>
                 </div>
             </div>
         </div>

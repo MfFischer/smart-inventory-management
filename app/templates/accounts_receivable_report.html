@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Accounts Receivable Report
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Accounts Receivable Report</h1>
+    <p>Overview of pending payments and aging data.</p>
+
+    <!-- Summary Card for Total Outstanding Receivables -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">Summary</div>
+        <div class="card-body">
+            <h5 style="color: #000000;">Total Outstanding Amount: ${{ "%.2f" | format(total_outstanding) }}</h5>
+        </div>
+    </div>
+
+    <!-- Detailed Receivables Table -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">Detailed Accounts Receivable</div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-hover accounts-receivable-table">
+                <thead>
+                    <tr style="background-color: #dc3545; color: #ffffff;">
+                        <th>Customer</th>
+                        <th>Sale Date</th>
+                        <th>Amount Due</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for receivable in receivables_data %}
+                    <tr>
+                        <td>{{ receivable.customer_name }}</td>
+                        <td>{{ receivable.sale.sale_date.strftime('%Y-%m-%d') if receivable.sale else 'N/A' }}</td>
+                        <td>${{ "%.2f" | format(receivable.amount_due) }}</td>
+                        <td>{{ receivable.due_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ receivable.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Back to Reports Dashboard Button -->
+    <div class="mt-4">
+        <a href="{{ url_for('tables_reports.reports_dashboard') }}" class="btn btn-secondary">Back to Reports Dashboard</a>
+    </div>
+</div>
+{% endblock %}

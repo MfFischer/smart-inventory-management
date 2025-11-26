@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Business Setup - BMSgo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center mb-0">{% if business %}Update{% else %}Setup{% endif %} Business Details</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <!-- Business Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label text-dark fw-bold">
+                                    <i class="fas fa-building"></i> Business Name *
+                                </label>
+                                <input type="text"
+                                       class="form-control text-dark"
+                                       id="name"
+                                       name="name"
+                                       value="{{ business.name if business else '' }}"
+                                       required>
+                            </div>
+
+                            <!-- VAT ID -->
+                            <div class="col-md-6 mb-3">
+                                <label for="vat_id" class="form-label text-dark fw-bold">
+                                    <i class="fas fa-id-card"></i> VAT ID
+                                </label>
+                                <input type="text"
+                                       class="form-control text-dark"
+                                       id="vat_id"
+                                       name="vat_id"
+                                       value="{{ business.vat_id if business else '' }}">
+                            </div>
+                        </div>
+
+                        <!-- VAT Rate -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="vat_rate" class="form-label text-dark fw-bold">
+                                    <i class="fas fa-percentage"></i> VAT Rate (%)
+                                </label>
+                                <input type="number"
+                                       class="form-control text-dark"
+                                       id="vat_rate"
+                                       name="vat_rate"
+                                       step="0.01"
+                                       min="0"
+                                       max="100"
+                                       value="{{ business.vat_rate if business else 0 }}">
+                                <small class="text-dark">
+                                    <i class="fas fa-info-circle"></i> Enter VAT rate as percentage (e.g., 20 for 20% VAT)
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="mb-3">
+                            <label for="address" class="form-label text-dark fw-bold">
+                                <i class="fas fa-map-marker-alt"></i> Business Address *
+                            </label>
+                            <textarea class="form-control text-dark"
+                                    id="address"
+                                    name="address"
+                                    rows="3"
+                                    required>{{ business.address if business else '' }}</textarea>
+                        </div>
+
+                        <div class="row">
+                            <!-- Phone -->
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label text-dark fw-bold">
+                                    <i class="fas fa-phone"></i> Phone Number *
+                                </label>
+                                <input type="tel"
+                                       class="form-control text-dark"
+                                       id="phone"
+                                       name="phone"
+                                       value="{{ business.phone if business else '' }}"
+                                       required>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label text-dark fw-bold">
+                                    <i class="fas fa-envelope"></i> Business Email
+                                </label>
+                                <input type="email"
+                                       class="form-control text-dark"
+                                       id="email"
+                                       name="email"
+                                       value="{{ business.email if business else '' }}">
+                            </div>
+                        </div>
+
+                        <!-- Website -->
+                        <div class="mb-3">
+                            <label for="website" class="form-label text-dark fw-bold">
+                                <i class="fas fa-globe"></i> Website
+                            </label>
+                            <input type="url"
+                                   class="form-control text-dark"
+                                   id="website"
+                                   name="website"
+                                   value="{{ business.website if business else '' }}"
+                                   placeholder="https://">
+                        </div>
+
+                        <!-- Logo Upload -->
+                        <div class="mb-4">
+                            <label for="logo" class="form-label text-dark fw-bold">
+                                <i class="fas fa-image"></i> Business Logo
+                            </label>
+                            <input type="file"
+                                   class="form-control text-dark"
+                                   id="logo"
+                                   name="logo"
+                                   accept="image/*">
+                            {% if business and business.logo_path %}
+                            <div class="mt-2">
+                                <img src="{{ url_for('static', filename=business.logo_path) }}"
+                                     alt="Current Logo"
+                                     class="img-thumbnail"
+                                     style="max-height: 100px;">
+                                <div class="text-dark mt-1">Current logo</div>
+                            </div>
+                            {% endif %}
+                            <div class="text-dark mt-1">
+                                <small><i class="fas fa-info-circle"></i> Recommended size: 300x300 pixels, max 2MB</small>
+                            </div>
+                        </div>
+
+                        <!-- Required Fields Note -->
+                        <div class="mb-3">
+                            <p class="text-dark"><small><i class="fas fa-asterisk text-danger"></i> Required fields</small></p>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i>
+                                {% if business %}Update{% else %}Save{% endif %} Business Details
+                            </button>
+                            <a href="{{ url_for('users.personal_dashboard') }}" class="btn btn-secondary btn-lg ms-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Additional styles to ensure text visibility */
+    .form-control {
+        color: #212529 !important; /* Dark text for input fields */
+        background-color: #fff !important; /* White background */
+    }
+
+    .form-control:focus {
+        color: #212529 !important;
+        background-color: #fff !important;
+        border-color: #86b7fe !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+    }
+
+    .form-control::placeholder {
+        color: #6c757d !important; /* Slightly lighter for placeholders */
+    }
+
+    /* Style for required field asterisks */
+    label.required:after {
+        content: " *";
+        color: #dc3545;
+    }
+
+    /* Improved contrast for small text */
+    small {
+        color: #495057 !important;
+    }
+
+    /* Card styling */
+    .card {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        border-bottom: none;
+        padding: 1.5rem;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* Button styling */
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background-color: #1e3a5f;
+        border-color: #1e3a5f;
+    }
+
+    .btn-primary:hover {
+        background-color: #152a45;
+        border-color: #152a45;
+    }
+
+    /* Form group spacing */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    /* Responsive image */
+    .img-thumbnail {
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        max-width: 150px;
+    }
+</style>
+{% endblock %}

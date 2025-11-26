@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}
+BMSgo - Start Your Trial
+{% endblock %}
+
+{% block content %}
+<style>
+    .trial-container {
+        background-color: #1C1F2A;
+        color: #E0E1DD;
+        padding: 40px;
+        border-radius: 8px;
+        max-width: 600px;
+        margin: 80px auto;
+        text-align: center;
+    }
+
+    .plan-details {
+        background-color: #2D2F3C;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+
+    .price {
+        font-size: 2.5rem;
+        color: #FFD700;
+        margin: 10px 0;
+    }
+
+    .savings {
+        color: #2E8B57;
+        font-size: 1.1rem;
+        margin: 10px 0;
+    }
+
+    .feature-list {
+        text-align: left;
+        margin: 20px 0;
+        padding-left: 20px;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .btn-trial {
+        background-color: #2E8B57;
+        border: none;
+        color: #FFFFFF;
+        padding: 12px 24px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-trial:hover {
+        background-color: #276747;
+        transform: translateY(-2px);
+    }
+
+    .btn-back {
+        background-color: transparent;
+        border: 2px solid #2E8B57;
+        color: #E0E1DD;
+    }
+</style>
+
+<div class="trial-container">
+    <h2>Start Your Free Trial</h2>
+    <p>You've selected the {{ plan_type | title }} Plan</p>
+
+    <div class="plan-details">
+        {% if plan_type == 'monthly' %}
+            <div class="price">$14.99 <span>/month</span></div>
+            <ul class="feature-list">
+                <li>✔ Full access to all features</li>
+                <li>✔ Priority support</li>
+                <li>✔ Cancel anytime</li>
+            </ul>
+        {% else %}
+            <div class="price">$149.90 <span>/year</span></div>
+            <div class="savings">Save $29.98 (2 months free!)</div>
+            <ul class="feature-list">
+                <li>✔ All monthly features</li>
+                <li>✔ Priority support</li>
+                <li>✔ Extended reporting</li>
+                <li>✔ Advanced analytics</li>
+            </ul>
+        {% endif %}
+    </div>
+
+    <p>Start with a 30-day free trial. No credit card required.</p>
+
+    <div class="btn-group">
+        <a href="{{ url_for('users.user_register', plan=plan_type) }}" class="btn-trial">Continue to Registration</a>
+        <a href="{{ url_for('main.landing') }}" class="btn-trial btn-back">Back to Plans</a>
+    </div>
+</div>
+{% endblock %}

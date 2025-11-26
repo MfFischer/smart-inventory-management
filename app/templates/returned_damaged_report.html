@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+Returned and Damaged Items Report
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Returned and Damaged Items Report</h1>
+
+    <!-- Date Range Display -->
+    <div class="mb-4">
+        {% if start_date and end_date %}
+            <p><strong>From:</strong> {{ start_date.strftime('%Y-%m-%d') }} <strong>To:</strong> {{ end_date.strftime('%Y-%m-%d') }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">Summary</div>
+        <div class="card-body">
+            <h5 style="color: #003366;">Total Cost of Returned/Damaged Items: ${{ returned_damaged_data.total_cost }}</h5>
+            <h5 style="color: #003366;">Return/Damage Rate: {{ returned_damaged_data.return_rate }}%</h5>
+        </div>
+    </div>
+
+    <!-- Detailed Returned and Damaged Items Table -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">Detailed Returned and Damaged Items</div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Reason</th>
+                        <th>Cost Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in returned_damaged_data.transactions %}
+                        <tr>
+                            <td>{{ item.return_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ item.product_name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.reason }}</td>
+                            <td>${{ item.cost_impact }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-3">
+        <a href="{{ url_for('tables_reports.reports_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

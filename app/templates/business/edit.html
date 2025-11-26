@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Business Details - BMSgo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center mb-0">Edit Business Details</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- Current Logo Display -->
+                        {% if business.logo_path %}
+                        <div class="text-center mb-4">
+                            <img src="{{ url_for('static', filename=business.logo_path) }}"
+                                 alt="Business Logo"
+                                 class="img-fluid mb-2"
+                                 style="max-height: 150px;">
+                            <div>
+                                <form action="{{ url_for('business.remove_logo') }}" method="POST" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i> Remove Logo
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <!-- Business Name -->
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="fas fa-building"></i> Business Name *
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="name"
+                                       name="name"
+                                       value="{{ business.name }}"
+                                       required>
+                            </div>
+
+                            <!-- VAT ID -->
+                            <div class="col-md-6 mb-3">
+                                <label for="vat_id" class="form-label">
+                                    <i class="fas fa-id-card"></i> VAT ID
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="vat_id"
+                                       name="vat_id"
+                                       value="{{ business.vat_id }}">
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="mb-3">
+                            <label for="address" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Business Address *
+                            </label>
+                            <textarea class="form-control"
+                                      id="address"
+                                      name="address"
+                                      rows="3"
+                                      required>{{ business.address }}</textarea>
+                        </div>
+
+                        <div class="row">
+                            <!-- Phone -->
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">
+                                    <i class="fas fa-phone"></i> Phone Number *
+                                </label>
+                                <input type="tel"
+                                       class="form-control"
+                                       id="phone"
+                                       name="phone"
+                                       value="{{ business.phone }}"
+                                       required>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope"></i> Business Email
+                                </label>
+                                <input type="email"
+                                       class="form-control"
+                                       id="email"
+                                       name="email"
+                                       value="{{ business.email }}">
+                            </div>
+                        </div>
+
+                        <!-- Website -->
+                        <div class="mb-3">
+                            <label for="website" class="form-label">
+                                <i class="fas fa-globe"></i> Website
+                            </label>
+                            <input type="url"
+                                   class="form-control"
+                                   id="website"
+                                   name="website"
+                                   value="{{ business.website }}">
+                        </div>
+
+                        <!-- Logo Upload -->
+                        <div class="mb-4">
+                            <label for="logo" class="form-label">
+                                <i class="fas fa-image"></i> Update Business Logo
+                            </label>
+                            <input type="file"
+                                   class="form-control"
+                                   id="logo"
+                                   name="logo"
+                                   accept="image/*">
+                            <small class="text-muted">Recommended size: 300x300 pixels, max 2MB</small>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Business Details
+                            </button>
+                            <a href="{{ url_for('business.business_view') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

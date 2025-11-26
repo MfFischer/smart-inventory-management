@@ -6,6 +6,7 @@
 <div class="container">
     <h1 class="my-4">Supplier Management</h1>
 
+    <!-- Search and Create Supplier Button Row -->
     <div class="row mb-4">
         <div class="col-md-6">
             <form action="{{ url_for('suppliers.supplier_search') }}" method="GET" class="form-inline">
@@ -23,13 +24,15 @@
     </div>
 
     <h2>Supplier Details</h2>
+
+    <!-- Supplier Cards -->
     {% for supplier in suppliers %}
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">{{ supplier.name }}</h5>
-            <p class="card-text">{{ supplier.description }}</p>
+            <!-- Make the supplier name darker -->
+            <h5 class="card-title" style="font-weight: bold; color: #333;">{{ supplier.name }}</h5>
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">Contact: {{ supplier.contact }}</li>
+                <li class="list-group-item">Contact: {{ supplier.phone }}</li>
                 <li class="list-group-item">Email: {{ supplier.email }}</li>
                 <li class="list-group-item">Address: {{ supplier.address }}</li>
                 <li class="list-group-item">Created At: {{ supplier.created_at }}</li>
@@ -40,7 +43,26 @@
                 <button type="submit" class="btn btn-danger mt-3">Delete</button>
             </form>
         </div>
+
+        <!-- Accounts Payable Section -->
+        <div class="card-footer">
+            <h5>Accounts Payable</h5>
+            <a href="{{ url_for('suppliers.supplier_accounts_payable', supplier_id=supplier.id) }}" class="btn btn-primary btn-sm mb-3">Manage Accounts Payable</a>
+            <ul class="list-group">
+                {% for payable in supplier.accounts_payable %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>Amount Due: ${{ payable.amount_due }} - Due Date: {{ payable.due_date.strftime('%Y-%m-%d') }} - Status: {{ payable.status }}</span>
+                    {% if payable.status != 'paid' %}
+                    <form action="{{ url_for('suppliers.mark_accounts_payable_as_paid', payable_id=payable.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-success btn-sm">Mark as Paid</button>
+                    </form>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
     {% endfor %}
+
 </div>
 {% endblock %}

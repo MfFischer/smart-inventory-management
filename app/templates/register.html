@@ -1,43 +1,278 @@
 {% extends "base.html" %}
 
-{% block title %}
-Register - Smart Inventory System
+{% block title %}Start Your Free Trial - BMSgo{% endblock %}
+
+{% block styles %}
+<style>
+    .register-page {
+        min-height: calc(100vh - var(--navbar-height));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+
+    .register-card {
+        background-color: var(--color-primary-light);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-xl);
+        padding: var(--spacing-3xl);
+        max-width: 500px;
+        width: 100%;
+        border: 1px solid var(--color-border-dark);
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: var(--spacing-2xl);
+    }
+
+    .register-logo {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto var(--spacing-lg);
+    }
+
+    .register-logo i {
+        font-size: 2rem;
+        color: var(--color-primary);
+    }
+
+    .register-title {
+        font-size: var(--font-size-2xl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-white);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .register-subtitle {
+        color: var(--color-text-primary);
+        font-size: var(--font-size-base);
+        opacity: 0.9;
+    }
+
+    .trial-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--color-accent), var(--color-accent-hover));
+        color: var(--color-primary);
+        padding: var(--spacing-xs) var(--spacing-md);
+        border-radius: var(--radius-full);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .register-form .form-group {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .password-requirements {
+        margin-top: var(--spacing-sm);
+        padding: var(--spacing-md);
+        background-color: rgba(255, 215, 0, 0.1);
+        border-radius: var(--radius-md);
+        border-left: 3px solid var(--color-accent);
+    }
+
+    .password-requirements p {
+        margin: 0 0 var(--spacing-xs) 0;
+        font-size: var(--font-size-sm);
+        color: var(--color-text-primary);
+        font-weight: var(--font-weight-semibold);
+    }
+
+    .password-requirements ul {
+        margin: 0;
+        padding-left: var(--spacing-lg);
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
+    }
+
+    .password-requirements li {
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .benefits-list {
+        margin: var(--spacing-xl) 0;
+        padding: var(--spacing-lg);
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: var(--radius-md);
+    }
+
+    .benefits-list h4 {
+        font-size: var(--font-size-base);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-white);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .benefits-list ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .benefits-list li {
+        padding: var(--spacing-xs) 0;
+        color: var(--color-text-primary);
+        font-size: var(--font-size-sm);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    .benefits-list li i {
+        color: var(--color-accent);
+        font-size: var(--font-size-base);
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: var(--spacing-xl);
+        color: var(--color-text-primary);
+        font-size: var(--font-size-sm);
+    }
+
+    .login-link a {
+        color: var(--color-accent);
+        font-weight: var(--font-weight-semibold);
+        text-decoration: none;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="text-light">Register New Account</h1>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
+<div class="register-page">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="register-logo">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <div class="trial-badge">
+                <i class="fas fa-gift"></i> 30-Day Free Trial
+            </div>
+            <h1 class="register-title">Start Your Free Trial</h1>
+            <p class="register-subtitle">No credit card required • Full access to all features</p>
+        </div>
 
-            <!-- Flash messages block for error or success messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                  <div class="alert alert-{{ category }} mt-3" role="alert">
-                    {{ message }}
-                  </div>
-                {% endfor %}
-              {% endif %}
-            {% endwith %}
+        <form method="POST" action="{{ url_for('users.user_register') }}" class="register-form needs-validation" novalidate>
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    placeholder="Choose a username"
+                    required
+                    autofocus
+                    autocomplete="username"
+                    minlength="3"
+                >
+                <div class="invalid-feedback">
+                    Username must be at least 3 characters long.
+                </div>
+            </div>
 
-            <!-- Update the form action to point to the correct route -->
-            <form method="POST" action="{{ url_for('users.user_register') }}">
-                <div class="mb-3">
-                    <label for="username" class="form-label text-light">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
+            <div class="form-group">
+                <label for="email" class="form-label">Business Email</label>
+                <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    placeholder="your@business.com"
+                    required
+                    autocomplete="email"
+                >
+                <div class="invalid-feedback">
+                    Please enter a valid email address.
                 </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label text-light">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    name="password"
+                    placeholder="Create a strong password"
+                    required
+                    autocomplete="new-password"
+                    minlength="8"
+                >
+                <div class="invalid-feedback">
+                    Password must be at least 8 characters long.
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label text-light">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                <div class="password-requirements">
+                    <p><i class="fas fa-shield-alt"></i> Password must contain:</p>
+                    <ul>
+                        <li>At least 8 characters</li>
+                        <li>Mix of letters and numbers recommended</li>
+                    </ul>
                 </div>
-                <button type="submit" class="btn btn-success">Register</button>
-            </form>
+            </div>
+
+            <!-- Role selection dropdown for admin users only -->
+            {% if session.get('role') == 'admin' %}
+                <div class="form-group">
+                    <label for="role" class="form-label">Role</label>
+                    <select class="form-control" id="role" name="role">
+                        <option value="staff">Staff</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-rocket"></i>
+                Start Free Trial
+            </button>
+        </form>
+
+        <div class="benefits-list">
+            <h4>What you'll get:</h4>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> Full access to all features</li>
+                <li><i class="fas fa-check-circle"></i> Unlimited products & sales</li>
+                <li><i class="fas fa-check-circle"></i> Real-time inventory tracking</li>
+                <li><i class="fas fa-check-circle"></i> Advanced reports & analytics</li>
+                <li><i class="fas fa-check-circle"></i> No credit card required</li>
+            </ul>
+        </div>
+
+        <div class="login-link">
+            Already have an account? <a href="{{ url_for('main.login') }}">Sign in here</a>
         </div>
     </div>
 </div>
+
+<script>
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
 {% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Your Trial - BMSgo{% endblock %}
+
+{% block content %}
+<style>
+    .welcome-container {
+        background-color: #1C1F2A;
+        color: #E0E1DD;
+        padding: 40px;
+        border-radius: 8px;
+        max-width: 800px;
+        margin: 80px auto;
+        text-align: center;
+    }
+
+    .welcome-header {
+        color: #FFD700;
+        margin-bottom: 30px;
+    }
+
+    .trial-info {
+        background-color: #2D2F3C;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+
+    .days-remaining {
+        font-size: 2rem;
+        color: #2E8B57;
+        margin: 20px 0;
+    }
+
+    .next-steps {
+        text-align: left;
+        margin: 30px 0;
+    }
+
+    .next-steps li {
+        margin: 15px 0;
+        padding-left: 25px;
+        position: relative;
+    }
+
+    .next-steps li:before {
+        content: "→";
+        position: absolute;
+        left: 0;
+        color: #FFD700;
+    }
+
+    .btn-get-started {
+        background-color: #2E8B57;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-get-started:hover {
+        background-color: #276747;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="welcome-container">
+    <h1 class="welcome-header">Welcome to BMSgo!</h1>
+
+    <div class="trial-info">
+        <h3>Your Trial Has Started</h3>
+        <div class="days-remaining">
+            {{ days_remaining }} Days Remaining
+        </div>
+        <p>Your trial will end on {{ trial_end_date.strftime('%B %d, %Y') }}</p>
+        {% if subscription_info %}
+            <p>Selected Plan: {{ subscription_info.plan_type | title }}</p>
+        {% endif %}
+    </div>
+
+    <div class="next-steps">
+        <h3>Next Steps:</h3>
+        <ul>
+            <li>Add your first product to the inventory</li>
+            <li>Set up your business profile</li>
+            <li>Explore the dashboard features</li>
+            <li>Configure email notifications</li>
+        </ul>
+    </div>
+
+    <a href="{{ url_for('users.personal_dashboard') }}" class="btn-get-started">
+        Go to Dashboard
+    </a>
+</div>
+{% endblock %}

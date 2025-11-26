@@ -1,7 +1,6 @@
 from inventory_system import db
 
 # Association table to link users and permissions (Many-to-Many relationship)
-# Ensure this table is defined only once in the application
 user_permissions = db.Table(
     'user_permissions',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
@@ -9,7 +8,6 @@ user_permissions = db.Table(
     extend_existing=True
 )
 
-# Define the Permission model
 class Permission(db.Model):
     """
     Model representing permissions in the system.

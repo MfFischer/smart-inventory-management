@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Sale Details
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 600px;">
+    <h1 class="text-light">Sale Details</h1>
+
+    <!-- Action Buttons -->
+    <div class="mb-4">
+        <a href="{{ url_for('sales.sale_receipt', sale_id=sale.id) }}" class="btn btn-primary">
+            <i class="fas fa-receipt"></i> View Receipt
+        </a>
+        <a href="{{ url_for('sales.sale_list') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Sales List
+        </a>
+    </div>
+
+    <div class="card text-light bg-dark mb-4">
+        <div class="card-header">
+            <h4 class="text-white">Sale Information</h4>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item bg-dark text-white">
+                    <strong>Sale ID:</strong> {{ sale.id or 'N/A' }}
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <strong>Customer Name:</strong> {{ sale.customer_name or 'N/A' }}
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <strong>Total Price:</strong> ${{ sale.total_price or 'N/A' }}
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <strong>Discount Percentage:</strong> {{ sale.discount_percentage or '0' }}%
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <strong>Profit:</strong> ${{ sale.profit or 'N/A' }}
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <strong>Sale Status:</strong> {{ sale.sale_status or 'N/A' }}
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <strong>Sale Date:</strong> {{ sale.sale_date.strftime('%Y-%m-%d %H:%M:%S') if sale.sale_date else 'N/A' }}
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <strong>Created At:</strong> {{ sale.created_at.strftime('%Y-%m-%d %H:%M:%S') if sale.created_at else 'N/A' }}
+                </li>
+                <li class="list-group-item bg-dark text-white">
+                    <strong>Updated At:</strong> {{ sale.updated_at.strftime('%Y-%m-%d %H:%M:%S') if sale.updated_at else 'N/A' }}
+                </li>
+            </ul>
+
+            <!-- Sale Items Section -->
+            <div class="mt-4">
+                <h5 class="text-white">Sale Items</h5>
+                <ul class="list-group list-group-flush">
+                    {% for item in sale.sale_items %}
+                    <li class="list-group-item bg-dark text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ item.product.name }}</strong><br>
+                                Quantity: {{ item.quantity }}<br>
+                                Unit Price: ${{ item.price_per_unit }}<br>
+                                Cost Price: ${{ item.product.cost_price }}<br>
+                                Discount: {{ item.discount_percentage }}%
+                            </div>
+                            <div class="text-end">
+                                Subtotal: ${{ (item.quantity * item.price_per_unit)|float }}
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="{{ url_for('sales.sale_list') }}" class="btn btn-secondary">Back to Sales List</a>
+</div>
+{% endblock %}

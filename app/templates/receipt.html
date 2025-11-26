@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}Receipt - {{ sale.receipt_number }}{% endblock %}
+
+{% block content %}
+<style>
+    /* Hide the default business header from base template */
+    .page-header {
+        display: none;
+    }
+
+    /* Receipt specific styles */
+    .receipt-wrapper {
+        background-color: #ffffff;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        margin: 2rem auto;
+        max-width: 800px;
+        padding: 2rem;
+    }
+
+    .receipt-content {
+        color: #1e3a5f;
+    }
+
+    .receipt-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .receipt-header h2 {
+        color: #1e3a5f;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .receipt-header p {
+        color: #1e3a5f;
+        margin: 0.3rem 0;
+        font-size: 16px;
+    }
+
+    .receipt-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .receipt-table {
+        width: 100%;
+        margin-bottom: 2rem;
+        border-collapse: collapse;
+    }
+
+    .receipt-table th {
+        background-color: #f8f9fa;
+        color: #1e3a5f;
+        padding: 12px;
+        border: 1px solid #dee2e6;
+    }
+
+    .receipt-table td {
+        color: #1e3a5f;
+        padding: 12px;
+        border: 1px solid #dee2e6;
+    }
+
+    .receipt-table .text-end {
+        text-align: right;
+    }
+
+    .receipt-table .text-center {
+        text-align: center;
+    }
+
+    .receipt-footer {
+        text-align: center;
+        margin-top: 2rem;
+        color: #1e3a5f;
+    }
+
+    .receipt-actions {
+        margin-bottom: 2rem;
+    }
+
+    .barcode-section {
+        text-align: center;
+        margin: 2rem 0;
+        padding: 1rem;
+        border-top: 1px dashed #dee2e6;
+    }
+
+    .barcode-container {
+        display: inline-block;
+        padding: 1rem;
+        background: #fff;
+        border-radius: 4px;
+    }
+
+    .receipt-number {
+        font-family: monospace;
+        font-size: 14px;
+        color: #1e3a5f;
+        margin-top: 0.5rem;
+    }
+
+    @media print {
+        body {
+            background-color: white !important;
+        }
+
+        .receipt-wrapper {
+            box-shadow: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .receipt-actions {
+            display: none;
+        }
+
+        .navbar, .footer {
+            display: none;
+        }
+
+        .barcode-section {
+            page-break-inside: avoid;
+        }
+    }
+</style>
+
+<div class="container">
+    <!-- Print and Back buttons -->
+    <div class="receipt-actions">
+        <button onclick="window.print()" class="btn btn-primary">
+            <i class="fas fa-print"></i> Print Receipt
+        </button>
+        <a href="{{ url_for('sales.sale_details', sale_id=sale.id) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Details
+        </a>
+    </div>
+
+    <!-- Receipt Content -->
+    <div class="receipt-wrapper">
+        <div class="receipt-content">
+            <!-- Business Header -->
+            <div class="receipt-header">
+                <h2>{{ business.name }}</h2>
+                <p>{{ business.address }}</p>
+                <p>Tel: {{ business.phone }}</p>
+                {% if business.email %}
+                    <p>{{ business.email }}</p>
+                {% endif %}
+                {% if business.vat_id %}
+                    <p>VAT ID: {{ business.vat_id }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Receipt Info -->
+            <div class="receipt-info">
+                <div>
+                    <p><strong>Receipt #:</strong> {{ sale.receipt_number }}</p>
+                    <p><strong>Date:</strong> {{ sale.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                </div>
+                <div>
+                    <p><strong>Customer:</strong> {{ sale.customer_name or 'Walk-in Customer' }}</p>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <table class="receipt-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-end">Unit Price</th>
+                        <th class="text-end">Discount</th>
+                        <th class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in sale.sale_items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="text-end">${{ "%.2f"|format(item.price_per_unit|float) }}</td>
+                        <td class="text-end">{{ "%.1f"|format(item.discount_percentage|float) }}%</td>
+                        <td class="text-end">${{ "%.2f"|format((item.quantity|float * item.price_per_unit|float * (1 - item.discount_percentage|float/100))) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                        <td class="text-end">${{ "%.2f"|format(sale.total_price|float) }}</td>
+                    </tr>
+                    {% if business.vat_rate %}
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>VAT ({{ "%.1f"|format(business.vat_rate|float) }}%):</strong></td>
+                        <td class="text-end">${{ "%.2f"|format((sale.total_price|float * (business.vat_rate|float / 100))) }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Total (Including VAT):</strong></td>
+                        <td class="text-end">${{ "%.2f"|format((sale.total_price|float * (1 + business.vat_rate|float / 100))) }}</td>
+                    </tr>
+                    {% endif %}
+                </tfoot>
+            </table>
+
+            <!-- Barcode Section -->
+            <div class="barcode-section">
+                <div class="barcode-container">
+                    <div id="barcode-root"></div>
+                    <div class="receipt-number">{{ sale.receipt_number }}</div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="receipt-footer">
+                <p>Thank you for your business!</p>
+                <p><small>This is a computer-generated receipt and requires no signature.</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- React and Barcode Generator Script -->
+<script type="module">
+    import { createRoot } from 'react-dom/client';
+    import BarcodeGenerator from './BarcodeGenerator';
+
+    // Initialize the barcode generator
+    const container = document.getElementById('barcode-root');
+    const root = createRoot(container);
+    root.render(React.createElement(BarcodeGenerator, {
+        value: '{{ sale.receipt_number }}'
+    }));
+</script>
+{% endblock %}

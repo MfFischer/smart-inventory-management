@@ -1,1 +1,80 @@
+# Environment variables
 .env
+
+# Personal guides and documentation (not for public repo)
+DEMO_MODE_GUIDE.md
+DEPLOYMENT_CHECKLIST.md
+VPS_UPLOAD_GUIDE.md
+GUMROAD_SETUP_GUIDE.md
+STANDALONE_MARKETING_STRATEGY.md
+COMPLETE_SUMMARY.md
+MODERNIZATION_SUMMARY.md
+QUICK_START_GUIDE.md
+DISTRIBUTION_GUIDE.md
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+*.egg
+*.whl
+*.zip
+
+# PyInstaller
+*.spec
+*.manifest
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated PDFs and reports
+*.pdf
+
+# Migrations backup
+migrations/versions_backup/
+
+# Static files (if generated)
+static/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp

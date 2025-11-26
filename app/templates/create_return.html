@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 600px;">
+    <h1>Create Return or Damaged Item</h1>
+
+    <!-- Form for returning sold items -->
+    <form action="{{ url_for('returns.create_return') }}" method="POST">
+        <div class="form-group mb-3">
+            <label for="receipt_number">Receipt Number (for returns):</label>
+            <input type="text" class="form-control" id="receipt_number" name="receipt_number" placeholder="Enter Receipt Number">
+        </div>
+
+        <!-- Form for reporting damaged items -->
+        <div class="form-group mb-3">
+            <label for="barcode">Barcode/Product Name (for damages):</label>
+            <input type="text" class="form-control" id="barcode" name="barcode" placeholder="Scan Barcode or Enter Product Name">
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="quantity">Quantity:</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" required>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="reason">Reason:</label>
+            <input type="text" class="form-control" id="reason" name="reason" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+        <a href="{{ url_for('returns.list_returns') }}" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>
+{% endblock %}

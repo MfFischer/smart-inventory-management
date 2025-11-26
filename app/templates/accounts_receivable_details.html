@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Accounts Receivable Details</h1>
+
+    <p><strong>Customer:</strong> {{ account.customer_name }}</p>
+    <p><strong>Amount Due:</strong> ${{ account.amount_due }}</p>
+    <p><strong>Due Date:</strong> {{ account.due_date.strftime('%Y-%m-%d') }}</p>
+    <p><strong>Status:</strong> {{ account.status }}</p>
+
+    <h3>Sale Information</h3>
+    <p><strong>Sale Date:</strong> {{ sale.sale_date.strftime('%Y-%m-%d') }}</p>
+    <p><strong>Items:</strong> <!-- Display each item in the sale here, if available --></p>
+
+    <div class="mt-4">
+        {% if account.status != 'paid' %}
+        <form action="{{ url_for('accounts_receivable.accounts_receivable_send_reminder', account_id=account.id) }}" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-warning">Send Reminder</button>
+        </form>
+        <form action="{{ url_for('accounts_receivable.accounts_receivable_mark_as_paid', account_id=account.id) }}" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-success">Mark as Paid</button>
+        </form>
+        {% endif %}
+        <a href="{{ url_for('accounts_receivable.accounts_receivable_list') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+{% endblock %}

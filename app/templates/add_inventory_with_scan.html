@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4 text-white bg-dark p-4 rounded" style="max-width: 600px;">
+    <h1 class="text-center">Add Inventory by Scanning Barcode/QR Code</h1>
+
+    <button id="scanButton" class="btn btn-primary w-100">Scan Barcode/QR Code</button>
+    <div id="scanner-container" class="mt-3">
+        <video id="video" width="100%" height="300" style="display:none;" class="rounded"></video>
+        <div id="errorMessage" class="alert alert-danger mt-2" style="display:none;"></div>
+    </div>
+
+    <div id="productInfo" class="alert alert-info mt-3" style="display:none;">
+        <h5 id="productName"></h5>
+        <p id="currentStock" class="mb-0"></p>
+    </div>
+
+    <form id="inventoryForm" method="post" action="{{ url_for('inventory.add_inventory_with_scan') }}" class="mt-4">
+        <div class="form-group">
+            <label for="barcode">Barcode:</label>
+            <div class="input-group">
+                <input type="text" id="barcode" name="barcode" class="form-control" required>
+                <button type="button" id="manualSearchBtn" class="btn btn-secondary">Search</button>
+            </div>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="stock_quantity">Quantity to Add:</label>
+            <input type="number" id="stock_quantity" name="stock_quantity" class="form-control" required min="1">
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="unit_price">Unit Price:</label>
+            <input type="number" id="unit_price" name="unit_price" class="form-control" step="0.01">
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="cost_price">Cost Price:</label>
+            <input type="number" id="cost_price" name="cost_price" class="form-control" step="0.01">
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="reorder_threshold">Reorder Threshold:</label>
+            <input type="number" id="reorder_threshold" name="reorder_threshold" class="form-control">
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="supplier_id">Supplier:</label>
+            <select id="supplier_id" name="supplier_id" class="form-control">
+                <option value="">Select a supplier</option>
+                {% for supplier in suppliers %}
+                <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-4 w-100">Update Inventory</button>
+        <a href="{{ url_for('inventory.inventory_list') }}" class="btn btn-secondary mt-3 w-100">Back to Inventory List</a>
+    </form>
+</div>
+
+<script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+<script>
+    let selectedDeviceId = null;
+    let codeReader = null;
+
+    async function initializeScanner() {
+        try {
+            // Create instance of BrowserMultiFormatReader
+            if (!codeReader) {
+                codeReader = new ZXing.BrowserMultiFormatReader();
+            }
+
+            // Get video devices
+            const videoInputDevices = await codeReader.listVideoInputDevices();
+            console.log('Video input devices:', videoInputDevices);
+
+            // Prefer environment facing (back) camera
+            selectedDeviceId = videoInputDevices.find(device => device.label.toLowerCase().includes('back'))?.deviceId
+                           || videoInputDevices[0]?.deviceId;
+
+            if (!selectedDeviceId) {
+                throw new Error('No camera device found');
+            }
+
+            const video = document.getElementById('video');
+            video.style.display = 'block';
+
+            // Start decoding from the selected camera
+            await codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
+                if (result) {
+                    console.log('Barcode found:', result.text);
+                    handleScannedBarcode(result.text);
+                }
+                if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error('Scanning error:', err);
+                }
+            });
+
+            console.log('Scanner started with device:', selectedDeviceId);
+        } catch (err) {
+            console.error('Scanner initialization error:', err);
+            showError(`Failed to initialize scanner: ${err.message}`);
+        }
+    }
+
+    async function handleScannedBarcode(barcode) {
+        console.log('Processing barcode:', barcode);
+        document.getElementById('barcode').value = barcode;
+
+        try {
+            const response = await fetch(`{{ url_for('inventory.get_product_by_barcode') }}?barcode=${barcode}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log('Product data:', data);
+                document.getElementById('unit_price').value = data.unit_price || '';
+                document.getElementById('cost_price').value = data.cost_price || '';
+                document.getElementById('reorder_threshold').value = data.reorder_point || '';
+                if (data.supplier_id) {
+                    document.getElementById('supplier_id').value = data.supplier_id;
+                }
+
+                document.getElementById('productName').textContent = data.name;
+                document.getElementById('currentStock').textContent = `Current Stock: ${data.current_stock}`;
+                document.getElementById('productInfo').style.display = 'block';
+
+                // Stop scanning after successful read
+                stopScanning();
+            } else {
+                showError(data.error || 'Product not found');
+            }
+        } catch (error) {
+            console.error('API error:', error);
+            showError('Error fetching product details');
+        }
+    }
+
+    function stopScanning() {
+        if (codeReader) {
+            codeReader.reset();
+            document.getElementById('video').style.display = 'none';
+        }
+    }
+
+    function showError(message) {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    // Event Listeners
+    document.getElementById('scanButton').addEventListener('click', async () => {
+        document.getElementById('errorMessage').style.display = 'none';
+        document.getElementById('productInfo').style.display = 'none';
+
+        if (!navigator.mediaDevices?.getUserMedia) {
+            showError('Camera access not supported in this browser');
+            return;
+        }
+
+        try {
+            await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            await initializeScanner();
+        } catch (err) {
+            console.error('Camera access error:', err);
+            showError('Failed to access camera. Please grant camera permissions.');
+        }
+    });
+
+    // Manual search button
+    document.getElementById('manualSearchBtn').addEventListener('click', () => {
+        const barcode = document.getElementById('barcode').value;
+        if (barcode) {
+            handleScannedBarcode(barcode);
+        } else {
+            showError('Please enter a barcode');
+        }
+    });
+
+    // Clean up when leaving the page
+    window.addEventListener('beforeunload', stopScanning);
+
+    // Debug logging for camera detection
+    navigator.mediaDevices.enumerateDevices()
+        .then(devices => {
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            console.log('Available video devices:', videoDevices);
+        })
+        .catch(err => console.error('Error enumerating devices:', err));
+</script>
+{% endblock %}

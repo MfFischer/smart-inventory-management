@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Return Details</h2>
+    <p><strong>Product:</strong> {{ returned_item.inventory.product_name }}</p>
+    <p><strong>Quantity:</strong> {{ returned_item.quantity }}</p>
+    <p><strong>Return Date:</strong> {{ returned_item.return_date }}</p>
+    <p><strong>Reason:</strong> {{ returned_item.reason }}</p>
+    <p><strong>Added by:</strong> {{ returned_item.user.username }}</p>
+    {% if returned_item.updated_by %}
+        <p><strong>Last Edited by:</strong> {{ returned_item.updated_by }}</p>
+        <p><strong>Last Edited At:</strong> {{ returned_item.updated_at }}</p>
+    {% endif %}
+    <a href="{{ url_for('returns.list_returns') }}" class="btn btn-primary">Back to List</a>
+</div>
+{% endblock %}

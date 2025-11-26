@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Visualization
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Create Visualization</h2>
+        <a href="{{ url_for('users.personal_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <form method="POST" action="{{ url_for('visualizations.create_visualization_view') }}" class="form-style">
+        <!-- Report Type Selector -->
+        <div class="form-group mb-3" style="max-width: 400px;">
+            <label for="report_type" class="form-label">Report Type</label>
+            <select id="report_type" name="report_type" class="form-control" required>
+                <option value="">Select Report Type</option>
+                <option value="sales">Sales</option>
+                <option value="expenses">Expenses</option>
+                <option value="inventory">Inventory</option>
+            </select>
+        </div>
+
+        <!-- Time Period Selector -->
+        <div class="form-group mb-3" style="max-width: 400px;">
+            <label for="time_period" class="form-label">Analysis Period</label>
+            <select id="time_period" name="time_period" class="form-control" required>
+                <option value="daily">Daily Analysis (up to 7 days)</option>
+                <option value="weekly">Weekly Analysis (up to 1 month)</option>
+                <option value="monthly">Monthly Analysis (up to 1 year)</option>
+                <option value="yearly">Yearly Analysis (up to 5 years)</option>
+            </select>
+        </div>
+
+        <!-- Date Range Selectors -->
+        <div class="form-group mb-3" style="max-width: 400px;">
+            <label for="start_date" class="form-label">Start Date</label>
+            <input type="date" id="start_date" name="start_date" class="form-control" required>
+        </div>
+        <div class="form-group mb-4" style="max-width: 400px;">
+            <label for="end_date" class="form-label">End Date</label>
+            <input type="date" id="end_date" name="end_date" class="form-control" required>
+            <small id="dateHelp" class="form-text text-muted mt-1"></small>
+        </div>
+
+        <!-- Visualization Options -->
+        <div class="row mb-4">
+            <!-- Bar Chart Card -->
+            <div class="col-md-4">
+                <div class="card bg-primary text-white h-100">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar"></i> Bar Chart
+                    </div>
+                    <div class="card-body d-flex flex-column align-items-center justify-content-between">
+                        <p class="card-text text-center">Compare values across different categories</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="chart_type" id="bar" value="bar" required>
+                            <label class="form-check-label" for="bar">Select Bar Chart</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie Chart Card -->
+            <div class="col-md-4">
+                <div class="card bg-success text-white h-100">
+                    <div class="card-header">
+                        <i class="fas fa-chart-pie"></i> Pie Chart
+                    </div>
+                    <div class="card-body d-flex flex-column align-items-center justify-content-between">
+                        <p class="card-text text-center">Show proportions of a whole</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="chart_type" id="pie" value="pie" required>
+                            <label class="form-check-label" for="pie">Select Pie Chart</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Line Chart Card -->
+            <div class="col-md-4">
+                <div class="card bg-warning text-dark h-100">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i> Line Chart
+                    </div>
+                    <div class="card-body d-flex flex-column align-items-center justify-content-between">
+                        <p class="card-text text-center">Track changes over time</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="chart_type" id="line" value="line" required>
+                            <label class="form-check-label" for="line">Select Line Chart</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-magic me-2"></i>Create Visualization
+        </button>
+    </form>
+</div>
+
+<style>
+.card {
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.card-text {
+    margin-bottom: 1rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const timePeriodSelect = document.getElementById('time_period');
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    const dateHelp = document.getElementById('dateHelp');
+
+    function updateDateHelp() {
+        const selectedPeriod = timePeriodSelect.value;
+        let helpText = '';
+
+        switch(selectedPeriod) {
+            case 'daily':
+                helpText = 'Please select a date range of 7 days or less';
+                break;
+            case 'weekly':
+                helpText = 'Please select a date range of up to 1 month';
+                break;
+            case 'monthly':
+                helpText = 'Please select a date range of up to 1 year';
+                break;
+            case 'yearly':
+                helpText = 'Please select a date range of up to 5 years';
+                break;
+        }
+        dateHelp.textContent = helpText;
+    }
+
+    function validateDateRange() {
+        const start = new Date(startDateInput.value);
+        const end = new Date(endDateInput.value);
+        const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+        const selectedPeriod = timePeriodSelect.value;
+
+        let isValid = true;
+        let message = '';
+
+        switch(selectedPeriod) {
+            case 'daily':
+                isValid = diffDays <= 7;
+                message = 'Daily analysis requires 7 days or less';
+                break;
+            case 'weekly':
+                isValid = diffDays <= 31;
+                message = 'Weekly analysis requires 31 days or less';
+                break;
+            case 'monthly':
+                isValid = diffDays <= 365;
+                message = 'Monthly analysis requires 1 year or less';
+                break;
+            case 'yearly':
+                isValid = diffDays <= 1825;
+                message = 'Yearly analysis requires 5 years or less';
+                break;
+        }
+
+        if (!isValid) {
+            alert(message);
+            endDateInput.value = '';
+        }
+    }
+
+    timePeriodSelect.addEventListener('change', updateDateHelp);
+    endDateInput.addEventListener('change', validateDateRange);
+    startDateInput.addEventListener('change', function() {
+        if (endDateInput.value) {
+            validateDateRange();
+        }
+    });
+
+    // Initialize help text
+    updateDateHelp();
+});
+</script>
+{% endblock %}

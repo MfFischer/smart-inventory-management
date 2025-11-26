@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}Visualization - {{ report_type|title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header and Actions -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-light">{{ report_type|title }} Visualization</h2>
+        <div class="btn-group">
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="fas fa-print"></i> Print
+            </button>
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#pdfPreviewModal" onclick="handlePreviewClick()">
+                <i class="fas fa-file-pdf"></i> Preview PDF
+            </button>
+            <a href="{{ url_for('visualizations.create_visualization_view') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Chart Display -->
+    <div class="card bg-dark visualization-card">
+        <div class="card-body p-4">
+            <div id="mainChart" class="chart-wrapper">
+                {{ chart_html|safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-labelledby="pdfPreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-white">
+                <div class="modal-header bg-dark text-light border-bottom border-secondary">
+                    <h5 class="modal-title" id="pdfPreviewModalLabel">PDF Preview</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="pdf-preview">
+                        <!-- Business Header -->
+                        <div class="report-header">
+                            <h1 class="company-name">{{ business.name }}</h1>
+                            <div class="company-details">
+                                <p>{{ business.address }}</p>
+                                <p>Tel: {{ business.phone }}</p>
+                                {% if business.email %}
+                                    <p>Email: {{ business.email }}</p>
+                                {% endif %}
+                                {% if business.vat_id %}
+                                    <p>VAT ID: {{ business.vat_id }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Report Title -->
+                        <div class="report-title">
+                            <h2>{{ report_type|title }} Report</h2>
+                        </div>
+
+                        <!-- Modal Chart Container -->
+                        <div class="chart-container">
+                            <div id="modalChart" class="chart-wrapper">
+                                <!-- Chart will be cloned here -->
+                            </div>
+                        </div>
+
+                        <!-- Report Details -->
+                        <div class="report-footer">
+                            <p><strong>Generated:</strong> {{ visualization.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                            {% if visualization.start_date %}
+                                <p><strong>Period:</strong>
+                                    {{ visualization.start_date.strftime('%Y-%m-%d') }}
+                                    to
+                                    {{ visualization.end_date.strftime('%Y-%m-%d') }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-dark border-top border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="{{ url_for('visualizations.download_visualization', vis_id=vis_id) }}"
+                       class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Container and Card Styles */
+    .container-fluid {
+        max-width: 1400px;
+        padding: 0 2rem;
+    }
+
+    .visualization-card {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        background-color: #1a1a1a !important;
+    }
+
+    /* Chart Wrapper Styles */
+    .chart-wrapper {
+        width: 100%;
+        height: 600px;
+        position: relative;
+    }
+
+    .chart-wrapper .js-plotly-plot {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    /* Modal Styles */
+    .modal-xl {
+        max-width: 95% !important;
+    }
+
+    .modal-body {
+        background-color: white;
+        padding: 2rem !important;
+    }
+
+    /* PDF Preview Styles */
+    .pdf-preview {
+        background-color: white;
+        color: #1e3a5f;
+    }
+
+    /* Business Header Styles */
+    .report-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #1e3a5f;
+    }
+
+    .company-name {
+        color: #1e3a5f;
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .company-details {
+        color: #2c3e50;
+        font-size: 16px;
+    }
+
+    .company-details p {
+        margin: 5px 0;
+    }
+
+    /* Report Title Styles */
+    .report-title {
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    .report-title h2 {
+        color: #1e3a5f;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    /* Chart Container Styles */
+    .chart-container {
+        background-color: white;
+        padding: 20px;
+        margin: 30px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        min-height: 500px;
+    }
+
+    /* Report Footer Styles */
+    .report-footer {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #dee2e6;
+        color: #2c3e50;
+    }
+
+    .report-footer p {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .report-footer strong {
+        color: #1e3a5f;
+    }
+
+    /* Print Styles */
+    @media print {
+        body {
+            background-color: white !important;
+        }
+
+        .btn-group, .modal-header, .modal-footer {
+            display: none !important;
+        }
+
+        .card {
+            border: none !important;
+            background-color: white !important;
+        }
+
+        .chart-wrapper {
+            height: 500px !important;
+        }
+
+        .visualization-card {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .card-body {
+            padding: 0 !important;
+        }
+    }
+
+    /* Fix for modal chart text colors */
+    #modalChart .js-plotly-plot .gtitle,
+    #modalChart .js-plotly-plot .xtitle,
+    #modalChart .js-plotly-plot .ytitle {
+        fill: #1e3a5f !important;
+    }
+
+    #modalChart .js-plotly-plot .legend text {
+        fill: #1e3a5f !important;
+    }
+
+    #modalChart .js-plotly-plot .xtick text,
+    #modalChart .js-plotly-plot .ytick text {
+        fill: #2c3e50 !important;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Store the initial chart data
+    let mainChartElement = document.querySelector('#mainChart .js-plotly-plot');
+    let storedChartData = null;
+
+    if (mainChartElement && window.Plotly) {
+        storedChartData = {
+            data: mainChartElement.data,
+            layout: mainChartElement.layout
+        };
+    }
+
+    // Function to handle preview button click
+    window.handlePreviewClick = function() {
+        const modalChart = document.getElementById('modalChart');
+        const mainChart = document.querySelector('#mainChart .js-plotly-plot');
+
+        // Clear previous chart if any
+        modalChart.innerHTML = '';
+
+        if (mainChart && window.Plotly) {
+            // Clone the chart data
+            const newData = JSON.parse(JSON.stringify(mainChart.data));
+            const newLayout = JSON.parse(JSON.stringify(mainChart.layout));
+
+            // Adjust layout for PDF preview
+            newLayout.height = 500;
+            newLayout.width = null;
+            newLayout.paper_bgcolor = 'white';
+            newLayout.plot_bgcolor = 'white';
+            newLayout.font = {
+                color: '#1e3a5f',
+                size: 12
+            };
+            newLayout.title.font.color = '#1e3a5f';
+            if (newLayout.legend) {
+                newLayout.legend.font = {
+                    color: '#1e3a5f',
+                    size: 12
+                };
+                newLayout.legend.bgcolor = 'white';
+            }
+            if (newLayout.xaxis) {
+                newLayout.xaxis.tickfont = { color: '#2c3e50' };
+                newLayout.xaxis.titlefont = { color: '#1e3a5f' };
+                newLayout.xaxis.gridcolor = 'rgba(44, 62, 80, 0.1)';
+            }
+            if (newLayout.yaxis) {
+                newLayout.yaxis.tickfont = { color: '#2c3e50' };
+                newLayout.yaxis.titlefont = { color: '#1e3a5f' };
+                newLayout.yaxis.gridcolor = 'rgba(44, 62, 80, 0.1)';
+            }
+
+            // Create new chart in modal
+            window.Plotly.newPlot(modalChart, newData, newLayout, {
+                responsive: true,
+                displayModeBar: false
+            });
+        }
+    };
+
+    // Handle modal events
+    const pdfPreviewModal = document.getElementById('pdfPreviewModal');
+
+    pdfPreviewModal.addEventListener('shown.bs.modal', function () {
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+            const modalChart = document.querySelector('#modalChart .js-plotly-plot');
+            if (modalChart && window.Plotly) {
+                window.Plotly.Plots.resize(modalChart);
+            }
+        }, 100);
+    });
+
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            const charts = document.querySelectorAll('.js-plotly-plot');
+            charts.forEach(chart => {
+                if (window.Plotly) {
+                    window.Plotly.Plots.resize(chart);
+                }
+            });
+        }, 100);
+    });
+});
+</script>
+{% endblock %}

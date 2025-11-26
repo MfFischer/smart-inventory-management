@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 style="color: #333333;">User Profile</h1>
+    <div class="card mx-auto" style="max-width: 600px; background-color: #f9f9f9; color: #333333;">
+        <div class="card-body">
+            <h5 class="card-title">{{ current_user.username }}</h5>
+            <p class="card-text"><strong>Email:</strong> {{ current_user.email }}</p>
+            <p class="card-text"><strong>Role:</strong> {{ current_user.role | capitalize }}</p>
+            <p class="card-text"><strong>Status:</strong> {{ current_user.status | capitalize }}</p>
+            <p class="card-text"><strong>Member Since:</strong> {{ current_user.created_at.strftime('%B %d, %Y') if current_user.created_at else 'N/A' }}</p>
+            <p class="card-text"><strong>Last Login:</strong> {{ current_user.last_login.strftime('%B %d, %Y %H:%M') if current_user.last_login else 'N/A' }}</p>
+            <a href="{{ url_for('users.personal_dashboard') }}" class="btn btn-primary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

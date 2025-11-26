@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}
+Smart Inventory System - Report History
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-dark">Report History</h1>
+    <p class="text-dark">Access previously generated reports.</p>
+
+    <!-- Report History Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-light mt-3">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Report Type</th>
+                    <th>Generated At</th>
+                    <th>Format</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if report_history %}
+                    {% for report in report_history %}
+                    <tr>
+                        <td>{{ report.report_type }}</td>
+                        <td>{{ report.generated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ report.format.upper() }}</td>
+                        <td>
+                            <a href="{{ url_for('tables_reports.download_report', report_id=report.id) }}" class="btn btn-sm btn-primary">Download</a>
+                            <form action="{{ url_for('tables_reports.send_report_email', report_id=report.id) }}" method="post" class="d-inline">
+                                <input type="email" name="email" placeholder="Enter email" required class="form-control-sm d-inline w-auto">
+                                <button type="submit" class="btn btn-sm btn-secondary">Send via Email</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No reports available.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

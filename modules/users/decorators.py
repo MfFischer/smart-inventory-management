@@ -1,18 +1,28 @@
 from functools import wraps
-from flask import jsonify
+from flask import jsonify, redirect, url_for, flash, session, render_template
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from modules.users.models import User
+from flask_login import current_user, login_required
+
+def get_user():
+    """Helper function to get the user from either JWT or session."""
+    if 'access_token' in session:
+        # If using JWT, verify and get the identity
+        verify_jwt_in_request()
+        jwt_identity = get_jwt_identity()
+        user = User.query.filter_by(username=jwt_identity['username']).first()
+    elif current_user.is_authenticated:
+        # For session-based authentication, use Flask-Login's current_user
+        user = current_user
+    else:
+        user = None
+    return user
 
 def permission_required(permission_name):
-    """
-    Decorator to check if a user has the specified permission.
-    """
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            verify_jwt_in_request()
-            current_user = get_jwt_identity()
-            user = User.query.filter_by(username=current_user['username']).first()
+            user = get_user()
             if not user:
                 return jsonify({'message': 'User not found.'}), 404
             if not user.has_permission(permission_name):
@@ -22,32 +32,25 @@ def permission_required(permission_name):
     return decorator
 
 def role_required(*required_roles):
-    """
-    Decorator to check if a user has any of the required roles.
-    """
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            verify_jwt_in_request()
-            current_user = get_jwt_identity()
-            user = User.query.filter_by(username=current_user['username']).first()
-            if not user:
-                return jsonify({'message': 'User not found.'}), 404
+            user = current_user  # Assuming current_user from Flask-Login is used
+            if not user or not user.is_authenticated:
+                return redirect(url_for('main.login'))  # Redirect to login if not authenticated
+
             if user.role not in required_roles:
-                return jsonify({'message': f'Access forbidden: {required_roles} role required.'}), 403
+                flash(f"Access denied: Admin privileges required to access this page.", "error")
+                return render_template('access_denied.html')  # Render the custom error page
+
             return func(*args, **kwargs)
         return wrapper
     return decorator
 
 def active_user_required(func):
-    """
-    Decorator to check if a user is active.
-    """
     @wraps(func)
     def wrapper(*args, **kwargs):
-        verify_jwt_in_request()
-        current_user = get_jwt_identity()
-        user = User.query.filter_by(username=current_user['username']).first()
+        user = get_user()
         if not user:
             return jsonify({'message': 'User not found.'}), 404
         if user.status != 'active':
@@ -56,15 +59,10 @@ def active_user_required(func):
     return wrapper
 
 def role_or_permission_required(roles=None, permissions=None):
-    """
-    Decorator to check if a user has any of the specified roles or permissions.
-    """
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            verify_jwt_in_request()
-            current_user = get_jwt_identity()
-            user = User.query.filter_by(username=current_user['username']).first()
+            user = get_user()
             if not user:
                 return jsonify({'message': 'User not found.'}), 404
 

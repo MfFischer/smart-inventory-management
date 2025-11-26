@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Returned and Damaged Items</h1>
+
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('returns.list_returns') }}" class="mb-4">
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <input type="text" name="product_name" value="{{ search_product }}" class="form-control" placeholder="Search by Product Name">
+            </div>
+            <div class="col-md-4 mb-2">
+                <input type="date" name="date" value="{{ search_date }}" class="form-control" placeholder="Search by Date">
+            </div>
+            <div class="col-md-4 mb-2">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a href="{{ url_for('returns.list_returns') }}" class="btn btn-secondary">Clear</a>
+            </div>
+        </div>
+        <!-- Create Return Button Row with Spacing -->
+        <div class="row mt-2">
+            <div>
+                <a href="{{ url_for('returns.create_return') }}" class="btn btn-primary mb-3" style="width: 240px;">Create Return/Damaged Item</a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Returned/Damaged Items List -->
+    <div class="row">
+        {% for item in returned_items %}
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Product: {{ item.inventory.product_name }}</h5>
+                        <p class="card-text">Quantity: {{ item.quantity }}</p>
+                        <p class="card-text">Date Returned: {{ item.return_date }}</p>
+                        <a href="{{ url_for('returns.view_return', return_id=item.id) }}" class="btn btn-info">View</a>
+                        <a href="{{ url_for('returns.edit_return', return_id=item.id) }}" class="btn btn-warning">Edit</a>
+                        <form action="{{ url_for('returns.delete_return', return_id=item.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>No returned or damaged items found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory Report - BMSgo{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Control Panel (Dark Theme) -->
+    <div class="card bg-dark mb-4 control-panel">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="text-light mb-0">Inventory Report</h2>
+                    <p class="text-muted">Generate and view inventory status report</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print Report
+                    </button>
+                    <a href="{{ url_for('tables_reports.reports_dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back
+                    </a>
+                </div>
+            </div>
+
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label text-light">Start Date</label>
+                    <input type="date" name="start_date" class="form-control bg-dark text-light border-secondary"
+                           value="{{ request.args.get('start_date', '') }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-light">End Date</label>
+                    <input type="date" name="end_date" class="form-control bg-dark text-light border-secondary"
+                           value="{{ request.args.get('end_date', '') }}">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>Generate Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Professional Report (White Background) -->
+    <div class="professional-report">
+        <!-- Simplified Report Header -->
+        <div class="report-header">
+            <div class="header-content">
+                <div class="report-info-centered">
+                    <h2 class="report-title">Inventory Status Report</h2>
+                    <p class="report-date">Generated: {{ datetime.now().strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% if request.args.get('start_date') and request.args.get('end_date') %}
+                        <p class="report-period">Period: {{ request.args.get('start_date') }} to {{ request.args.get('end_date') }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards - Compact Grid Layout -->
+        <div class="summary-cards-container">
+            <div class="summary-card">
+                <h3>Total Items</h3>
+                <p class="number">{{ '{:,}'.format(total_items) }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Value</h3>
+                <p class="number">${{ '{:,.2f}'.format(total_value) }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Low Stock Items</h3>
+                <p class="number">{{ low_stock_count }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Average Value</h3>
+                <p class="number">${{ '{:,.2f}'.format(total_value / total_items if total_items > 0 else 0) }}</p>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        {% if inventory_data %}
+        <div class="report-section">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>SKU</th>
+                            <th class="text-center">In Stock</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-center">Reorder Point</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-end">Total Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in inventory_data %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.sku }}</td>
+                            <td class="text-center">{{ item.stock_quantity }}</td>
+                            <td class="text-end">${{ "%.2f"|format(item.unit_price|float) }}</td>
+                            <td class="text-center">{{ item.reorder_threshold }}</td>
+                            <td class="text-center">
+                                {% set is_low_stock = item.stock_quantity <= item.reorder_threshold %}
+                                <span class="status-badge {{ 'low-stock' if is_low_stock else 'sufficient' }}">
+                                    {{ "Low Stock" if is_low_stock else "Sufficient" }}
+                                </span>
+                            </td>
+                            <td class="text-end">${{ "%.2f"|format((item.unit_price|float * item.stock_quantity)) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-total">
+                            <td colspan="2"><strong>Totals</strong></td>
+                            <td class="text-center"><strong>{{ '{:,}'.format(total_items) }}</strong></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-end"><strong>${{ '{:,.2f}'.format(total_value) }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="no-data text-center py-5">
+            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+            <h4>No Inventory Data Available</h4>
+            <p class="text-muted">Try adjusting your filter criteria or add some inventory items.</p>
+        </div>
+        {% endif %}
+
+        <!-- Report Footer -->
+        <div class="report-footer">
+            <p>Generated by BMSgo Inventory Management System</p>
+            <p>Generated on {{ datetime.now().strftime('%Y-%m-%d at %H:%M:%S') }}</p>
+            {% if request.args.get('start_date') and request.args.get('end_date') %}
+                <p>Reporting Period: {{ request.args.get('start_date') }} to {{ request.args.get('end_date') }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Control Panel Styles */
+    .control-panel {
+        display: block;
+    }
+
+    /* Professional Report Styles */
+    .professional-report {
+        background-color: white;
+        color: #333;
+        padding: 20px;
+        max-width: 1000px;
+        margin: 0 auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Compact Header */
+    .report-header {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #1e3a5f;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .report-info-centered {
+        text-align: center;
+    }
+
+    .report-title {
+        color: #1e3a5f;
+        font-size: 20px;
+        margin-bottom: 5px;
+    }
+
+    .report-date, .report-period {
+        color: #666;
+        font-size: 12px;
+        margin: 2px 0;
+    }
+
+    /* Compact Summary Cards */
+    .summary-cards-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 6px;
+        text-align: center;
+        border: 1px solid #dee2e6;
+    }
+
+    .summary-card h3 {
+        color: #1e3a5f;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .summary-card .number {
+        color: #333;
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    /* Table Styles */
+    .table {
+        margin-bottom: 0;
+        color: #333;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        color: #1e3a5f;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+        padding: 8px;
+    }
+
+    .table td, .table th {
+        padding: 8px;
+        vertical-align: middle;
+    }
+
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .status-badge.low-stock {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .status-badge.sufficient {
+        background-color: #198754;
+        color: white;
+    }
+
+    .table-total {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    /* Report Footer */
+    .report-footer {
+        margin-top: 20px;
+        padding-top: 10px;
+        border-top: 1px solid #dee2e6;
+        text-align: center;
+        color: #666;
+        font-size: 11px;
+    }
+
+    .report-footer p {
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    /* No Data State */
+    .no-data {
+        color: #666;
+        padding: 20px 0;
+    }
+
+    .no-data i {
+        color: #1e3a5f;
+    }
+
+    /* Print Styles */
+    @media print {
+        body {
+            background-color: white;
+        }
+
+        .control-panel {
+            display: none !important;
+        }
+
+        .professional-report {
+            box-shadow: none;
+            padding: 0;
+            max-width: none;
+        }
+
+        .container-fluid {
+            padding: 0;
+            margin: 0;
+        }
+
+        .summary-cards-container {
+            page-break-inside: avoid;
+        }
+
+        .summary-card {
+            background-color: transparent !important;
+            border: 1px solid #dee2e6;
+        }
+
+        .table {
+            font-size: 11px;
+        }
+
+        .table td, .table th {
+            padding: 6px;
+        }
+
+        .status-badge {
+            border: 1px solid !important;
+        }
+
+        .status-badge.low-stock {
+            color: #dc3545 !important;
+            background-color: transparent !important;
+        }
+
+        .status-badge.sufficient {
+            color: #198754 !important;
+            background-color: transparent !important;
+        }
+    }
+
+    /* Responsive Layout */
+    @media (max-width: 768px) {
+        .summary-cards-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .table {
+            font-size: 12px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .summary-cards-container {
+            grid-template-columns: 1fr;
+        }
+
+        .professional-report {
+            padding: 10px;
+        }
+    }
+</style>
+{% endblock %}

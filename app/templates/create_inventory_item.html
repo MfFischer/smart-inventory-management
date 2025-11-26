@@ -6,174 +6,219 @@ Smart Inventory System - Create Inventory Item
 
 {% block content %}
 <div class="container mt-4">
-    <h1>Create Inventory Item</h1>
+    <div class="page-header">
+        <h1><i class="fas fa-warehouse"></i> Receive Stock</h1>
+        <p>Add inventory items to your stock</p>
+    </div>
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
 
-    <form method="POST" action="{{ url_for('inventory.inventory_create') }}">
-        <!-- Product Section -->
-        <div class="mb-3">
-            <label for="product_select" class="form-label">
-                Product
-            </label>
-            <select id="product_select"
-                    name="product_id"
-                    class="form-select"
-            >
-                <option value="">
-                    Select a product or add new
-                </option>
-                {% for product in products %}
-                <option value="{{ product.id }}">
-                    {{ product.name }}
-                </option>
-                {% endfor %}
-                <option value="new">
-                    + Add New Product
-                </option>
-            </select>
-        </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
-        <div id="new_product_fields" style="display:none;">
-            <div class="mb-3">
-                <label for="new_product_name" class="form-label">
-                    New Product Name
-                </label>
-                <input type="text"
-                       class="form-control"
-                       id="new_product_name"
-                       name="new_product_name"
-                >
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('inventory.inventory_create') }}">
+                        <!-- Product Section -->
+                        <div class="mb-3">
+                            <label for="product_select" class="form-label">Product <span class="text-danger">*</span></label>
+                            <select id="product_select" name="product_id" class="form-select" required>
+                                <option value="">Select a product or add new</option>
+                                {% for product in products %}
+                                <option value="{{ product.product_id }}">{{ product.name }}</option>
+                                {% endfor %}
+                                <option value="new">+ Add New Product</option>
+                            </select>
+                        </div>
+
+                        <!-- New Product Fields -->
+                        <div id="new_product_fields" style="display: none;" class="border-top pt-3 mt-3">
+                            <h6 class="mb-3"><i class="fas fa-box"></i> New Product Information</h6>
+                            <div class="mb-3">
+                                <label for="new_product_name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="new_product_name" name="new_product_name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="new_product_description" class="form-label">Description</label>
+                                <textarea class="form-control" id="new_product_description" name="new_product_description" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Supplier Section -->
+                        <div class="mb-3">
+                            <label for="supplier_id" class="form-label">Supplier <span class="text-danger">*</span></label>
+                            <select id="supplier_id" name="supplier_id" class="form-select" required>
+                                <option value="">Select a supplier or add new</option>
+                                {% for supplier in suppliers %}
+                                <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                                {% endfor %}
+                                <option value="new">+ Add New Supplier</option>
+                            </select>
+                        </div>
+
+                        <!-- New Supplier Fields -->
+                        <div id="new_supplier_fields" style="display: none;" class="border-top pt-3 mt-3">
+                            <h6 class="mb-3"><i class="fas fa-truck"></i> New Supplier Information</h6>
+                            <div class="mb-3">
+                                <label for="new_supplier_name" class="form-label">Supplier Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="new_supplier_name" name="new_supplier_name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="new_supplier_email" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="new_supplier_email" name="new_supplier_email">
+                                <div class="form-text">Email is required for supplier notifications.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="new_supplier_contact" class="form-label">Contact Person</label>
+                                <input type="text" class="form-control" id="new_supplier_contact" name="new_supplier_contact">
+                            </div>
+                        </div>
+
+                        <!-- Inventory Details -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="stock_quantity" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" min="0" value="0" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="reorder_threshold" class="form-label">Reorder Threshold <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="reorder_threshold" name="reorder_threshold" min="0" value="0" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="unit_price" class="form-label">Unit Price (Selling) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" min="0" class="form-control" id="unit_price" name="unit_price" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="cost_price" class="form-label">Cost Price <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" min="0" class="form-control" id="cost_price" name="cost_price" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary w-100 mb-2">
+                                <i class="fas fa-plus-circle"></i> Create Inventory Item
+                            </button>
+                            <a href="{{ url_for('inventory.inventory_list') }}" class="btn btn-secondary w-100">
+                                <i class="fas fa-arrow-left"></i> Back to Inventory List
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="new_product_description" class="form-label">
-                    New Product Description
-                </label>
-                <textarea class="form-control"
-                          id="new_product_description"
-                          name="new_product_description">
-                </textarea>
-            </div>
         </div>
-
-        <!-- Supplier Section -->
-        <div class="mb-3">
-            <label for="supplier_select" class="form-label">
-                Supplier
-            </label>
-            <select id="supplier_select"
-                    name="supplier_id"
-                    class="form-select">
-                <option value="">
-                    Select a supplier or add new
-                </option>
-                {% for supplier in suppliers %}
-                <option value="{{ supplier.id }}">
-                    {{ supplier.name }}
-                </option>
-                {% endfor %}
-                <option value="new">
-                    + Add New Supplier
-                </option>
-            </select>
-        </div>
-        <div id="new_supplier_fields" style="display:none;">
-            <div class="mb-3">
-                <label for="new_supplier_name" class="form-label">
-                    New Supplier Name
-                </label>
-                <input type="text"
-                       class="form-control"
-                       id="new_supplier_name"
-                       name="new_supplier_name">
-            </div>
-            <div class="mb-3">
-                <label for="new_supplier_contact" class="form-label">
-                    New Supplier Contact
-                </label>
-                <input type="text"
-                       class="form-control"
-                       id="new_supplier_contact"
-                       name="new_supplier_contact">
-            </div>
-        </div>
-
-        <!-- Pre-fill stock details if product exists -->
-        <div class="mb-3">
-            <label for="sku" class="form-label">
-                SKU
-            </label>
-            <input type="text"
-                   class="form-control"
-                   id="sku"
-                   name="sku" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="stock_quantity" class="form-label">
-                Stock Quantity
-            </label>
-            <input type="number"
-                   class="form-control"
-                   id="stock_quantity"
-                   name="stock_quantity" required>
-        </div>
-        <div class="mb-3">
-            <label for="reorder_threshold" class="form-label">
-                Reorder Threshold
-            </label>
-            <input type="number"
-                   class="form-control"
-                   id="reorder_threshold"
-                   name="reorder_threshold" required>
-        </div>
-        <div class="mb-3">
-            <label for="unit_price" class="form-label">
-                Unit Price
-            </label>
-            <input type="text"
-                   class="form-control"
-                   id="unit_price"
-                   name="unit_price" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-            Create
-        </button>
-    </form>
+    </div>
 </div>
 
+{% block scripts %}
 <script>
-document.getElementById('product_select').addEventListener('change', function() {
-    const selectedProductId = this.value;
-    console.log("Product Selected:", selectedProductId);
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const productSelect = document.getElementById('product_select');
+    const newProductFields = document.getElementById('new_product_fields');
+    const supplierSelect = document.getElementById('supplier_id');
+    const newSupplierFields = document.getElementById('new_supplier_fields');
+    const newProductInputs = newProductFields.querySelectorAll('input, textarea');
+    const newSupplierInputs = newSupplierFields.querySelectorAll('input');
 
-    if (selectedProductId === 'new') {
-        document.getElementById('new_product_fields').style.display = 'block';
-        // Clear fields for new product entry
-        document.getElementById('stock_quantity').value = '';
-        document.getElementById('reorder_threshold').value = '';
-        document.getElementById('unit_price').value = '';
-    } else {
-        document.getElementById('new_product_fields').style.display = 'none';
-        if (selectedProductId) {
-            fetch(`/product-details/${selectedProductId}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Fetched Product Data:", data);
-                    if (data.success) {
-                        document.getElementById('stock_quantity').value = data.product.stock_quantity;
-                        document.getElementById('reorder_threshold').value = data.product.reorder_threshold;
-                        document.getElementById('unit_price').value = data.product.unit_price;
-                    } else {
-                        console.error('Failed to fetch product details:', data.error);
-                    }
-                })
-                .catch(error => console.error('Error fetching product details:', error));
+    // Handle Product Selection
+    productSelect.addEventListener('change', function() {
+        if (this.value === 'new') {
+            newProductFields.style.display = 'block';
+            newProductInputs.forEach(input => {
+                if (input.id === 'new_product_name') {
+                    input.required = true;
+                }
+            });
+        } else {
+            newProductFields.style.display = 'none';
+            newProductInputs.forEach(input => input.required = false);
+            if (this.value) {
+                fetchProductDetails(this.value);
+            }
         }
+    });
+
+    // Handle Supplier Selection
+    supplierSelect.addEventListener('change', function() {
+        if (this.value === 'new') {
+            newSupplierFields.style.display = 'block';
+            newSupplierInputs.forEach(input => {
+                if (['new_supplier_name', 'new_supplier_email'].includes(input.id)) {
+                    input.required = true;
+                }
+            });
+        } else {
+            newSupplierFields.style.display = 'none';
+            newSupplierInputs.forEach(input => input.required = false);
+        }
+    });
+
+    // Fetch Product Details
+    function fetchProductDetails(productId) {
+        fetch(`/inventory/product-details/${productId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('unit_price').value = data.product.unit_price;
+                    document.getElementById('cost_price').value = data.product.cost_price;
+                    document.getElementById('stock_quantity').value = data.product.stock_quantity || 0;
+                    document.getElementById('reorder_threshold').value = data.product.reorder_threshold || 0;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching product details:', error);
+            });
     }
+
+    // Form Validation
+    document.querySelector('form').addEventListener('submit', function(event) {
+        if (productSelect.value === 'new') {
+            const unitPrice = parseFloat(document.getElementById('unit_price').value);
+            const costPrice = parseFloat(document.getElementById('cost_price').value);
+
+            if (!unitPrice || unitPrice <= 0) {
+                event.preventDefault();
+                alert('Please enter a valid unit price');
+                return;
+            }
+
+            if (!costPrice || costPrice <= 0) {
+                event.preventDefault();
+                alert('Please enter a valid cost price');
+                return;
+            }
+        }
+
+        if (supplierSelect.value === 'new') {
+            const email = document.getElementById('new_supplier_email').value;
+            if (!email) {
+                event.preventDefault();
+                alert('Supplier email is required');
+                return;
+            }
+        }
+    });
 });
 </script>
+{% endblock %}
 {% endblock %}
