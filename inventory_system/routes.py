@@ -14,6 +14,17 @@ main_bp = Blueprint('main', __name__)
 # Set up logging
 logger = logging.getLogger(__name__)
 
+@main_bp.route('/')
+def home():
+    """Root route - show landing page if not authenticated, dashboard if authenticated"""
+    if current_user.is_authenticated:
+        # Check if user has a role that can access dashboard
+        if current_user.role in ['admin', 'staff', 'owner']:
+            return redirect(url_for('users.personal_dashboard'))
+    # Otherwise show the landing page
+    return render_template('landing.html')
+
+
 @main_bp.route('/login', methods=['GET', 'POST'])
 def login():
     # If user is already logged in, redirect to dashboard
